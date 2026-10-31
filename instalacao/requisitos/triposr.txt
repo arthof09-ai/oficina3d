@@ -1,0 +1,19 @@
+# .venv_triposr: requirements.txt do TripoSR @ 107cefd (transcricao, evento ~483) com as trocas da v1:
+# - SEM torchmcubes (nao compila sem CUDA Toolkit): usa compat\torchmcubes + oficina3d_compat.pth (etapa d);
+# - + scikit-image (o substituto usa) e onnxruntime (o rembg precisa; faltou na v1, evento 296);
+# - SEM gradio (so o gradio_app.py do TripoSR usa; o run.py nao).
+# Itens sem versao: a v1 nao registrou a versao; o requirements_venv_triposr.lock fixa depois da 1a instalacao.
+torch==2.5.1+cu124
+torchvision==0.20.1+cu124
+omegaconf==2.3.0
+Pillow==10.1.0
+einops==0.7.0
+transformers==4.35.0
+trimesh==4.0.5
+rembg
+huggingface_hub<1.0
+imageio[ffmpeg]
+xatlas==0.0.9
+moderngl==5.10.0
+scikit-image
+onnxruntime

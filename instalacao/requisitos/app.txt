@@ -1,0 +1,35 @@
+# .venv_app = app + Hunyuan3D-2GP (o ".venv" da v1; faz o papel do .venv_hunyuan do plano 6.1).
+# Versoes: MANIFESTO_DOWNLOADS_OFICINA3D_v1.json + "Successfully installed" do pip da v1 (transcricao, evento ~1490).
+# O torch entra antes, sozinho, por --index-url https://download.pytorch.org/whl/cu124 (instalar.ps1, etapa d).
+# SEM diso (exige CUDA Toolkit; o runner usa enable_flashvdm(mc_algo="mc")).
+# SEM ninja/pybind11/gradio_litmodel3d do requirements do 2GP: so servem para compilar ou para o gradio_app.py.
+torch==2.5.1+cu124
+torchvision==0.20.1+cu124
+numpy==2.2.6
+transformers==4.49.0
+tokenizers==0.21.4
+safetensors==0.8.0
+diffusers==0.39.0
+accelerate==1.15.0
+mmgp==3.2.7
+optimum-quanto==0.2.6
+einops==0.8.2
+omegaconf==2.4.0
+tqdm
+trimesh==5.2.0
+pymeshlab==2025.7.post1
+xatlas==0.0.11
+pygltflib==1.16.5
+rembg==2.0.69
+onnxruntime==1.23.2
+opencv-python==5.0.0.93
+scikit-image==0.25.2
+scipy==1.15.3
+numba==0.68.1
+pillow==10.4.0
+gradio==4.44.1
+fastapi==0.162.0
+uvicorn==0.54.0
+pydantic==2.10.6
+psutil==7.2.2
+huggingface_hub<1.0

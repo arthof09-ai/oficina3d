@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "oficina3d": {
+      "type": "stdio",
+      "command": "C:\\Users\\<usuario>\\RPG_Local\\Oficina3D\\.venv_mcp\\Scripts\\python.exe",
+      "args": ["-m", "oficina3d.mcp"],
+      "env": {
+        "PYTHONPATH": "C:\\Users\\<usuario>\\RPG_Local\\Oficina3D\\app",
+        "PYTHONUTF8": "1",
+        "OFICINA3D_BASE": "C:\\Users\\<usuario>\\RPG_Local\\Oficina3D"
+      }
+    }
+  }
+}

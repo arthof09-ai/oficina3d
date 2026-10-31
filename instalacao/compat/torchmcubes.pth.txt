@@ -1,0 +1,40 @@
+Substituto do torchmcubes ligado por um arquivo .pth (só no .venv_triposr)
+==========================================================================
+
+Por quê
+-------
+O TripoSR (tsr/models/isosurface.py) faz `from torchmcubes import marching_cubes`.
+O torchmcubes original não tem wheel: precisa compilar, e com o PyTorch CUDA o CMake
+exige o CUDA Toolkit (e o MSVC). A v2 não compila nada. Por isso o requirements do
+TripoSR é instalado SEM a linha `git+https://github.com/tatsy/torchmcubes.git`, e no
+lugar entra o pacote `compat\torchmcubes\__init__.py` (marching cubes na CPU pelo
+scikit-image, mesma convenção de eixos e faces). Na v1 extraiu a malha em 2,7 s.
+
+O arquivo que o instalar.ps1 cria
+---------------------------------
+Nome:    oficina3d_compat.pth
+Onde:    <OFICINA3D_BASE>\.venv_triposr\Lib\site-packages\
+         (o instalador descobre a pasta com
+          python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])")
+Conteúdo (UMA linha, caminho absoluto da pasta que CONTÉM a pasta torchmcubes):
+
+    C:\Users\txcga\RPG_Local\Oficina3D\app\instalacao\compat
+
+Como funciona
+-------------
+Na partida, o módulo `site` do Python lê todo *.pth do site-packages e acrescenta ao
+sys.path cada linha que seja uma pasta existente. Assim `import torchmcubes` acha
+`compat\torchmcubes\__init__.py` em qualquer processo do .venv_triposr, sem mexer no
+código do TripoSR e sem PYTHONPATH.
+
+Cuidados
+--------
+- Gravar em ASCII, SEM BOM (Set-Content -Encoding ascii, ou [IO.File]::WriteAllText com
+  ASCII). Um BOM UTF-8 vira parte da primeira linha e o caminho não é achado.
+- O caminho tem de ser só ASCII (o Python 3.10 lê o .pth na codificação local).
+- Linhas que começam com "import" são EXECUTADAS pelo site; esta linha é só um caminho.
+- Se a pasta app\ mudar de lugar, rode de novo a etapa d do instalar.ps1 (ela regrava o .pth).
+- Conferir: .venv_triposr\Scripts\python.exe -c "import torchmcubes; print(torchmcubes.__file__)"
+  tem de apontar para ...\app\instalacao\compat\torchmcubes\__init__.py.
+- Não instalar o pacote torchmcubes real no mesmo venv: o site-packages vem antes no
+  sys.path e ele ganharia do substituto.

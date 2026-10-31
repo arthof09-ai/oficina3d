@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oficina 3D</title>
+<link rel="stylesheet" href="/static/app.css">
+<!-- Configura o model-viewer ANTES de ele carregar (decodificador Draco local: funciona offline). -->
+<script src="/static/viewer_config.js"></script>
+<!-- model-viewer 3.5.0 (Google), cópia local em static/vendor/ — ver vendor/LEIA-ME.txt -->
+<script type="module" src="/static/vendor/model-viewer.min.js"></script>
+<script defer src="/static/app.js"></script>
+</head>
+<body>
+<header class="topo">
+  <h1>Oficina 3D</h1>
+  <span id="estado-worker" class="pilula">worker: ?</span>
+  <nav class="abas" role="tablist">
+    <button type="button" class="aba ativa" data-aba="enviar" role="tab">Enviar</button>
+    <button type="button" class="aba" data-aba="fila" role="tab">Fila</button>
+    <button type="button" class="aba" data-aba="galeria" role="tab">Galeria</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ============================================================ ENVIAR -->
+  <section id="painel-enviar" class="painel ativo">
+    <p class="aviso">Use imagens com fundo transparente. Prancha com várias vistas numa imagem só é separada automaticamente.</p>
+    <form id="form-envio" autocomplete="off">
+      <label id="zona-soltar" class="zona" for="campo-imagens">
+        <span>Arraste as imagens aqui ou toque para escolher (PNG, JPG ou WebP; até <b id="lim-n">12</b> imagens de <b id="lim-mb">40</b> MB)</span>
+        <input id="campo-imagens" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+      </label>
+      <ul id="lista-imagens" class="miniaturas"></ul>
+
+      <div class="grade">
+        <label>Modo
+          <select id="campo-modo" name="modo"></select>
+        </label>
+        <label>Motor
+          <select id="campo-motor" name="motor"><option value="">automático</option></select>
+        </label>
+        <label>Alvo de triângulos
+          <input id="campo-alvo" name="alvo_triangulos" type="number" min="1000" max="1000000" step="1000" placeholder="50000">
+        </label>
+        <label>Passos
+          <input id="campo-passos" name="passos" type="number" min="1" max="100" placeholder="padrão do motor">
+        </label>
+        <label>Nome
+          <input id="campo-nome" name="nome" type="text" maxlength="60" placeholder="ex.: orc">
+        </label>
+        <label class="caixa">
+          <input id="campo-simetrizar" name="simetrizar" type="checkbox"> Simetrizar (corpo-base em T-pose)
+        </label>
+        <label id="bloco-malha" class="oculto">Malha (.glb/.obj) para o modo so-refinar
+          <input id="campo-malha" type="file" accept=".glb,.obj">
+        </label>
+      </div>
+      <p id="tempo-motor" class="dica"></p>
+      <button id="botao-enviar" type="submit" class="primario">Enviar para a fila</button>
+      <progress id="progresso-envio" class="oculto" max="100" value="0"></progress>
+      <p id="msg-envio" class="msg" role="status"></p>
+    </form>
+  </section>
+
+  <!-- ============================================================ FILA -->
+  <section id="painel-fila" class="painel">
+    <ul id="lista-jobs" class="jobs"></ul>
+    <p id="fila-vazia" class="dica oculto">Nenhum job ainda.</p>
+  </section>
+
+  <!-- ============================================================ GALERIA -->
+  <section id="painel-galeria" class="painel">
+    <div id="grade-galeria" class="galeria"></div>
+    <p id="galeria-vazia" class="dica oculto">Nenhum modelo concluído ainda.</p>
+  </section>
+
+  <!-- ============================================================ DETALHE -->
+  <section id="painel-detalhe" class="painel">
+    <button type="button" id="voltar" class="secundario">← voltar</button>
+    <h2 id="det-titulo"></h2>
+    <p id="det-estado" class="dica"></p>
+    <div class="visor">
+      <div id="visor-3d" class="visor-3d"></div>
+      <div class="botoes">
+        <button type="button" id="ver-final" class="secundario">Modelo final</button>
+        <button type="button" id="ver-cru" class="secundario">Forma crua</button>
+        <a id="baixar-glb" class="botao" href="#" download>Baixar GLB</a>
+        <a id="baixar-zip" class="botao" href="#" download>Baixar ZIP</a>
+      </div>
+      <p id="legenda-visor" class="dica"></p>
+    </div>
+
+    <h3>Nota do Mestre</h3>
+    <form id="form-nota" class="nota">
+      <label>Nota (0 a 10)
+        <select id="campo-nota"><option value="">—</option></select>
+      </label>
+      <label class="largo">Comentário
+        <textarea id="campo-comentario" maxlength="2000" rows="3" placeholder="o que ficou bom, o que corrigir"></textarea>
+      </label>
+      <button type="submit" class="primario">Gravar nota</button>
+      <p id="msg-nota" class="msg" role="status"></p>
+    </form>
+
+    <h3>Prévias</h3>
+    <div id="det-previas" class="previas"></div>
+    <h3>Fidelidade por silhueta (IoU)</h3>
+    <table id="det-iou" class="tabela"></table>
+    <h3>Imagens de entrada</h3>
+    <div id="det-entradas" class="previas"></div>
+    <h3>Avisos</h3>
+    <ul id="det-avisos" class="lista"></ul>
+    <h3>Histórico</h3>
+    <ol id="det-historico" class="lista historico"></ol>
+  </section>
+</main>
+</body>
+</html>

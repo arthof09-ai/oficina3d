@@ -1,0 +1,11 @@
+# .venv_mcp: servidor MCP (sem torch). Versoes do pip da v1 (transcricao, evento 852).
+# ATENCAO: mcp 2.x -> FastMCP virou MCPServer (from mcp.server.mcpserver import MCPServer).
+# psutil: pedido no plano 6.5 (PID pelo psutil no servidor_mcp.py); nao estava no venv da v1.
+mcp==2.3.0
+pydantic==2.14.1
+starlette==1.7.0
+uvicorn==0.54.0
+sse-starlette==3.5.1
+httpx2==2.14.0
+pywin32==312
+psutil==7.2.2
