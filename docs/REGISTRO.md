@@ -88,3 +88,20 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - Reteste com o mesmo comando do instalador: **IMPORT OK 2.5.1+cu124 True 4.49.0 0.39.0** (torch, CUDA disponivel, transformers, diffusers).
 - Estado: **itens 1 e 2 da Fase 1 CONCLUIDOS** (ambiente, motores e modelos prontos e provados por import). Proximos: item 4 (worker + gpu.lock + jobs_teste), item 5 (web/MCP no ar) e item 6 (bateria dourada).
 
+## [2026-10-31 19:44 -03] EXEC-02: autorizacao total + metodo de trabalho
+
+- O Mestre concedeu autorizacao total ao Muse DENTRO do projeto Oficina3D (ver DECISOES, EXEC-02): decidir pelo melhor do projeto, fazer e baixar o que precisar, registrando todas as duvidas, problemas, decisoes e solucoes, e trabalhando sempre com um agente Critico rigoroso e baterias de testes.
+- Primeira aplicacao: o registro da tarefa do worker (item 4 da Fase 1), que estava pausado desde 18:50 aguardando esta confirmacao, foi executado com o script do proprio projeto.
+
+## [2026-10-31 18:47-18:57 -03] PROBLEMA: PC sem alcancar o github.com (push pendente)
+
+- Sintoma: `git push` falha com "Failed to connect to github.com:443" (timeouts de 21-33 s), 8 tentativas automaticas esgotadas. Outros destinos funcionaram no mesmo periodo (Hugging Face a ~200 Mbps, PyPI, indice do PyTorch).
+- Impacto: nenhum no codigo (commit 6839839 esta salvo local; o remoto ja tinha tudo ate 6762003). Apenas a sincronizacao esta pendente.
+- Estado: em diagnostico (DNS x rota) pelo Muse; solucao e resultado serao registrados aqui.
+
+### Atualizacao do diagnostico [2026-10-31 19:57 -03]
+
+- O problema NAO e so o GitHub: testes as 19:52-19:57 mostram a conexao TCP 443 falhando para TODOS os destinos provados (github.com, api.github.com, ssh.github.com, huggingface.co, pypi.org, www.google.com), com DNS lento e algumas respostas estranhas do resolvedor local (github.com e api.github.com resolvendo para a faixa 4.228.31.x). Ate 18:38 a mesma rede baixava a ~200 Mbps; a degradacao comecou entre 18:42 e 18:47.
+- O acesso do Muse ao PC (Tailscale/SSH) segue normal: o defeito esta na saida comum do PC/provedor, nao no projeto.
+- DECISAO do Muse (EXEC-02): o trabalho local da Fase 1 SEGUE (worker, jobs, web, MCP e bateria dourada nao precisam de internet — os modelos ja sao locais). Para a sincronizacao, fica armada uma tarefa automatica no PC que tenta o `git push` a cada 15 min e se desliga sozinha no primeiro sucesso; o resultado fica registrado aqui.
+
