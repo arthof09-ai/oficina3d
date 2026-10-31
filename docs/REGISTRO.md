@@ -164,3 +164,8 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **LISTA_INSTALACAO_FASE1.md** (a outra metade da P6, divida do agente B): em `instalacao/` — runtime, os 3 venvs com versoes conferidas, clones e commits, os 13+2 modelos, env, tarefas e como conferir em 1 minuto.
 - **Suite completa no interpretador de producao: 199 testes, OK** (152 antigos + 47 novos; 1 skip desenhado, o do registro MCP fora do venv_mcp — la ele roda e passa: 7/7).
 
+## [2026-10-31 20:50 -03] REVISAO_E_ROTEIRO.md entregue; Prova C bloqueada pelas imagens douradas
+
+- Escrito `docs/REVISAO_E_ROTEIRO.md` (pedido do Mestre das 19:52): a definicao de "pronta" em 8 itens com prova, as lacunas honestas, as rodadas de melhoria R1-R5 com criterio de saida, os riscos permanentes e a tabela de status das ressalvas do Critico (P1-P6 resolvidos; P7 aberto).
+- **Bloqueio da Prova C (item 6):** as imagens douradas do Orc, Caprileo e Besta NAO estao neste PC nem no Drive (buscadas em toda a BASE, em `Oficina3D_v2` — pastas `referencias` e `aprovados` vazias — e em `03 - Modelos 3D`). Eram material da v1, noutra maquina. A bateria esta desenhada e a pasta `testes/dourado/` aceita as imagens assim que o Mestre indicar onde estao (ou enviar). Sem elas, qualquer "dourado" substituto seria invencao — nao farei.
+
