@@ -5,6 +5,9 @@
 # Itens sem versao: a v1 nao registrou a versao; o requirements_venv_triposr.lock fixa depois da 1a instalacao.
 torch==2.5.1+cu124
 torchvision==0.20.1+cu124
+# numpy 1.26: o trimesh 4.0.5 (fixado abaixo) usa ndarray.ptp(), removido no numpy 2.0
+# (falha medida em job real, 31/10/2026). Este venv e da era do TripoSR: fica no 1.26.
+numpy==1.26.4
 omegaconf==2.3.0
 Pillow==10.1.0
 einops==0.7.0

@@ -43,3 +43,7 @@ if (-not $SemCriar) {
     }
 }
 Remove-Variable -Name __o3dTeste, __o3dP -ErrorAction SilentlyContinue
+# Arquivo dos jobs concluidos (oficina3d/arquivar.py le OFICINA3D_ARQUIVO como a raiz
+# Oficina3D_v2 do Drive). Resolvido por curinga: sem literal acentuado neste arquivo (P5).
+$driveRpg = (Get-ChildItem 'G:\Meu Drive' -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'RPG*' } | Select-Object -First 1).FullName
+if ($driveRpg) { $env:OFICINA3D_ARQUIVO = Join-Path $driveRpg 'Oficina3D_v2' }

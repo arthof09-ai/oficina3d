@@ -23,6 +23,11 @@ set "HF_HUB_DISABLE_SYMLINKS_WARNING=1"
 set "HF_HUB_DISABLE_TELEMETRY=1"
 rem Para rodar os motores sem rede depois dos downloads:  set "HF_HUB_OFFLINE=1"
 
+rem Arquivo dos jobs concluidos (oficina3d/arquivar.py le OFICINA3D_ARQUIVO como a
+rem raiz Oficina3D_v2 do Drive). Resolvido por curinga: este arquivo fica 100% ASCII
+rem e o nome real da pasta tem til (P5, 31/10/2026).
+for /d %%D in ("G:\Meu Drive\RPG*") do set "OFICINA3D_ARQUIVO=%%D\Oficina3D_v2"
+
 for %%P in ("%OFICINA3D_JOBS%" "%HF_HOME%" "%HY3DGEN_MODELS%" "%U2NET_HOME%" "%TEMP%" "%UV_CACHE_DIR%" "%UV_PYTHON_INSTALL_DIR%" "%OFICINA3D_BASE%\_cache\logs" "%OFICINA3D_BASE%\locks" "%OFICINA3D_BASE%\motores") do (
     if not exist "%%~P\" mkdir "%%~P"
 )
