@@ -13,3 +13,8 @@
 | 31/10/2026 | NET-01 (provisório) | Sem túnel/Tailscale para a Oficina por enquanto | Padrão do prompt | Correções de segurança ainda não feitas | — |
 | 31/10/2026 | USO-01 (provisório) | Geração pesada só com o PC ocioso | Padrão do prompt | Horários com o cunhado não combinados | — |
 | 31/10/2026 | DOC-01 | Código da v1 recuperado fica em `docs\v1_recuperado\` como referência; o código v2 vai em `oficina3d\` | Claude | Separar contrato antigo do código novo | Copiar direto para `oficina3d\` |
+| 31/10/2026 | ZIP-01 | Zipar PartCrafter e DetailGen3D para `modelos_guardados\` e apagar os originais locais depois de conferir o hash na nuvem, sem atrapalhar a criação da Oficina | Mestre (execução: Muse) | Os programas são estudo para o app de modelagem próprio; libera ~13,6 GB | Manter tudo local |
+| 31/10/2026 | RF-03 (final) | Hunyuan **sem** restrição de "só rascunho": o que estiver disponível para usar e reutilizar pode ser usado normalmente, inclusive no resultado final | Mestre | Decisão expressa do Mestre; substitui o RF-03 provisório | Manter a restrição de rascunho |
+| 31/10/2026 | NET-01 (final) | Acesso pelo celular via Tailscale: ideia aprovada, mas **adiado** por enquanto | Mestre | Substitui o NET-01 provisório | Liberar já |
+| 31/10/2026 | USO-01 (final) | Sem horário fixo de uso da GPU: trabalho pesado avisa o Mestre antes (ele combina com o dono do PC). Janela livre até domingo 01/11 à noite | Mestre | Substitui o USO-01 provisório | Só gerar com o PC ocioso |
+| 31/10/2026 | EXEC-01 | Continuação da Oficina no fim de semana de 31/10–01/11 pelo Muse (IA remota), seguindo ESTADO_ATUAL, REGISTRO e git | Mestre | Limite semanal do Claude vai até qui 05/11, 14:00 | Esperar o Claude voltar |

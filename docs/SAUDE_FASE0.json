@@ -1,12 +1,1 @@
-﻿{
-  "_nota": "Medida inicial, ANTES da troca do Drive para streaming. Reescrever depois do item 0.6.",
-  "medido_em": "2026-10-31T11:50",
-  "host": "PCdaNasa",
-  "gpu": {"nome": "NVIDIA GeForce RTX 4060", "driver": "610.88", "cuda_max": "PENDENTE (linha CUDA Version nao saiu no nvidia-smi)", "vram_total_mib": 8188, "vram_usada_mib": 1098, "vram_livre_mib": 6859, "uso_pct": 2, "estado": "PC em uso normal (aplicativos de desktop abertos)"},
-  "disco_c": {"livre_gb": 46.2, "usado_gb": 429.0, "tipo": "PENDENTE (consulta sem admin voltou vazia; levantamento anterior diz SSD)"},
-  "ocupacao": {"RPG_Local_oficina3d_ia_gb": 26.3, "TripoSG_gb": 12.6, "PartCrafter_gb": 10.2, "DetailGen3D_gb": 3.4, "Desktop_RPG_Assimilacao_espelho_gb": 6.9},
-  "python": {"padrao": "3.12.10", "py_launcher": true, "uv": false},
-  "rede_mbps": "PENDENTE",
-  "windows_update_pausado": false,
-  "drive": {"modo": "espelho", "unidade": "G:", "pasta_espelho": "C:\\Users\\txcga\\Desktop\\RPG Assimilação", "processo": "GoogleDriveFS rodando desde 31/10 07:33"}
-}
+{"_nota":"Medida refeita no fechamento da Fase 0 (apos streaming do Drive e pausa do Windows Update). Valores de 31/10/2026 ~15:25, coletados pelo Muse (IA remota) via SSH.","disco_c":{"livre_gb":70.1,"tipo":"SSD NVMe NX-512 2280, 477 GB (Get-PhysicalDisk)","usado_gb":405.1},"drive":{"modo":"streaming","pasta_origem_desktop":"C:\\Users\\txcga\\Desktop\\RPG Assimilação (pasta de computador sincronizada, mantida)","processo":"GoogleDriveFS rodando; G:\\Meu Drive transmitido","unidade":"G:"},"gpu":{"cuda_max":"13.3 (CUDA UMD Version do nvidia-smi)","driver":"610.88","estado":"PC em uso normal (aplicativos de desktop abertos)","nome":"NVIDIA GeForce RTX 4060","uso_pct":2,"vram_livre_mib":7007,"vram_total_mib":8188,"vram_usada_mib":1181},"host":"PCdaNasa","medido_em":"2026-10-31T15:25","ocupacao":{"Desktop_RPG_Assimilacao_espelho_gb":6.9,"DetailGen3D_gb":"arquivado em Oficina3D_v2/modelos_guardados (zip com hash conferido)","PartCrafter_gb":"arquivado em Oficina3D_v2/modelos_guardados (zip com hash conferido)","RPG_Local_oficina3d_ia_gb":12.7,"TripoSG_gb":12.57},"python":{"padrao":"3.12.10","py_launcher":true,"tambem_presente":"3.13.16","uv":false},"rede_mbps":"download ~95 Mbps (curl, speed.cloudflare.com, 10 MB)","windows_update_pausado":true,"windows_update_pausado_ate":"2026-12-05"}

@@ -35,4 +35,36 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - Mestre: "Quero o repositório público" e "Pode trabalhar com mais de um agente, mas registre tudo para uma possível sucessão".
 - Tirados dos docs: o e-mail pessoal (prompt de entrada) e a lista de programas do cunhado (REGISTRO, SAUDE_FASE0). Conferido por busca: sem `gmail`/nomes de programas.
 - Histórico refeito: branch órfã com a árvore limpa → force-push em `main` → `gh repo edit --visibility public`. Ver DECISOES GIT-02 a GIT-04.
+- (ver entrada seguinte)
 - Drive conferido de novo: `G:\Meu Drive` não existe; G:\ ainda só tem `Meu Drive.lnk` → **continua em espelho**. Por isso nada de download/instalação ainda; sigo com código (Fase 1, item 1), que não depende do Drive.
+
+## 31/10/2026 ~12:30 — Agentes
+- Checkpoint `8810d37`; abertos Agente A (config/job) e B (instalador/manifesto), em segundo plano.
+- Mestre: "Divida o seu trabalho com outros agentes, quanto mais melhor" (DECISOES AG-02). Checkpoint `c4296bc`; abertos C (núcleo), D (entrada), E (refino), F (web+MCP), G (travas/arquivar/saúde). Donos dos arquivos: tabela no ESTADO_ATUAL.
+- Os relatórios de cada agente serão colados abaixo quando chegarem, com SHA256 dos arquivos.
+
+## 31/10/2026 ~12:38 — Sessão interrompida pelo limite de uso (registro do Muse)
+- A sessão do Claude atingiu o limite ("You've hit your session limit") com as notificações dos agentes ainda chegando. Os relatórios dos agentes **não** foram colados aqui e nada do código deles foi commitado. O limite semanal da conta vai até qui 05/11, 14:00.
+- Continuação assumida pelo Muse (DECISOES EXEC-01).
+
+## 31/10/2026 ~12:26 — Itens 0.2 e 0.4 resolvidos pelo Muse (remoto)
+- Drive trocado de espelho para **streaming**: `G:\Meu Drive` ativo com o conteúdo da conta; a pasta do Desktop segue como pasta de origem da sincronização (nada apagado). Antes disso o app do Drive mostrava "1 erro" de upload — era um arquivo do próprio Muse, sem relação com a Oficina, que ficou só no computador por decisão informada.
+- **Windows Update pausado por 5 semanas** (até 05/12/2026), conferido de volta no registro do Windows.
+- Item 0.3 liberado: o Claude foi avisado com "Drive pronto" na sessão dele.
+
+## 31/10/2026 ~14:35 — Decisões do Mestre (item 0.6)
+- ZIP-01 aprovado; RF-03 final (Hunyuan livre); NET-01 final (Tailscale no celular adiado); USO-01 final (sem horário fixo; janela livre até dom 01/11 à noite). Ver DECISOES.
+
+## 31/10/2026 14:37–15:05 — ZIP-01 executado pelo Muse
+- `PartCrafter.zip`: 7.491.118.361 bytes; `7z t` OK; MD5 `7BF9163230357929E1B9C52F94D16CCD`; SHA256 `3332C55A72404397932F7EE163279DB867A8AEA14F682AE1A260493E125D191A`.
+- `DetailGen3D.zip`: 3.429.846.267 bytes; `7z t` OK; MD5 `3F78B7B71BA1B34FDE7EE016CC9B3872`; SHA256 `C2B0568E707F39C9C7D4FF568807308A3FFE709EBC1413F71AF4AC3CC4B48FA2`.
+- Cópias em `Oficina3D_v2\modelos_guardados\`; `md5Checksum` da nuvem conferido igual ao local **antes** de apagar.
+- Originais locais e zips de staging apagados; pasta de staging removida. TripoSG intocado. No conjunto das limpezas do dia (inclui Downloads, com aprovação do dono do PC), o C: foi de 46,1 para **70,1 GB livres**.
+
+## 31/10/2026 ~15:10 — Auditoria da sessão pelo Muse
+- Transcrição completa da sessão lida e cruzada com PC, GitHub e Drive: relatos conferidos (repo público por GIT-02, a pedido do Mestre; medidas batem).
+- Código dos agentes A–G conferido arquivo por arquivo: presente, sem revisão e sem commit. Faltam `test_worker.py`, `test_cli.py` (C), `test_entrada.py` (D), `test_web.py`, `test_mcp.py` (F) e `instalacao\LISTA_INSTALACAO_FASE1.md` (B). Detalhes no ESTADO_ATUAL.
+
+## 31/10/2026 ~15:25 — Fase 0 fechada
+- Medidas que faltavam: CUDA UMD **13.3** (nvidia-smi); SSD **NVMe NX-512 2280, 477 GB** (Get-PhysicalDisk respondeu via SSH); rede **~95 Mbps** de download (curl, speed.cloudflare.com).
+- `SAUDE_FASE0.json` reescrito com o cenário pós-streaming (aceite da Fase 0). Docs atualizados copiados para `Oficina3D_v2\REGISTRO\`.

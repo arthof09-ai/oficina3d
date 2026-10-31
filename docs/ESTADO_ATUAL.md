@@ -1,45 +1,45 @@
 # ESTADO ATUAL: Oficina 3D v2 (CUNHADO-PC)
-**Atualizado em:** 31/10/2026, ~12:20 (horário do PC)
-**Quem escreveu:** Claude Code no CUNHADO-PC (hostname `PCdaNasa`)
+**Atualizado em:** 31/10/2026, ~15:25 (horário do PC)
+**Quem escreveu:** Muse (IA remota do Mestre), continuando a sessão do Claude Code local — que parou no limite de uso semanal (volta qui 05/11, 14:00). Auditoria completa da sessão em 31/10 ~15:10: tudo que o Claude relatou confere no PC, no GitHub e no Drive.
 
 ## Fase e passo
-- Fase 0, item 0 **bloqueado** (troca do Drive para streaming precisa de cliques na tela).
-- Em paralelo, Fase 1 item 1 (código, sem download): 2 agentes rodando (ver "Processos").
+- **Fase 0 CONCLUÍDA.** Os itens que dependiam de tela foram resolvidos pelo Muse em 31/10: Drive em streaming (item 0.2/5 do plano), Windows Update pausado por 5 semanas (item 0.4) e as decisões do item 0.6 tomadas pelo Mestre (ver DECISOES: ZIP-01, RF-03 final, NET-01 final, USO-01 final). Medidas que faltavam coletadas (CUDA, SSD, rede) e `SAUDE_FASE0.json` reescrito — aceite da fase cumprido.
+- **Fase 1, item 1 (código):** os 7 agentes (AG-02) terminaram de escrever; o código está no disco **sem revisão e sem commit**. Revisão + testes em andamento pelo Muse.
+- Janela de trabalho: PC livre até domingo 01/11 à noite (USO-01 final).
 
 ## VERIFICADO
-- Repositório **público** `https://github.com/arthof09-ai/oficina3d`, clonado em `C:\Users\txcga\RPG_Local\Oficina3D\app`. Histórico refeito sem e-mail pessoal (commit `e16460d`). `gh api repos/arthof09-ai/oficina3d --jq .visibility` → `public`.
+- Repositório **público** `https://github.com/arthof09-ai/oficina3d` (GIT-02), clonado em `C:\Users\txcga\RPG_Local\Oficina3D\app`. HEAD `c4296bc` = remoto.
 - Pastas: `C:\Users\txcga\RPG_Local\Oficina3D\{app,motores,_cache,jobs,jobs_teste,locks}`.
 - Contrato v1 em `app\docs\`; código recuperado da v1 em `app\docs\v1_recuperado\`.
-- Drive (ainda espelho): `C:\Users\txcga\Desktop\RPG Assimilação\RPG Assimilação\Oficina3D_v2\` com 7 subpastas; `REGISTRO\` com cópia dos docs.
-- Medidas iniciais em `docs\SAUDE_FASE0.json`.
+- Drive em **streaming**: `G:\Meu Drive\RPG Assimilação\Oficina3D_v2\` com 7 subpastas; `REGISTRO\` com cópia dos docs. A pasta do Desktop segue como pasta de origem da sincronização (não mexida).
+- Windows Update pausado até 05/12/2026 (conferido no registro do Windows).
+- Medidas completas em `docs\SAUDE_FASE0.json`: RTX 4060 (CUDA UMD 13.3, ~7,0 GB VRAM livre), SSD NVMe 477 GB, C: com 70,1 GB livres, rede ~95 Mbps.
+- **ZIP-01 executado:** PartCrafter e DetailGen3D zipados em `modelos_guardados\` (teste de integridade OK; MD5 da nuvem = MD5 local) e os originais locais apagados. TripoSG intocado (12,57 GB em `oficina3d_ia\`).
 
-## EM ANDAMENTO: 7 agentes (decisão AG-02 do Mestre). Nenhum commita; nenhum baixa/instala.
-| Agente | Dono dos arquivos (dentro de `app\`) | Fonte |
+## EM ANDAMENTO: revisão do código dos 7 agentes (decisão AG-02 do Mestre)
+Nenhum agente commitou. Estado conferido arquivo por arquivo pelo Muse:
+| Agente | Arquivos | Estado |
 |---|---|---|
-| A | `oficina3d\__init__.py`, `config.py`, `job.py`; `testes\test_config.py`, `test_job.py` | plano 6.5 + v1_recuperado |
-| B | `instalacao\*` (manifesto_modelos.json, baixar_modelos.py, instalar.ps1/.cmd, env.ps1/.cmd, patches\, compat\, LISTA_INSTALACAO_FASE1.md) | manifesto + transcrição |
-| C (núcleo) | `oficina3d\motores\*`, `worker.py`, `cli.py`; `testes\test_motores.py`, `test_worker.py`, `test_cli.py` | transcrição (agente núcleo da v1) |
-| D (entrada) | `oficina3d\entrada\*`; `testes\test_entrada.py` | transcrição (agente entrada) |
-| E (refino) | `oficina3d\refino\*`; `testes\test_refino.py` | transcrição (agente refino) |
-| F (web+MCP) | `oficina3d\web\*`, `oficina3d\mcp\*`; `testes\test_web.py`, `test_mcp.py` | transcrição (agente web) + servidor_mcp.py v1 + plano 6.4/6.5 |
-| G (robustez) | `oficina3d\travas.py` (gpu.lock, worker.lock), `oficina3d\arquivar.py`, `oficina3d\saude.py`; `instalacao\tarefa_worker\*`; `testes\test_travas.py`, `test_arquivar.py`, `test_saude.py` | plano 5.1, 6.2, Fase 1 item 4 |
-Se a sessão cair: os agentes morrem. Rodar `git -C C:\Users\txcga\RPG_Local\Oficina3D\app status`, ver que arquivos de cada dono existem e reabrir só os que faltam, com a mesma descrição.
+| A | `oficina3d\config.py`, `job.py`; `testes\test_config.py`, `test_job.py` | completo |
+| B | `instalacao\*` (manifesto, baixar_modelos.py, instalar.ps1/.cmd, env, patches, compat, requisitos) | falta `LISTA_INSTALACAO_FASE1.md` |
+| C (núcleo) | `oficina3d\motores\*`, `worker.py`, `cli.py`; testes | faltam `test_worker.py` e `test_cli.py` |
+| D (entrada) | `oficina3d\entrada\*`; teste | falta `test_entrada.py` |
+| E (refino) | `oficina3d\refino\*`; `testes\test_refino.py` | completo |
+| F (web+MCP) | `oficina3d\web\*`, `oficina3d\mcp\*`; testes; `docs\mcp_exemplo.json` | faltam `test_web.py` e `test_mcp.py` |
+| G (robustez) | `oficina3d\travas.py`, `arquivar.py`, `saude.py`; `instalacao\tarefa_worker\*`; 3 testes | completo |
 
 ## PENDENTE
-- Item 0: Drive espelho → streaming; itens 0.3 a 0.6.
-- Pausar Windows Update (cliques na tela).
-- Velocidade de rede, tipo do SSD.
-- Fase 1 itens 2 a 6 (dependem do Drive em streaming e de espaço).
+- Revisão: rodar os 7 testes existentes, corrigir quebras, decidir sobre os 5 testes que faltam e a LISTA do agente B; commit de checkpoint.
+- Fase 1 item 1 (instalação): `uv` ainda ausente — instalar, `uv python install 3.10`, criar os venvs e instalar pelo manifesto (`instalacao\instalar.ps1`).
+- Fase 1 item 2: clonar Hunyuan3D-2GP e TripoSR nos commits fixados, aplicar patches, baixar modelos com SHA.
+- Fase 1 itens 3 a 6, na ordem do plano.
 
 ## Próximo comando exato
-1. Se os agentes terminaram: conferir os relatórios deles colados no `docs\REGISTRO.md`; se não estiverem lá, rodar `git -C C:\Users\txcga\RPG_Local\Oficina3D\app status` e revisar os arquivos novos.
-2. Quando o Mestre disser "Drive pronto": `Get-ChildItem "G:\Meu Drive\RPG Assimilação" | Select-Object Name` e seguir o item 0.3 do prompt de entrada.
+1. Rodar a suíte: `python -m pytest testes` (ou `python -m unittest discover -s testes`) na pasta `app`; registrar o resultado no REGISTRO.
+2. Commit + push do checkpoint do código dos agentes; seguir para a instalação do `uv`.
 
 ## Processos rodando agora
-- Agentes A a G (subagentes do Claude Code, sem PID próprio; ver tabela acima). Se a sessão cair, eles morrem: refazer pela descrição acima, partindo do que estiver no disco (`git status`).
+- Nenhum agente do Claude (a sessão caiu com o limite). Quem executa agora é o Muse, por SSH, até o Mestre dizer o contrário ou o Claude voltar (qui 05/11).
 
 ## Bloqueios e perguntas ao Mestre
-1. Trocar o Drive para streaming (cliques). 2. Pausar Windows Update (cliques). 3. Posso zipar PartCrafter + DetailGen3D para `modelos_guardados\` e apagar o local (~13,6 GB)? 4. RF-03 / Tailscale / horários da GPU (padrões em uso).
-
-## Espaço livre no C:
-46,2 GB (31/10/2026, 12:10).
+- Nenhuma. As 4 perguntas da versão anterior foram respondidas em 31/10 (ver DECISOES).
