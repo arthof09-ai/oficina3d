@@ -1,6 +1,6 @@
 """Testes de oficina3d.travas (gpu.lock / worker.lock / GPU ocupada).
 
-Rodar (cwd = app):  py -3.12 -m unittest discover -s testes -p "test_travas.py" -v
+Rodar (cwd = app, no Python de producao):  ..\.venv_app\Scripts\python.exe -m unittest discover -s testes -p "test_travas.py" -v
 Temporários só em <BASE>\\jobs_teste\\ (apagados no fim).
 """
 import json
@@ -21,20 +21,20 @@ sys.path.insert(0, str(APP))
 from oficina3d import travas  # noqa: E402
 
 FILHO = r"""
-import sys, time
+import os, sys, time
 sys.path.insert(0, sys.argv[1])
 from oficina3d import travas
 pasta, segurar, registro = sys.argv[2], float(sys.argv[3]), sys.argv[4]
 with travas.adquirir_gpu(timeout=60, dono="filho", pasta=pasta):
     with open(registro, "a") as f:
-        f.write("E %.6f\n" % time.time())
+        f.write("E %.6f %d\n" % (time.time(), os.getpid()))
     print("PRONTO", flush=True)
     if segurar < 0:
         while True:
             time.sleep(1)      # fica preso até ser morto
     time.sleep(segurar)
     with open(registro, "a") as f:
-        f.write("S %.6f\n" % time.time())
+        f.write("S %.6f %d\n" % (time.time(), os.getpid()))
 print("SOLTOU", flush=True)
 """
 
@@ -43,6 +43,19 @@ def _filho(pasta, segurar, registro):
     return subprocess.Popen([sys.executable, "-c", FILHO, str(APP), str(pasta), str(segurar), str(registro)],
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
                             creationflags=0x08000000)
+
+
+def _pid_reportado(registro):
+    """PID que o proprio filho gravou no registro (o PID real do interprete).
+
+    NAO usar Popen.pid: no venv do uv, sys.executable e um lancador (trampolim)
+    cujo PID difere do PID do Python real que segura a trava (P1, auditoria do Critico).
+    """
+    for ln in Path(registro).read_text().splitlines():
+        partes = ln.split()
+        if partes and partes[0] == "E" and len(partes) >= 3:
+            return int(partes[2])
+    raise AssertionError("registro sem linha E com pid")
 
 
 def _esperar_pronto(p, timeout=30):
@@ -76,15 +89,16 @@ class TestTravaEntreProcessos(BaseTemp):
         p = _filho(self.pasta, 2.0, self.registro)
         self.filhos.append(p)
         _esperar_pronto(p)
+        pid_filho = _pid_reportado(self.registro)
         est = travas.estado_trava("gpu", self.pasta)
         self.assertTrue(est["ocupada"])
-        self.assertEqual(est["dono"]["pid"], p.pid)
+        self.assertEqual(est["dono"]["pid"], pid_filho)
         self.assertTrue(est["dono_vivo"])
         # timeout=0: não espera, falha dizendo quem tem a trava
         with self.assertRaises(travas.TravaOcupada) as ctx:
             with travas.adquirir_gpu(timeout=0, pasta=self.pasta):
                 pass
-        self.assertEqual(ctx.exception.dono.get("pid"), p.pid)
+        self.assertEqual(ctx.exception.dono.get("pid"), pid_filho)
         # com timeout: espera o filho soltar e pega
         t0 = time.monotonic()
         with travas.adquirir_gpu(timeout=30, dono="pai", pasta=self.pasta) as info:
@@ -111,6 +125,7 @@ class TestTravaEntreProcessos(BaseTemp):
         p = _filho(self.pasta, -1, self.registro)
         self.filhos.append(p)
         _esperar_pronto(p)
+        pid_filho = _pid_reportado(self.registro)
         p.kill()  # "Finalizar tarefa": sem chance de soltar
         p.wait(timeout=10)
         est = travas.estado_trava("gpu", self.pasta)
@@ -118,7 +133,7 @@ class TestTravaEntreProcessos(BaseTemp):
         self.assertTrue(est["orfa"])
         self.assertFalse(est["dono_vivo"])
         with travas.adquirir_gpu(timeout=0, pasta=self.pasta) as info:
-            self.assertEqual(info["orfa_anterior"]["pid"], p.pid)
+            self.assertEqual(info["orfa_anterior"]["pid"], pid_filho)
         self.assertFalse(travas.estado_trava("gpu", self.pasta)["orfa"])
 
     def test_registro_velho_com_pid_morto(self):
