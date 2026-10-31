@@ -22,7 +22,10 @@ from typing import Mapping
 BASE_PADRAO = Path(r"C:\Users\txcga\RPG_Local\Oficina3D")
 
 # Pastas da v2 (plano 6.1).
-NOMES_VENVS = {"app": ".venv_app", "hunyuan": ".venv_hunyuan", "triposr": ".venv_triposr", "mcp": ".venv_mcp"}
+# INFRA-01 (31/10/2026, Muse sob EXEC-02): neste projeto o Hunyuan roda no .venv_app.
+# O instalador construiu a pilha Hunyuan (hy3dgen, mmgp) dentro do .venv_app e o teste de
+# import provou; um .venv_hunyuan separado duplicaria ~5,5 GB sem ganho. Ver DECISOES.
+NOMES_VENVS = {"app": ".venv_app", "hunyuan": ".venv_app", "triposr": ".venv_triposr", "mcp": ".venv_mcp"}
 PYTHON_VENVS = "3.10"  # todas criadas pelo uv com Python 3.10
 
 

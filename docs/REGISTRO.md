@@ -105,3 +105,11 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - O acesso do Muse ao PC (Tailscale/SSH) segue normal: o defeito esta na saida comum do PC/provedor, nao no projeto.
 - DECISAO do Muse (EXEC-02): o trabalho local da Fase 1 SEGUE (worker, jobs, web, MCP e bateria dourada nao precisam de internet — os modelos ja sao locais). Para a sincronizacao, fica armada uma tarefa automatica no PC que tenta o `git push` a cada 15 min e se desliga sozinha no primeiro sucesso; o resultado fica registrado aqui.
 
+## [2026-10-31 19:45-20:02 -03] Item 4 (worker no ar) + INFRA-01 (Hunyuan no .venv_app)
+
+- Worker: tarefa `Oficina3D_Worker` registrada com o script do proprio projeto (registrar_tarefa.cmd) e iniciada; log confirma o lancador subindo `python -m oficina3d.worker` as 19:45:49; processos vivos conferidos.
+- PROBLEMA encontrado na checagem viva `cli motores`: os motores Hunyuan apareciam INDISPONIVEIS — o config esperava um `.venv_hunyuan` que o instalador nao criou (a pilha Hunyuan foi instalada no `.venv_app`). Os testes unitarios nao pegavam (fronteira dos motores e simulada neles).
+- SOLUCAO (DECISOES: INFRA-01): `NOMES_VENVS` passou a apontar `hunyuan` -> `.venv_app`; docstring do runner e 3 assercoes de `test_config.py` ajustadas. Verificacao: suite completa **152 testes OK** e `cli motores` agora mostra **mv-turbo, mini-turbo e triposr DISPONIVEIS**.
+- PROBLEMA registrado (pendente): os motores NAO-turbo `hunyuan-mini` e `hunyuan-mv` (30 passos) estao sem os pesos completos (o manifesto so baixou as variantes turbo). DECISAO (EXEC-02 + ordem de qualidade do Mestre, 19:52): baixar tambem os pesos full dos dois motores quando a internet do PC voltar, para a Oficina ficar completa — pesos estimados em ~8,7 GB no total; conferir a lista exata pelo manifesto antes de baixar.
+- Ordem do Mestre (19:52): revisar tudo que falta, definir o que e a Oficina "pronta", e depois da conclusao rodar rodadas de aprimoramento — qualidade acima de economia. Revisao formal entra em `docs/REVISAO_E_ROTEIRO.md`.
+

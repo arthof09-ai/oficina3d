@@ -58,7 +58,7 @@ class TestMontar(unittest.TestCase):
                         (c.tmp, "tmp"), (c.uv_cache, "uv")):
             self.assertEqual(p, c.base / "_cache" / nome)
         self.assertEqual({k: p.name for k, p in c.venvs.items()},
-                         {"app": ".venv_app", "hunyuan": ".venv_hunyuan", "triposr": ".venv_triposr",
+                         {"app": ".venv_app", "hunyuan": ".venv_app", "triposr": ".venv_triposr",
                           "mcp": ".venv_mcp"})
         self.assertEqual(c.ferramentas, Path(r"C:\Users\txcga\RPG_Local\ferramentas"))
         self.assertEqual(c.blender.name.lower(), "blender.exe")
@@ -69,7 +69,7 @@ class TestMontar(unittest.TestCase):
         self.assertEqual(c.base, Path(r"D:\Teste\Oficina3D"))
         self.assertEqual(c.jobs, Path(r"D:\Teste\Oficina3D\jobs"))
         self.assertEqual(c.hf_home, Path(r"D:\Teste\Oficina3D\_cache\huggingface"))
-        self.assertEqual(c.venvs["hunyuan"], Path(r"D:\Teste\Oficina3D\.venv_hunyuan"))
+        self.assertEqual(c.venvs["hunyuan"], Path(r"D:\Teste\Oficina3D\.venv_app"))
         self.assertEqual(c.ferramentas, Path(r"D:\Teste\ferramentas"))
         c = config.montar({"OFICINA3D_BASE": r"D:\Teste\Oficina3D", "OFICINA3D_JOBS": '"D:\\Fila\\jobs"'})
         self.assertEqual(c.jobs, Path(r"D:\Fila\jobs"))
@@ -136,7 +136,7 @@ class TestVocabulario(unittest.TestCase):
         self.assertEqual(config.MOTOR_PADRAO_UMA_VISTA, "hunyuan-mini-turbo")
         self.assertIsNone(config.OPCOES_PADRAO["motor"])
         self.assertEqual(config.PY_APP, config.BASE / ".venv_app" / "Scripts" / "python.exe")
-        self.assertEqual(config.PY_HUNYUAN, config.BASE / ".venv_hunyuan" / "Scripts" / "python.exe")
+        self.assertEqual(config.PY_HUNYUAN, config.BASE / ".venv_app" / "Scripts" / "python.exe")
 
 
 class TestEnvSubprocesso(unittest.TestCase):
