@@ -132,3 +132,12 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **PROVA:** job `20261031-200949-fumaca-arquivo-2` (triposr): **concluido 100%**, `saida\modelo.glb` (1.125.516 B) + 5 previas + relatorio; e **arquivado no Drive** em `arquivo_jobs\<id>` com `manifesto_sha256.json` e tamanhos identicos.
 - **Item 4 da Fase 1 FECHADO** (worker como tarefa + fila real + gpu.lock em uso + arquivamento). Restam da Fase 1: item 5 (web/MCP no ar) e item 6 (bateria dourada), alem da divida P6 (testes que faltam + LISTA).
 
+## [2026-10-31 20:14-20:16 -03] P3 RESOLVIDO: era o tunel da VPN Windscribe
+
+- Autorizacao do Mestre (20:14): desligar a VPN do PC.
+- Diagnostico confirmado antes de desligar: adaptador `WindscribeWireguard` ativo com DNS proprio do tunel (10.255.255.1) e servicos `WindscribeService` + tunel WireGuard rodando; o DNS do Wi-Fi (8.8.8.8) estava limpo.
+- Acao: parados o servico do tunel e o `WindscribeService` e encerrado o app Windscribe (reversivel: abrir o app religa). Nada mais foi tocado (o adaptador Radmin VPN, sem DNS, ficou como estava).
+- Prova: com o tunel fora, o MESMO IP que o DNS devolve para github.com passou a responder — `https://github.com` = **HTTP 200**. Ou seja: o endereco estava certo; o tunel e que engolia as conexoes (blackhole) desde ~18:42-18:47. Hipotese do Critico (P3) confirmada na essencia: era a VPN.
+- Sincronizacao: o push rodou na hora — **remoto = 969e2f7** (5 commits: 6839839, 03cf44a, 44afc03, c3615a3, 969e2f7), conferido pela API do GitHub; a tarefa `MusePushSync` se desligou sozinha apos o sucesso, como desenhado.
+- Efeito colateral bom: com a internet de volta, o download dos pesos full (hunyuan-mini/mv nao-turbo) volta a ser possivel — entra na fila deste fim de semana.
+
