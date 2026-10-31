@@ -23,13 +23,13 @@
       "revisao": "main",
       "subpasta": "hunyuan3d-dit-v2-mv-turbo",
       "arquivo": "config.yaml",
-      "bytes": null,
-      "bytes_estimado": 1700,
-      "sha256": null,
+      "bytes": 1667,
+      "sha256": "4d9d7b21dd0669efd0a8da6024ecce28619b45a4ca5f3ea1394a54b3d38698f5",
       "modo": "hf_local",
       "destino": "_cache/hy3dgen/tencent/Hunyuan3D-2mv/hunyuan3d-dit-v2-mv-turbo/config.yaml",
       "prioridade": 1,
-      "uso": "mv-turbo (PADRAO com 2-4 vistas)"
+      "uso": "mv-turbo (PADRAO com 2-4 vistas)",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "hy-mv-turbo-dit",
@@ -38,11 +38,12 @@
       "subpasta": "hunyuan3d-dit-v2-mv-turbo",
       "arquivo": "model.fp16.safetensors",
       "bytes": 4930777530,
-      "sha256": null,
+      "sha256": "172d7a989b99f66af760da0080d8c6f6350c72609536cf0c55b87a4afa574e45",
       "modo": "hf_local",
       "destino": "_cache/hy3dgen/tencent/Hunyuan3D-2mv/hunyuan3d-dit-v2-mv-turbo/model.fp16.safetensors",
       "prioridade": 1,
-      "uso": "mv-turbo (PADRAO com 2-4 vistas)"
+      "uso": "mv-turbo (PADRAO com 2-4 vistas)",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "hy-vae-v2-0-turbo-config",
@@ -51,11 +52,12 @@
       "subpasta": "hunyuan3d-vae-v2-0-turbo",
       "arquivo": "config.yaml",
       "bytes": 336,
-      "sha256": null,
+      "sha256": "91355c5acc412149996d19dbe46040d10fab888efd8bb910c76bad3a550f6ceb",
       "modo": "hf_local",
       "destino": "_cache/hy3dgen/tencent/Hunyuan3D-2/hunyuan3d-vae-v2-0-turbo/config.yaml",
       "prioridade": 1,
-      "uso": "VAE FlashVDM do mv-turbo"
+      "uso": "VAE FlashVDM do mv-turbo",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "hy-vae-v2-0-turbo",
@@ -64,11 +66,12 @@
       "subpasta": "hunyuan3d-vae-v2-0-turbo",
       "arquivo": "model.fp16.safetensors",
       "bytes": 407410402,
-      "sha256": null,
+      "sha256": "66b7af697118db2de00c22f63a385c75f9049709739281971837af9e4ce31cb4",
       "modo": "hf_local",
       "destino": "_cache/hy3dgen/tencent/Hunyuan3D-2/hunyuan3d-vae-v2-0-turbo/model.fp16.safetensors",
       "prioridade": 1,
-      "uso": "VAE FlashVDM do mv-turbo"
+      "uso": "VAE FlashVDM do mv-turbo",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "u2net",
@@ -76,16 +79,16 @@
       "revisao": null,
       "subpasta": null,
       "arquivo": "u2net.onnx",
-      "bytes": null,
-      "bytes_estimado": 176000000,
-      "sha256": null,
+      "bytes": 175997641,
+      "sha256": "8d10d2f3bb75ae3b6d527c77944fc5e7dcd94b29809d47a739a7a728a912b491",
       "md5": "60024c5c889badc19c04ad937298a77b",
       "md5_nota": "md5 que o rembg (sessions/u2net.py) passa ao pooch; tirado da memoria do codigo do rembg, NAO CONFERIDO. Se o download falhar so no md5, troque para null e avise.",
       "modo": "url",
       "url": "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.onnx",
       "destino": "_cache/u2net/u2net.onnx",
       "prioridade": 1,
-      "uso": "remocao de fundo (rembg, etapa entrada)"
+      "uso": "remocao de fundo (rembg, etapa entrada)",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "hy-mini-turbo-dit-config",
@@ -94,11 +97,12 @@
       "subpasta": "hunyuan3d-dit-v2-mini-turbo",
       "arquivo": "config.yaml",
       "bytes": 1664,
-      "sha256": null,
+      "sha256": "be28205844da01bd5d3c5ba5160f5886fb9765d542483f9d12bda8f17324db5e",
       "modo": "hf_local",
       "destino": "_cache/hy3dgen/tencent/Hunyuan3D-2mini/hunyuan3d-dit-v2-mini-turbo/config.yaml",
       "prioridade": 2,
-      "uso": "mini-turbo (1 vista, rascunho)"
+      "uso": "mini-turbo (1 vista, rascunho)",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "hy-mini-turbo-dit",
@@ -107,11 +111,12 @@
       "subpasta": "hunyuan3d-dit-v2-mini-turbo",
       "arquivo": "model.fp16.safetensors",
       "bytes": 3822584202,
-      "sha256": null,
+      "sha256": "bdbcef30dd0149a281e17d5b5b1fdad1122c904e098a42f3100e04e03c247bc4",
       "modo": "hf_local",
       "destino": "_cache/hy3dgen/tencent/Hunyuan3D-2mini/hunyuan3d-dit-v2-mini-turbo/model.fp16.safetensors",
       "prioridade": 2,
-      "uso": "mini-turbo (1 vista, rascunho)"
+      "uso": "mini-turbo (1 vista, rascunho)",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "hy-vae-mini-turbo-config",
@@ -120,11 +125,12 @@
       "subpasta": "hunyuan3d-vae-v2-mini-turbo",
       "arquivo": "config.yaml",
       "bytes": 335,
-      "sha256": null,
+      "sha256": "75315e176c36b290b317f187a46adc08f01a7193836f8e77767eec76e868d2ab",
       "modo": "hf_local",
       "destino": "_cache/hy3dgen/tencent/Hunyuan3D-2mini/hunyuan3d-vae-v2-mini-turbo/config.yaml",
       "prioridade": 2,
-      "uso": "VAE FlashVDM do mini-turbo"
+      "uso": "VAE FlashVDM do mini-turbo",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "hy-vae-mini-turbo",
@@ -133,11 +139,12 @@
       "subpasta": "hunyuan3d-vae-v2-mini-turbo",
       "arquivo": "model.fp16.safetensors",
       "bytes": 407410402,
-      "sha256": null,
+      "sha256": "5dcaca67a8da9e7079fb7b55714a572d0651ac95983bb43099913feaf6738f94",
       "modo": "hf_local",
       "destino": "_cache/hy3dgen/tencent/Hunyuan3D-2mini/hunyuan3d-vae-v2-mini-turbo/model.fp16.safetensors",
       "prioridade": 2,
-      "uso": "VAE FlashVDM do mini-turbo"
+      "uso": "VAE FlashVDM do mini-turbo",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "triposr-config",
@@ -146,11 +153,12 @@
       "subpasta": null,
       "arquivo": "config.yaml",
       "bytes": 987,
-      "sha256": null,
+      "sha256": "74ca708ce086bf68e97709ea6b3d91f14717921c04691e84043f0eb8fcc68e62",
       "modo": "hf_cache",
       "destino": "_cache/huggingface",
       "prioridade": 2,
-      "uso": "TripoSR (rascunho em segundos, MIT)"
+      "uso": "TripoSR (rascunho em segundos, MIT)",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "triposr-ckpt",
@@ -159,11 +167,12 @@
       "subpasta": null,
       "arquivo": "model.ckpt",
       "bytes": 1677246742,
-      "sha256": null,
+      "sha256": "429e2c6b22a0923967459de24d67f05962b235f79cde6b032aa7ed2ffcd970ee",
       "modo": "hf_cache",
       "destino": "_cache/huggingface",
       "prioridade": 2,
-      "uso": "TripoSR: peso unico do motor (necessario)"
+      "uso": "TripoSR: peso unico do motor (necessario)",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "dino-vitb16-config",
@@ -171,13 +180,13 @@
       "revisao": "main",
       "subpasta": null,
       "arquivo": "config.json",
-      "bytes": null,
-      "bytes_estimado": 1000,
-      "sha256": null,
+      "bytes": 454,
+      "sha256": "b87c0270b97db085fd82cf114a761fd0f62ae7914fbd407c752a2260646b689c",
       "modo": "hf_cache",
       "destino": "_cache/huggingface",
       "prioridade": 3,
-      "uso": "TripoSR: config do tokenizador de imagem (pesos vem do model.ckpt)"
+      "uso": "TripoSR: config do tokenizador de imagem (pesos vem do model.ckpt)",
+      "sha256_medido_em": "2026-10-31"
     },
     {
       "id": "dino-vitb16-preproc",
@@ -185,23 +194,23 @@
       "revisao": "main",
       "subpasta": null,
       "arquivo": "preprocessor_config.json",
-      "bytes": null,
-      "bytes_estimado": 1000,
-      "sha256": null,
+      "bytes": 244,
+      "sha256": "44298553bf686c8c3d1b128f24fae01f76235f66bda5516f1c6c0c57bba1b47f",
       "modo": "hf_cache",
       "destino": "_cache/huggingface",
       "prioridade": 3,
-      "uso": "TripoSR: pre-processador do tokenizador de imagem"
+      "uso": "TripoSR: pre-processador do tokenizador de imagem",
+      "sha256_medido_em": "2026-10-31"
     }
   ],
   "totais": {
     "arquivos": 13,
-    "bytes_medidos": 11245432600,
-    "bytes_estimados_dos_sem_medida": 176003700,
-    "total_bytes": 11421436300,
+    "bytes_medidos": 11421432606,
+    "bytes_estimados_dos_sem_medida": 0,
+    "total_bytes": 11421432606,
     "total_gb_decimal": 11.42,
     "total_gib": 10.64,
-    "sem_sha256": 13,
+    "sem_sha256": 0,
     "nota": "GB decimal = 10^9 B; GiB = 2^30 B (é o 'GB' que o Explorador do Windows mostra)."
   }
 }

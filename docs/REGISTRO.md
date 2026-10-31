@@ -73,3 +73,18 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - Suíte rodada na pasta `app`: `py -3.12 -m unittest discover -s testes -v` → **152 testes em 25,2 s: OK (skipped=1), exit 0**. O skip é o backend opcional de refino (Blender + pymeshlab), que depende da instalação da Fase 1.
 - Nenhuma correção de código foi necessária. Dívida registrada no ESTADO_ATUAL: 5 arquivos de teste faltantes (C, D, F) e a `LISTA_INSTALACAO_FASE1.md` (B) — não bloqueiam a instalação.
 - Commit de checkpoint do pacote `oficina3d\`, `testes\`, `instalacao\` e `docs\mcp_exemplo.json` (o `.gitignore` já barra pycache, venvs, pesos e imagens).
+
+## [2026-10-31 18:24 -03] Fase 1, itens 1 e 2: instalacao executada
+
+- Quem: Muse (continuacao autorizada pelo Mestre em 31/10 18:22).
+- Plano do instalador conferido antes de executar (guarda anti-Drive OK; 70,00 GiB livres; previsto 20,64 GiB; minimo de 20 GiB respeitado).
+- Executado pelo instalador do projeto: uv 0.13.6 achado no PATH do usuario; Python 3.10 instalado pelo uv; 3 venvs criados com torch 2.5.1+cu124 (app, triposr, mcp); clones Hunyuan3D-2GP@f2456e0 e TripoSR@107cefd; patch triposr_bake_texture aplicado (git apply --check antes); 13 modelos baixados (11,42 GB) com SHA-256 conferido um a um; manifesto atualizado com bytes/SHA medidos; locks dos 3 venvs gravados.
+- Testes de import da primeira rodada: .venv_triposr OK (IMPORT OK 2.5.1+cu124, CUDA True, transformers 4.35.0, torchmcubes resolvido pelo compat do projeto); .venv_mcp OK (mcp 2.3.0); .venv_app FALHOU: ModuleNotFoundError: No module named 'setuptools' (cadeia: optimum.quanto -> torch.utils.cpp_extension -> import setuptools).
+
+## [2026-10-31 18:45 -03] Correcao do .venv_app: setuptools + wheel
+
+- Causa: o venv criado pelo uv nasce sem setuptools; o app.txt nao o listava.
+- Correcao aplicada: setuptools 84.2.1 e wheel 0.48.0 instalados no .venv_app; `setuptools` e `wheel` adicionados a `instalacao/requisitos/app.txt` (com comentario da causa) para instalacoes futuras; lock `requirements_venv_app.lock` re-congelado.
+- Reteste com o mesmo comando do instalador: **IMPORT OK 2.5.1+cu124 True 4.49.0 0.39.0** (torch, CUDA disponivel, transformers, diffusers).
+- Estado: **itens 1 e 2 da Fase 1 CONCLUIDOS** (ambiente, motores e modelos prontos e provados por import). Proximos: item 4 (worker + gpu.lock + jobs_teste), item 5 (web/MCP no ar) e item 6 (bateria dourada).
+

@@ -33,3 +33,6 @@ uvicorn==0.54.0
 pydantic==2.10.6
 psutil==7.2.2
 huggingface_hub<1.0
+# venv do uv nasce sem setuptools; optimum.quanto importa torch.utils.cpp_extension, que o exige (falha medida em 31/10/2026 na Fase 1)
+setuptools
+wheel
