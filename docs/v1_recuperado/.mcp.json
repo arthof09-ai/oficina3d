@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "oficina3d": {
+      "type": "stdio",
+      "command": "E:\\RPG_Assimilacao\\Oficina3D\\.venv_mcp\\Scripts\\python.exe",
+      "args": ["-m", "oficina3d.servidor_mcp"],
+      "env": {
+        "PYTHONPATH": "E:\\RPG_Assimilacao\\Oficina3D\\app",
+        "PYTHONUTF8": "1"
+      }
+    }
+  }
+}

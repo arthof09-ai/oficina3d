@@ -1,0 +1,12 @@
+﻿{
+  "_nota": "Medida inicial, ANTES da troca do Drive para streaming. Reescrever depois do item 0.6.",
+  "medido_em": "2026-10-31T11:50",
+  "host": "PCdaNasa",
+  "gpu": {"nome": "NVIDIA GeForce RTX 4060", "driver": "610.88", "cuda_max": "PENDENTE (linha CUDA Version nao saiu no nvidia-smi)", "vram_total_mib": 8188, "vram_usada_mib": 1098, "vram_livre_mib": 6859, "uso_pct": 2, "estado": "PC em uso normal (aplicativos de desktop abertos)"},
+  "disco_c": {"livre_gb": 46.2, "usado_gb": 429.0, "tipo": "PENDENTE (consulta sem admin voltou vazia; levantamento anterior diz SSD)"},
+  "ocupacao": {"RPG_Local_oficina3d_ia_gb": 26.3, "TripoSG_gb": 12.6, "PartCrafter_gb": 10.2, "DetailGen3D_gb": 3.4, "Desktop_RPG_Assimilacao_espelho_gb": 6.9},
+  "python": {"padrao": "3.12.10", "py_launcher": true, "uv": false},
+  "rede_mbps": "PENDENTE",
+  "windows_update_pausado": false,
+  "drive": {"modo": "espelho", "unidade": "G:", "pasta_espelho": "C:\\Users\\txcga\\Desktop\\RPG Assimilação", "processo": "GoogleDriveFS rodando desde 31/10 07:33"}
+}

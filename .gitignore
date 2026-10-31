@@ -1,0 +1,25 @@
+# Oficina 3D v2: o git guarda só código e documentação.
+# Nada de pesos, venvs, caches, jobs ou arte do RPG (arte é privada).
+.venv*/
+__pycache__/
+*.pyc
+*.safetensors
+*.ckpt
+*.onnx
+*.bin
+*.pt
+*.pth
+!instalacao/**/*.pth.txt
+_cache/
+jobs/
+jobs_teste/
+locks/
+motores/
+*.glb
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.zip
+*.log
+testes/dourado/imagens/

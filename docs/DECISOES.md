@@ -1,0 +1,14 @@
+# DECISÕES: Oficina 3D v2
+
+| Data | Código | Decisão | Quem | Motivo | Alternativas descartadas |
+|---|---|---|---|---|---|
+| 31/10/2026 | LOC-01 | Pesos e venvs no disco local (`RPG_Local\Oficina3D`); o parado vai para o Drive em streaming | Mestre | Disco do C: é o gargalo; conta Pro 5 TiB | SSD externo; pesos dentro do Drive espelhado |
+| 31/10/2026 | GIT-01 | Repositório `arthof09-ai/oficina3d` (criado privado) | Mestre | Lição da perda da v1 | Sem git (v1) |
+| 31/10/2026 | GIT-02 | Repositório passa a **público** | Mestre ("Quero o repositório público") | Pedido do Mestre | Manter privado |
+| 31/10/2026 | GIT-03 | Antes de abrir: tirar e-mail pessoal e lista de programas do cunhado dos docs e refazer o histórico (2 commits, repo com minutos de vida) com force-push | Claude | Repositório público expõe o histórico inteiro | Abrir com o e-mail no histórico |
+| 31/10/2026 | GIT-04 | Regra para repositório público: nunca commitar e-mail, tokens, IPs da Tailscale, IDs do Notion, nomes de programas pessoais do cunhado, arte do RPG ou imagens de referência | Claude | Repositório público | — |
+| 31/10/2026 | AG-01 | Mestre libera mais de um agente; mantenho **no máximo 2 ao mesmo tempo** (regra 7 do prompt). Agentes **não** fazem commit: escrevem arquivos e devolvem relatório com lista + SHA256; eu colo no REGISTRO e faço o commit | Mestre + Claude | Evitar conflito no git e perda por limite de uso | Agentes com commit próprio em worktree |
+| 31/10/2026 | RF-03 (provisório) | Hunyuan só para rascunho (blockout) até o Mestre decidir | Padrão do prompt | Licença contraditória | Usar Hunyuan no asset final |
+| 31/10/2026 | NET-01 (provisório) | Sem túnel/Tailscale para a Oficina por enquanto | Padrão do prompt | Correções de segurança ainda não feitas | — |
+| 31/10/2026 | USO-01 (provisório) | Geração pesada só com o PC ocioso | Padrão do prompt | Horários com o cunhado não combinados | — |
+| 31/10/2026 | DOC-01 | Código da v1 recuperado fica em `docs\v1_recuperado\` como referência; o código v2 vai em `oficina3d\` | Claude | Separar contrato antigo do código novo | Copiar direto para `oficina3d\` |

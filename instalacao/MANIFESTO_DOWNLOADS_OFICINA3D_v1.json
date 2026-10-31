@@ -1,0 +1,47 @@
+{
+  "_nota": "Rastreio de tudo que o PC Gusta baixou/instalou na sessao de 27/10/2026, extraido da auditoria dos 1161 eventos. Tamanhos em bytes medidos na v1. sha256 null = a calcular no primeiro download e gravar aqui. O PC Gusta quebrou: nada abaixo existe mais la; tudo vem das fontes originais.",
+  "modelos_hunyuan": {
+    "destino_relativo": "_cache/hy3dgen/<repo>/<subpasta>/",
+    "arquivos_por_subpasta": ["config.yaml", "model.fp16.safetensors"],
+    "itens": [
+      {"repo": "tencent/Hunyuan3D-2mini", "subpasta": "hunyuan3d-dit-v2-mini", "bytes": 3819958234, "uso": "mini (1 imagem)", "sha256": null},
+      {"repo": "tencent/Hunyuan3D-2mini", "subpasta": "hunyuan3d-vae-v2-mini", "bytes": 428455666, "uso": "VAE do mini", "sha256": null},
+      {"repo": "tencent/Hunyuan3D-2mini", "subpasta": "hunyuan3d-dit-v2-mini-turbo", "bytes": 3822584202, "uso": "mini-turbo (padrao 1 vista)", "sha256": null},
+      {"repo": "tencent/Hunyuan3D-2mini", "subpasta": "hunyuan3d-vae-v2-mini-turbo", "bytes": 407410402, "uso": "FlashVDM do mini", "sha256": null},
+      {"repo": "tencent/Hunyuan3D-2mv", "subpasta": "hunyuan3d-dit-v2-mv", "bytes": 4928151562, "uso": "multivista (lento)", "sha256": null},
+      {"repo": "tencent/Hunyuan3D-2mv", "subpasta": "hunyuan3d-dit-v2-mv-turbo", "bytes": 4930777530, "uso": "mv-turbo (PADRAO 2-4 vistas)", "sha256": null},
+      {"repo": "tencent/Hunyuan3D-2", "subpasta": "hunyuan3d-dit-v2-0", "bytes": 4928151562, "uso": "full (dispensavel na v2)", "sha256": null, "prioridade": "baixa"},
+      {"repo": "tencent/Hunyuan3D-2", "subpasta": "hunyuan3d-vae-v2-0", "bytes": 428455666, "uso": "VAE do full", "sha256": null, "prioridade": "baixa"},
+      {"repo": "tencent/Hunyuan3D-2", "subpasta": "hunyuan3d-vae-v2-0-turbo", "bytes": 407410402, "uso": "FlashVDM do mv-turbo", "sha256": null}
+    ]
+  },
+  "triposr": [
+    {"repo": "stabilityai/TripoSR", "arquivo": "config.yaml", "destino": "HF_HOME (cache do Hugging Face)"},
+    {"repo": "stabilityai/TripoSR", "arquivo": "model.ckpt", "bytes": 1677246742, "sha256": null}
+  ],
+  "u2net": {"arquivo": "u2net.onnx", "bytes_aprox": 176000000, "destino": "_cache/u2net (U2NET_HOME)", "fonte": "rembg (baixa sozinho no primeiro uso)"},
+  "repositorios": [
+    {"nome": "Hunyuan3D-2GP", "url": "https://github.com/deepbeepmeep/Hunyuan3D-2GP.git", "commit": "f2456e0", "destino": "motores/Hunyuan3D-2GP"},
+    {"nome": "TripoSR", "url": "https://github.com/VAST-AI-Research/TripoSR.git", "commit": "107cefd", "destino": "motores/TripoSR", "patch": "tsr/bake_texture.py: .to(scene_code.device) nas posicoes; .cpu() antes de .numpy() (ver transcricao, evento 317)"}
+  ],
+  "ferramentas": [
+    {"nome": "Blender", "versao": "5.2.3", "url": "https://download.blender.org/release/Blender5.2/blender-5.2.3-windows-x64.zip", "bytes": 405839452, "sha256": "723f08a4...dc2fb (completo no log, evento 55)", "obs": "JA INSTALADO no CUNHADO-PC"},
+    {"nome": "Godot", "versao": "4.7.2-stable", "url": "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip", "bytes": 86013866, "sha512": "83decd58...259993", "obs": "JA INSTALADO no CUNHADO-PC"},
+    {"nome": "Python", "versao": "3.10.11", "url": "https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe", "sha256": "D8DEDE5005564B408BA50317108B765ED9C3C510342A598F9FD42681CBE0648B", "obs": "no CUNHADO-PC usar uv python install 3.10"},
+    {"nome": "VS 2022 Build Tools", "versao": "17.14.37806.7", "obs": "so se um motor exigir compilacao; a v2 evita compilar"}
+  ],
+  "venvs": {
+    ".venv": "torch==2.5.1+cu124 torchvision==0.20.1+cu124 transformers==4.49.0 diffusers==0.39.0 accelerate==1.15.0 mmgp==3.2.7 optimum-quanto==0.2.6 trimesh==5.2.0 pymeshlab==2025.7.post1 xatlas==0.0.11 pygltflib==1.16.5 rembg==2.0.69 onnxruntime==1.23.2 opencv-python==5.0.0.93 scikit-image==0.25.2 scipy==1.15.3 numba==0.68.1 gradio==4.44.1 fastapi==0.162.0 uvicorn==0.54.0 pydantic==2.10.6 pillow==10.4.0 huggingface_hub<1.0 (sem diso)",
+    ".venv_triposr": "torch==2.5.1+cu124 transformers==4.35.0 trimesh==4.0.5 Pillow==10.1.0 einops==0.7.0 omegaconf==2.3.0 xatlas==0.0.9 moderngl==5.10.0 scikit-image onnxruntime (sem torchmcubes; usar compat/torchmcubes + .pth)",
+    ".venv_mcp": "mcp==2.3.0 pydantic==2.14.1 starlette==1.7.0 uvicorn==0.54.0 sse-starlette==3.5.1 pywin32==312 httpx2==2.14.0"
+  },
+  "web_vendor": [
+    "https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js",
+    "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/libs/draco/gltf/draco_decoder.wasm",
+    "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/libs/draco/gltf/draco_wasm_wrapper.js",
+    "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/libs/draco/gltf/draco_decoder.js"
+  ],
+  "total_aprox_modelos_gb": 26.7,
+  "total_recomendado_v2_gb": 11.5,
+  "no_drive_ja": "Biblioteca de estudo (lote 1 completo; lote 2 parcial) em Oficina3D_Biblioteca_Claude nas categorias 03/04/07/09. Pesos grandes (TripoSG 7,95 GB, DetailGen3D 3,66 GB, PartCrafter 3,97 GB) ainda NAO estao no Drive."
+}
