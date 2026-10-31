@@ -155,7 +155,11 @@ def _pesos_necessarios(spec: dict, flashvdm: bool) -> list[tuple[str, str]]:
     """Lista de (repo, arquivo relativo) que o motor precisa; motor falso usa spec['pesos'] (caminhos)."""
     tipo = spec.get("tipo")
     if tipo == "hunyuan":
-        req = [(spec["repo"], f"{spec['subpasta']}/model.fp16.safetensors")]
+        # config.yaml TAMBEM e obrigatorio: sem ele o motor morre ao carregar
+        # (prova viva do hunyuan-mini em 31/10/2026 — o verificador nao cobrava
+        # e o motor constava "disponivel" sem conseguir rodar).
+        req = [(spec["repo"], f"{spec['subpasta']}/model.fp16.safetensors"),
+               (spec["repo"], f"{spec['subpasta']}/config.yaml")]
         if flashvdm and spec.get("vae_turbo"):
             r, s = spec["vae_turbo"]
             req.append((r, f"{s}/model.fp16.safetensors"))

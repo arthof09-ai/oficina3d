@@ -169,3 +169,11 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - Escrito `docs/REVISAO_E_ROTEIRO.md` (pedido do Mestre das 19:52): a definicao de "pronta" em 8 itens com prova, as lacunas honestas, as rodadas de melhoria R1-R5 com criterio de saida, os riscos permanentes e a tabela de status das ressalvas do Critico (P1-P6 resolvidos; P7 aberto).
 - **Bloqueio da Prova C (item 6):** as imagens douradas do Orc, Caprileo e Besta NAO estao neste PC nem no Drive (buscadas em toda a BASE, em `Oficina3D_v2` — pastas `referencias` e `aprovados` vazias — e em `03 - Modelos 3D`). Eram material da v1, noutra maquina. A bateria esta desenhada e a pasta `testes/dourado/` aceita as imagens assim que o Mestre indicar onde estao (ou enviar). Sem elas, qualquer "dourado" substituto seria invencao — nao farei.
 
+## [2026-10-31 20:46-20:57 -03] R2 comeca: o motor mini completo quebrou, foi corrigido e provou
+
+- **Diretriz nova registrada:** DONO-01 em DECISOES (o app e do Mestre; motores embutidos; referencias de estudo serao excluidas no fim — com os limites tecnicos e de licenca escritos).
+- **Falha real (a R2 cumprindo o papel):** o primeiro job do `hunyuan-mini` completo (30 passos) morreu na etapa forma: faltava `hunyuan3d-dit-v2-mini/config.yaml`. Causas: (1) meu download dirigido baixou so o `.safetensors` de cada motor novo; (2) **o verificador de disponibilidade nao cobrava o config.yaml** (para o TripoSR ele cobrava!) — o motor constava "disponivel" sem conseguir rodar.
+- **Correcoes:** baixados os `config.yaml` dos dois motores novos; `_pesos_necessarios` agora exige safetensors **e** config.yaml para todo Hunyuan; criado `testes/test_motores.py` (5 testes) com a regressao.
+- **Prova:** job `20261031-205245-prova-mini-full-2` **concluido 100%** — GLB de 1.134 KB + 5 previas + relatorio, arquivado. O `hunyuan-mini` completo esta vivo de verdade (nao so "disponivel").
+- Na fila a seguir: a prova do `hunyuan-mv` completo (4 vistas) e um job de refino ponta a ponta usando esse GLB.
+
