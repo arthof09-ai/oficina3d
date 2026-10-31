@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Modelo da Tarefa Agendada da pagina web da Oficina 3D (usuário atual, sem admin).
+  NÃO importe este arquivo direto: rode registrar_tarefa.cmd (nesta pasta), que troca
+  __USUARIO__, __APP__ e __BASE__ e grava a versão final em UTF-16.
+  - sobe no logon do usuário, 2 minutos depois (não pesa na entrada do Windows);
+  - prioridade baixa (8 = abaixo do normal, E/S baixa);
+  - sem limite de tempo; uma instância só; reinicia em falha (3x a cada 5 min);
+  - o iniciar_worker.py carrega o env.cmd e reinicia o worker se ele cair.
+-->
+<Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>Oficina 3D: pagina web local (127.0.0.1:8765). Prioridade baixa; sobe no logon.</Description>
+    <URI>\Oficina3D_Web</URI>
+  </RegistrationInfo>
+  <Triggers>
+    <LogonTrigger>
+      <Enabled>true</Enabled>
+      <UserId>__USUARIO__</UserId>
+      <Delay>PT2M</Delay>
+    </LogonTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <UserId>__USUARIO__</UserId>
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>LeastPrivilege</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>false</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <IdleSettings>
+      <StopOnIdleEnd>false</StopOnIdleEnd>
+      <RestartOnIdle>false</RestartOnIdle>
+    </IdleSettings>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <WakeToRun>false</WakeToRun>
+    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
+    <Priority>8</Priority>
+    <RestartOnFailure>
+      <Interval>PT5M</Interval>
+      <Count>3</Count>
+    </RestartOnFailure>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>"__BASE__\.venv_app\Scripts\pythonw.exe"</Command>
+      <Arguments>"__APP__\instalacao\tarefa_web\iniciar_web.py"</Arguments>
+      <WorkingDirectory>__APP__</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>

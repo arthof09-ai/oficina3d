@@ -14,7 +14,10 @@ _cache/
 jobs/
 jobs_teste/
 locks/
-motores/
+/motores/
+# NAO ignorar oficina3d/motores/ (o pacote de motores do app): a regra generica
+# 'motores/' escondia o pacote inteiro do git (GIT-01, 31/10/2026). Os clones
+# externos ficam na BASE, fora deste repositorio, e nao precisam de regra aqui.
 *.glb
 *.png
 *.jpg

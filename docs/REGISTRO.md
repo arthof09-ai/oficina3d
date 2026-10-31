@@ -141,3 +141,14 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - Sincronizacao: o push rodou na hora — **remoto = 969e2f7** (5 commits: 6839839, 03cf44a, 44afc03, c3615a3, 969e2f7), conferido pela API do GitHub; a tarefa `MusePushSync` se desligou sozinha apos o sucesso, como desenhado.
 - Efeito colateral bom: com a internet de volta, o download dos pesos full (hunyuan-mini/mv nao-turbo) volta a ser possivel — entra na fila deste fim de semana.
 
+## [2026-10-31 20:18-20:35 -03] Item 5 CONCLUIDO (web + MCP) e achado GIT-01
+
+- **Tarefa `Oficina3D_Web`** criada (pasta nova `instalacao/tarefa_web/`, espelho da do worker): sobe no logon e mantem a pagina em http://127.0.0.1:8765. Endpoints provados ao vivo: `/api/saude` (ok, disco/GPU/worker), `/api/motores`, `/api/jobs`, `/` (HTTP 200).
+- **Defeito real achado e corrigido no lancador:** a web MORRIA em ~3 s sob `pythonw.exe` (o `__main__` da web e o uvicorn escrevem em `sys.stderr`, que nao existe no pythonw). Em console (python.exe) subia perfeita. Correcao no `iniciar_web.py`: usar **python.exe** com `CREATE_NO_WINDOW` e saida para `_cache/logs/web_server.log`. (O worker NAO tem esse problema: foi desenhado para pythonw e segue nele.)
+- **Incidente (erro do Muse, registrado):** o diagnostico da web encerrou por engano os processos do worker (filtro de processos recentes amplo demais). O worker foi religado em seguida (20:20:47) e confirmado vivo pela propria `/api/saude` (pid + trava conferem). Sem perda: a fila estava vazia.
+- **MCP provado com cliente real (stdio):** servidor `oficina3d` v2.0.0, **9 ferramentas** (o plano falava 8; a extra e `iniciar_worker`). Criado o **`.mcp.json` na BASE** com os caminhos reais deste PC (o USO dizia que o Claude Code ja estava configurado, mas o arquivo nao existia).
+- **PROVA B do Critico: APROVADA.** Paridade total web x MCP: mesmos 5 motores com a mesma disponibilidade e os mesmos 3 jobs (a resposta do MCP vem em blocos, um item por bloco — cliente precisa juntar todos).
+- **GIT-01 (grave, corrigido):** a regra `motores/` do `.gitignore` escondia do git o pacote **`oficina3d/motores/` inteiro** (4 arquivos: `__init__.py`, `base.py`, `_runner_hunyuan.py`, `_runner_triposr.py`) — o repositorio no GitHub NAO tinha a camada de motores. A regra mirava os clones externos, que ficam na BASE (fora do repo) e nem precisavam dela. Regra ancorada para a raiz (`/motores/`) com comentario, e os 4 arquivos entraram no git neste commit.
+- Derivas de documentacao corrigidas: modulo `oficina3d.servidor_mcp` -> `oficina3d.mcp` no USO (3 pontos) + nota no topo do USO com a BASE e os venvs reais deste PC; textos dos motores nao dizem mais "RF-03: so rascunho" (4 licencas + 1 descricao) — RF-03 final liberou o uso.
+- Suite completa no interpretador de producao apos tudo: **verde (exit 0)**.
+

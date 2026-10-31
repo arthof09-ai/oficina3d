@@ -1,5 +1,7 @@
 # Oficina 3D — como Claude, ChatGPT/Codex e outras IAs usam o app
 
+> **Neste PC (atualizado pelo Muse em 31/10/2026):** a BASE é `C:\Users\txcga\RPG_Local\Oficina3D` (não `E:\RPG_Assimilacao\Oficina3D` — os caminhos com `E:` abaixo são o exemplo genérico da v1; troque pela BASE daqui). Os ambientes são `.venv_app` (app/worker/web), `.venv_mcp` (MCP) e `.venv_triposr` — não existe `.venv` único. O módulo do servidor MCP é `oficina3d.mcp`. Já existe um `.mcp.json` pronto na BASE com os caminhos reais deste PC. Worker e página web sobem sozinhos no logon (tarefas `Oficina3D_Worker` e `Oficina3D_Web`).
+
 Quatro portas de entrada, todas para a mesma fila (`E:\RPG_Assimilacao\Oficina3D\jobs\`). O **worker** processa um job por vez na GPU; precisa estar rodando:
 
 ```
@@ -34,7 +36,7 @@ Roda no ambiente separado `.venv_mcp` (pacote `mcp` 2.x).
 ```json
 {"mcpServers": {"oficina3d": {
   "command": "E:\\RPG_Assimilacao\\Oficina3D\\.venv_mcp\\Scripts\\python.exe",
-  "args": ["-m", "oficina3d.servidor_mcp"],
+  "args": ["-m", "oficina3d.mcp"],
   "env": {"PYTHONPATH": "E:\\RPG_Assimilacao\\Oficina3D\\app", "PYTHONUTF8": "1"}}}}
 ```
 
@@ -42,13 +44,13 @@ Roda no ambiente separado `.venv_mcp` (pacote `mcp` 2.x).
 ```toml
 [mcp_servers.oficina3d]
 command = "E:\\RPG_Assimilacao\\Oficina3D\\.venv_mcp\\Scripts\\python.exe"
-args = ["-m", "oficina3d.servidor_mcp"]
+args = ["-m", "oficina3d.mcp"]
 env = { PYTHONPATH = "E:\\RPG_Assimilacao\\Oficina3D\\app", PYTHONUTF8 = "1" }
 ```
 
 **HTTP local (streamable-http)**, para clientes que não abrem processo:
 ```
-..\.venv_mcp\Scripts\python.exe -m oficina3d.servidor_mcp --http --porta 8766   →  http://127.0.0.1:8766/mcp
+..\.venv_mcp\Scripts\python.exe -m oficina3d.mcp --http --porta 8766   →  http://127.0.0.1:8766/mcp
 ```
 Acesso de fora do PC (ChatGPT na nuvem, sessões em nuvem) exige túnel com chave (Tailscale/Cloudflare) — **não configurado**; decisão do Mestre.
 
