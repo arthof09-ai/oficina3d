@@ -152,3 +152,15 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - Derivas de documentacao corrigidas: modulo `oficina3d.servidor_mcp` -> `oficina3d.mcp` no USO (3 pontos) + nota no topo do USO com a BASE e os venvs reais deste PC; textos dos motores nao dizem mais "RF-03: so rascunho" (4 licencas + 1 descricao) — RF-03 final liberou o uso.
 - Suite completa no interpretador de producao apos tudo: **verde (exit 0)**.
 
+## [2026-10-31 20:29-20:44 -03] Pesos completos baixados (5/5 motores) e divida P6 paga
+
+- **Motores completos:** com a internet de volta, baixados os DiTs full (30 passos) do `hunyuan-mini` e do `hunyuan-mv` para o cache HF. `cli motores` agora mostra **os 5 motores disponiveis**. Disco C: com 45,1 GiB livres apos os downloads.
+- **P6 PAGA — os 5 arquivos de teste que faltavam, escritos pelo Muse:**
+  - `testes/test_worker.py` (11 testes): fila (pendentes/proximo com permitidos), retomada de orfaos (volta para a fila; estourou MAX_RETOMADAS=2 vira erro; concluido intocado), escolha do motor (explicito vence; padrao mv-turbo com 2+ vistas e mini-turbo com 1) e `_livre_min_gb` (env valido/invalido/ausente).
+  - `testes/test_entrada.py` (13): validacao com arrays sinteticos — diagnostico de fundo (sem alfa/tudo opaco/limpo), avisos de recorte (vazia, resolucao baixa, boa sem avisos, cortada na borda), assinatura/distancia de cor (0 consigo, 1 entre vermelho e azul), personagens diferentes e vistas repetidas.
+  - `testes/test_cli.py` (10): `separar_vista` (com/sem vista, `C:\\` do Windows nao e vista, sufixo desconhecido nao e vista), parser ligado aos comandos certos e comandos sem GPU (motores=0, status de job real=0, inexistente=1).
+  - `testes/test_web.py` (7): TestClient com `hosts_locais={"testclient"}` + Host de loopback + cabecalho anti-CSRF (sem isso o porteiro responde 403 a tudo — comportamento correto dele); pagina 200, motores identicos aos do modulo, saude, 422 sem imagem e com modo invalido, fluxo criar->ler->cancelar e 404.
+  - `testes/test_mcp.py` (6+1): ferramentas chamadas direto (o modulo funciona sem o pacote mcp); listar motores/jobs, status, recusas de id malformado/inexistente, cancelar exigindo confirmacao; e, **so no `.venv_mcp`** (onde o pacote existe), o registro do servidor — nos outros venvs esse teste pula, como desenhado.
+- **LISTA_INSTALACAO_FASE1.md** (a outra metade da P6, divida do agente B): em `instalacao/` — runtime, os 3 venvs com versoes conferidas, clones e commits, os 13+2 modelos, env, tarefas e como conferir em 1 minuto.
+- **Suite completa no interpretador de producao: 199 testes, OK** (152 antigos + 47 novos; 1 skip desenhado, o do registro MCP fora do venv_mcp — la ele roda e passa: 7/7).
+
