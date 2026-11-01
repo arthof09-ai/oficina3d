@@ -63,6 +63,7 @@ Antes de convocar o Critico, o executor confere e resolve CADA item. A ideia (AP
 - [ ] Novidade da rodada registrada: qual verificacao NOVA esta bateria pede ao Critico (regra de escalada, secao 5).
 - [ ] Medicao de arestas em malha vinda de GLB solda vertices por posicao (tolerancia 1e-6) - sem solda, costura subcontada e bordas falsas. [licao L-24]
 - [ ] Direcao de vista em medicao fora do Blender esta no frame das normais (GLB: costas = -Z; converter Blender->glTF (x,y,z)->(x,z,-y)) - vetor Blender cru mede o eixo errado. [licao L-25]
+- [ ] Vistas geradas entregues com autotestes geometricos MEDIDOS pelo executor: lateralizacao das diagonais contra a familia canonica (ancora lateralizada nao cruza a linha media) e pureza da planta (elemento frontal nao le de frente; se le inteiro, NAO e topo e nao se entrega com esse rotulo). Desvio estrutural nunca descrito com diminutivo ("levemente", "quase") sem medida que o sustente. [licao L-26]
 
 ---
 
@@ -236,6 +237,32 @@ flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
   conversao); documentar o frame de toda tabela de direcoes usada
   fora do seu contexto de origem. (Checklist pre-Critico, item novo.)
 
+### L-26 - Antecipacao ve o cosmetico e subestima o estrutural: geometria de camera se entrega MEDIDA, nao estimada (01/11/2026)
+- **Caso:** no lote 2 da REF-01 (Besta Cristalina), a antecipacao do
+  executor acertou os defeitos cosmeticos (bracos segmentados, franja
+  da boca virando presas, cristal menor) mas chamou de "cabeca
+  levemente elevada" uma boca 100% frontal (obliqua alta de ~40-55
+  graus vendida como vista de topo) e defendeu como "ambiguidade de
+  rotulo" um espelhamento de fato da diag_esq (a cauda cruzou a linha
+  media: ponta em x=885/1000, centroide de cristais 0,557 contra
+  0,481 canonico). Os dois defeitos estruturais (B1 SYM S2 e B2
+  DEF/MIS S2) so apareceram com os testes geometricos NOVOS da
+  bateria (atribuicao das diagonais e pureza da planta).
+- **Custo:** lote 2 REPROVADO no criterio de aceite; diag_esq e topo
+  voltam para retrabalho (a diag_dir foi aprovada e e utilizavel).
+  Sem os testes novos, o conjunto multivista aprenderia a cauda nos
+  dois lados e carregaria um rotulo "topo" falso - o mesmo dano do
+  D10 (costas espelhadas) do lote 1.
+- **Regra:** vista gerada se entrega com AUTOTESTE geometrico do
+  executor, nunca com estimativa a olho: (a) em diagonal frontal,
+  medir a lateralizacao (ancora + distribuicao dos pixels da classe
+  assinatura) contra a familia canonica - cruzou a linha media, nao
+  se entrega; (b) em vista de topo, o criterio e binario - se o
+  elemento frontal (boca/rosto) le inteiro de frente, NAO e planta e
+  nao se entrega com esse rotulo; (c) desvio estrutural nunca se
+  descreve com diminutivo ("levemente", "quase") sem a medida que o
+  sustente. (Checklist pre-Critico, item novo.)
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:
@@ -253,6 +280,7 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Bateria T1-mecanismo (Etapa COR) | Auditoria de proveniencia por texel (percentual pintado direto x por dilatacao, com consequencia visual) + medida INDEPENDENTE da area UV (decode do GLB, fora do codigo sob teste) + teste anti-atravessamento com medicao (nao so olho) + determinismo por SHA em 2 runs | Pegou: D3 (trilha de determinismo sem artefato do 1o run), D4 (teste mal nomeado), D5 (IoU sintetico vacuo), D6 (lacunas de teste), D8 (iou vazia, verificacao GLB fraca) - e CONFIRMOU a UV 4,32% como causa da fragmentacao; veredito APROVA o mecanismo |
 | 01/11/2026 | Bateria D2/D7 (Etapa COR) | Reimplementacao independente da classificacao de costura (sem importar o codigo sob teste) + proxy (mediana 4 amostras) x media rasterizada + localizacao das piores costuras (juncao de vistas x aleatorio) + controle x alvo no sem-costas + cobertura UV rasterizada independente | S2-1 (solda: costura 4.017 vs 13.758 reais, 37.456 bordas falsas) e S2-2 (frame: D2 mediu topo/base, nao costas/frente) - medicao REPROVADA, fenomeno CONFIRMADO; D2-A (512) aprovado nos numeros |
 | 01/11/2026 | Verificacao D2/D7 (correcoes) | Reimplementacao com parse binario do GLB (sem trimesh, sem costura.py) + teste novo rodado contra o codigo ANTIGO (tem de falhar la) + conferencia da previa flat (Emission, sem luz) e do ponto da pior costura | D2 FECHADO e D7 FECHADO (numeros corrigidos reproduzidos a casa decimal); empate exato no top 3 explicado (duas costuras em 336,02); pendencias restantes S2-3, S3-2, S4-2 registradas |
+| 01/11/2026 | Rodada 2 REF-01 lote 2 (Besta) | Teste de atribuicao das diagonais (lateralizacao medida) + teste de pureza da planta (boca frontal = nao e topo) | B1 SYM S2 (diag_esq espelhada) e B2 DEF/MIS S2 (topo obliquo) achados; diag_dir aprovada |
 
 ---
 
