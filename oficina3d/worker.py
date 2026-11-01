@@ -226,6 +226,19 @@ def _motor_do_job(jb: dict, op: dict) -> str:
     return job.motor_padrao(jb.get("modo", "livre"), vistas)
 
 
+def _aviso_vistas_ignoradas(res_cor: dict) -> str:
+    """Aviso de vistas ignoradas na etapa cor (D-T2-3).
+
+    O texto antigo dizia "bake v1" tambem no modo vertice, onde nao
+    ha bake: o aviso agora nomeia o passo que realmente ignorou as
+    vistas (bake na projecao, passo vertice sem bake no vertice).
+    """
+    origem = ("passo vertice (sem bake)" if res_cor.get("modo_cor") == "vertice"
+              else "bake")
+    return ("cor: vistas ignoradas pelo " + origem + ": "
+            + ", ".join(res_cor.get("vistas_ignoradas") or []))
+
+
 def _etapa_cor(job_dir: Path, glb_refinado: Path, imagens: list[dict], progresso=None,
                modo: str = "projecao", glb_forma: Path | None = None) -> dict:
     """Etapa `cor` (COR-05/COR-07): despacha por `cor_modo` - "projecao"
@@ -362,8 +375,7 @@ def processar_job(job_id: str) -> dict:
             jb["avisos"].extend(
                 f"cor: vista {v} ausente no job" for v in res_cor.get("vistas_ausentes") or [])
             if res_cor.get("vistas_ignoradas"):
-                jb["avisos"].append(
-                    "cor: vistas ignoradas pelo bake v1: " + ", ".join(res_cor["vistas_ignoradas"]))
+                jb["avisos"].append(_aviso_vistas_ignoradas(res_cor))
             sem_cor = job_dir / "saida" / "modelo_sem_cor.glb"
             if modelo_final != sem_cor:
                 shutil.copy2(modelo_final, sem_cor)

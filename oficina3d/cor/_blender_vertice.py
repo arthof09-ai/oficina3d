@@ -18,9 +18,9 @@ Fontes de cor, em prioridade estrita (matematica em
 ``oficina3d.cor.vertice``): (1) vistas canonicas por projecao sobre os
 vertices (oclusao por BVH, facing minimo, alinhamento por silhueta -
 o mesmo do T1); (2) cor da forma transferida pela superficie mais
-proxima (com autochecagem de alinhamento: distancia mediana aos pontos
-da forma; acima de 5% da altura, a fonte e RECUSADA e o motivo fica no
-resultado); (3) propagacao pela malha. Vertice sem nenhuma fonte sai
+proxima (com autochecagem de alinhamento D-T2-1: mediana + p90 das
+distancias + razao por eixo das caixas; fora da regua, a fonte e
+RECUSADA e o motivo fica no resultado); (3) propagacao pela malha. Vertice sem nenhuma fonte sai
 preto e CONTADO em cobertura.sem_cor - nunca escondido.
 
 Saida: GLB com COLOR_0 e material "cor" (Principled com no de cor de
@@ -61,6 +61,9 @@ ANGULOS = P.ANGULOS
 CORES_SINTETICO = {"frente": (1.0, 0.0, 0.0), "costas": (0.0, 0.0, 1.0),
                    "esquerda": (0.0, 1.0, 0.0), "direita": (1.0, 1.0, 0.0)}
 LIMITE_FORMA_VERTS = 2_000_000
+# Legado (COR-07): a decisao de aceite vive em V.avaliar_alinhamento_forma
+# (D-T2-1); esta constante e so o limite antigo da mediana, mantida para
+# nao quebrar import externo.
 LIMITE_ALINHAMENTO_FRAC = 0.05
 
 
@@ -245,9 +248,10 @@ def transferir_forma(obj_forma, verts_ref, fonte, dim_ref):
 
     Alinhamento: escala uniforme pela altura (a invariante do refino:
     altura = altura_m, pivo nos pes) + centros X/Y da caixa + base Z.
-    Autochecagem: distancia mediana (amostra) entre vertices refinados e
-    a superficie da forma alinhada; acima de LIMITE_ALINHAMENTO_FRAC da
-    altura, a fonte e recusada. Retorna (cores_forma ou None, info).
+    Autochecagem (regra D-T2-1, em oficina3d.cor.vertice):
+    mediana + p90 das distancias (amostra) entre vertices refinados e
+    a superficie da forma alinhada + razao por eixo das caixas; fora
+    da regua, a fonte e recusada. Retorna (cores_forma ou None, info).
     """
     fv, ff, fc = cores_da_forma(obj_forma)
     info = {"presente": fc is not None, "aceita": False}
@@ -276,11 +280,21 @@ def transferir_forma(obj_forma, verts_ref, fonte, dim_ref):
         hit = bvh.find_nearest(Vector(tuple(verts_ref[vi])))
         if hit is not None and hit[3] is not None:
             dists.append(float(hit[3]))
-    med = float(np.median(dists)) if dists else float("inf")
-    info["dist_mediana_frac_altura"] = round(med / alt_r, 5) if dists else None
+    ext_f = fv_map.max(axis=0) - fv_map.min(axis=0)
+    ext_r = hi_r - lo_r
+    razoes = {}
+    for i, eixo in enumerate("xyz"):
+        razoes[eixo] = float(ext_f[i] / ext_r[i]) if ext_r[i] else float("inf")
+    dists_frac = [d / alt_r for d in dists]
+    aceita, motivo, metricas = V.avaliar_alinhamento_forma(dists_frac, razoes)
+    info.update(metricas)
     info["escala_aplicada"] = round(float(s), 5)
-    if not dists or med > LIMITE_ALINHAMENTO_FRAC * alt_r:
-        info["motivo"] = "alinhamento forma x refinado nao sadio (distancia mediana alta)"
+    info["regua_alinhamento"] = {
+        "mediana_max_frac_altura": V.LIMITE_ALINHAMENTO_MEDIANA_FRAC,
+        "p90_max_frac_altura": V.LIMITE_ALINHAMENTO_P90_FRAC,
+        "razao_caixa_faixa": list(V.FAIXA_RAZAO_CAIXA)}
+    if not aceita:
+        info["motivo"] = motivo
         return None, info
     info["aceita"] = True
     cores_forma = np.zeros((len(verts_ref), 3), dtype=np.float64)
@@ -308,6 +322,16 @@ def verificar_glb_vertice(caminho):
     65.274 -> 71.336 medida na D-COR05 e o mesmo fenomeno; na esfera do
     sintetico, 1.986 -> 2.143). Exigir igualdade com a malha reprovaria
     todo modelo real - defeito cacado na autoauditoria pos-sintetico.
+
+    D-T2-4: a checagem antiga lia SO o primeiro primitivo do primeiro
+    mesh - um GLB com 2 primitivos, o segundo sem COLOR_0, passava.
+    Agora TODOS os primitivos de TODOS os meshes sao exigidos (na
+    pratica de hoje a importacao unifica os objetos e o passo entrega
+    1 primitivo; a exigencia e defesa em profundidade). As chaves
+    antigas (color_0, color_0_vertices, posicao_vertices) passam a
+    descrever o AGREGADO: color_0 = todos tem COLOR_0; as contagens
+    somam todos os primitivos. Primitivo malformado (S4-1) conta como
+    sem cor: o verificador reprova GLB quebrado em vez de excecao.
     """
     with open(caminho, "rb") as f:
         cab = f.read(12)
@@ -318,13 +342,29 @@ def verificar_glb_vertice(caminho):
         if tipo != 0x4E4F534A:
             raise ValueError("GLB sem bloco JSON")
         g = json.loads(f.read(tam).decode("utf-8"))
-    prims = g.get("meshes", [{}])[0].get("primitives", [])
-    attrs = prims[0].get("attributes", {}) if prims else {}
-    tem = "COLOR_0" in attrs and "POSITION" in attrs
-    conta_cor = g["accessors"][attrs["COLOR_0"]]["count"] if tem else None
-    conta_pos = g["accessors"][attrs["POSITION"]]["count"] if tem else None
+    prims = [prim for malha in g.get("meshes", [])
+             for prim in malha.get("primitives", [])]
+    acessores = g.get("accessors", [])
+    conta_cor = 0
+    conta_pos = 0
+    primitivos_sem_cor = 0
+    for prim in prims:
+        # S4-1 (fechamento D-T2): primitivo malformado (acessor invalido,
+        # atributo ausente, contagem ausente) REPROVA em vez de quebrar:
+        # o verificador e defesa em profundidade e tem de falhar fechado.
+        try:
+            attrs = prim.get("attributes", {})
+            i_cor = attrs["COLOR_0"]
+            i_pos = attrs["POSITION"]
+            conta_cor += acessores[i_cor]["count"]
+            conta_pos += acessores[i_pos]["count"]
+        except (KeyError, IndexError, TypeError, AttributeError):
+            primitivos_sem_cor += 1
+    tem = bool(prims) and primitivos_sem_cor == 0
     return {"color_0": bool(tem), "color_0_vertices": conta_cor,
             "posicao_vertices": conta_pos,
+            "primitivos": len(prims),
+            "primitivos_sem_cor": primitivos_sem_cor,
             "imagens_no_glb": len(g.get("images", [])),
             "materiais": len(g.get("materials", [])),
             "ok": bool(tem and conta_cor == conta_pos

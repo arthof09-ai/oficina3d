@@ -197,3 +197,70 @@ def resumo_cobertura(fonte: np.ndarray) -> dict:
     }
     pct = {k: (round(100.0 * v / total, 2) if total else 0.0) for k, v in cont.items()}
     return {"total_vertices": total, "por_fonte": cont, "pct": pct}
+
+# --- Regra de aceite do alinhamento forma x refinado (D-T2-1) -------------
+# A autochecagem antiga usava SO a distancia mediana (COR-07): o Critico
+# do T2 mostrou que ela ACEITA uma forma sabotada com o eixo X esticado
+# 2x (mediana 0,02101 < 0,05 - a mediana e insensivel a deformacao
+# anisotropica). A regra nova soma duas guardas, ambas medidas na mesma
+# amostra de distancias e nas caixas ja alinhadas:
+#   * percentil p90 das distancias (fracao da altura): pega a cauda que
+#     a mediana ignora - deformacao global empurra o p90, nao so a
+#     mediana;
+#   * razao por eixo das caixas (forma mapeada / refinado): pega o
+#     esticamento direto, mesmo quando as distancias pontuais ficam
+#     baixas (superficie 2D: ponto deslocado lateralmente continua perto
+#     de ALGUMA parte da superficie).
+# Limites medidos na tranche D-T2 (par legitimo TripoSR Orc, job
+# crit-t2-soforma, vs sabotagem X2 do Critico): legitimo = mediana
+# 0,00056, p90 0,0013, caixas <= 1,00184 (margem > 70x no p90 e > 20% na
+# caixa); sabotado X2 = mediana 0,02022 (PASSAVA na regra antiga),
+# p90 0,08138, caixa X 2,002 (recusado pela caixa). O p90 0,10 NAO pega
+# o X2 sozinho: a caixa e a guarda primaria contra esticamento, o p90
+# e guarda secundaria contra deformacoes que preservam a caixa.
+# Limite conhecido, nao defeito escondido: deformacao LOCAL pequena
+# (ex.: so um braco esticado) passa pelas tres guardas - a regra pega
+# deformacao global anisotropica, que e o caso do Critico. A razao do
+# eixo Z e ~1 por construcao (a escala e pela altura) e nao conta como
+# guarda: ela esta na tabela por completude, nao por cobertura.
+LIMITE_ALINHAMENTO_MEDIANA_FRAC = 0.05
+LIMITE_ALINHAMENTO_P90_FRAC = 0.10
+FAIXA_RAZAO_CAIXA = (0.80, 1.25)
+
+
+def avaliar_alinhamento_forma(distancias_frac_altura, razoes_caixa):
+    """Decide se a cor da forma pode ser transferida (regra D-T2-1).
+
+    ``distancias_frac_altura``: distancias amostra -> superficie da forma
+    alinhada, como fracao da altura do refinado. ``razoes_caixa``: dict
+    {eixo: extensao_forma_mapeada / extensao_refinado} (eixos "x", "y",
+    "z" - os tres SAO obrigatorios; dict incompleto e recusado, S4-2).
+    Devolve (aceita, motivo, metricas): motivo vazio quando
+    aceita; metricas traz mediana, p90 e razoes (arredondados) para o
+    relatorio do job. A decisao usa os valores sem arredondar.
+    """
+    dists = np.asarray(list(distancias_frac_altura or []), dtype=np.float64)
+    razoes = dict(razoes_caixa or {})
+    med = float(np.median(dists)) if len(dists) else None
+    p90 = float(np.percentile(dists, 90)) if len(dists) else None
+    metricas = {
+        "dist_mediana_frac_altura": round(med, 5) if med is not None else None,
+        "dist_p90_frac_altura": round(p90, 5) if p90 is not None else None,
+        "razao_caixa": {k: round(float(v), 5) for k, v in razoes.items()},
+    }
+    if not len(dists):
+        return False, "alinhamento forma x refinado sem amostra de distancia", metricas
+    faltam = [e for e in ("x", "y", "z") if e not in razoes]
+    if faltam:
+        return False, ("alinhamento forma x refinado sem razoes de caixa dos "
+                       f"eixos: {','.join(faltam)}"), metricas
+    if med > LIMITE_ALINHAMENTO_MEDIANA_FRAC:
+        return False, "alinhamento forma x refinado nao sadio (distancia mediana alta)", metricas
+    if p90 > LIMITE_ALINHAMENTO_P90_FRAC:
+        return False, "alinhamento forma x refinado nao sadio (percentil p90 alto)", metricas
+    lo, hi = FAIXA_RAZAO_CAIXA
+    for eixo, razao in razoes.items():
+        if not (lo <= float(razao) <= hi):
+            return False, (f"alinhamento forma x refinado nao sadio "
+                           f"(caixa do eixo {eixo} fora da faixa: {float(razao):.3f})"), metricas
+    return True, "", metricas

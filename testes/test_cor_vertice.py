@@ -325,5 +325,79 @@ class TestWorkerDespachoCor(unittest.TestCase):
             passo_mod.rodar_passo_cor = orig_p
 
 
+class TestAvaliarAlinhamentoForma(unittest.TestCase):
+    """D-T2-1: a regra nova (mediana + p90 + caixa por eixo)."""
+
+    def test_legitimo_aceita(self):
+        aceita, motivo, _m = V.avaliar_alinhamento_forma(
+            [0.0002] * 100, {"x": 1.0, "y": 0.99, "z": 1.0})
+        self.assertTrue(aceita)
+        self.assertEqual(motivo, "")
+
+    def test_caso_do_critico_x2_recusado_pela_caixa(self):
+        # O Critico do T2 mediu mediana 0,02101 (passava na regra antiga);
+        # a caixa X 2.0 recusa na regra nova mesmo com a mediana baixa.
+        aceita, motivo, met = V.avaliar_alinhamento_forma(
+            [0.02101] * 100, {"x": 2.0, "y": 1.0, "z": 1.0})
+        self.assertFalse(aceita)
+        self.assertIn("eixo x", motivo)
+        self.assertEqual(met["dist_mediana_frac_altura"], 0.02101)
+
+    def test_mediana_alta_recusa(self):
+        aceita, motivo, _m = V.avaliar_alinhamento_forma(
+            [0.06] * 100, {"x": 1.0, "y": 1.0, "z": 1.0})
+        self.assertFalse(aceita)
+        self.assertIn("mediana", motivo)
+
+    def test_p90_alto_recusa_mesmo_com_mediana_baixa(self):
+        # 20% da amostra longe: p90 ~0,18 > 0,10, mediana 0,02 passa.
+        aceita, motivo, met = V.avaliar_alinhamento_forma(
+            [0.02] * 80 + [0.20] * 20, {"x": 1.0, "y": 1.0, "z": 1.0})
+        self.assertFalse(aceita)
+        self.assertIn("p90", motivo)
+        self.assertGreater(met["dist_p90_frac_altura"], 0.10)
+
+    def test_sem_amostra_recusa(self):
+        aceita, motivo, _m = V.avaliar_alinhamento_forma(
+            [], {"x": 1.0, "y": 1.0, "z": 1.0})
+        self.assertFalse(aceita)
+        self.assertIn("sem amostra", motivo)
+
+    def test_razoes_incompletas_recusam_s4_2(self):
+        # S4-2: eixo ausente nao e checado se a funcao aceitar o dict -
+        # a guarda tem de recusar o dict incompleto, nao ignora-lo.
+        aceita, motivo, _m = V.avaliar_alinhamento_forma(
+            [0.001] * 100, {"x": 1.0})
+        self.assertFalse(aceita)
+        self.assertIn("eixos", motivo)
+
+    def test_caixa_comprimida_recusa_e_borda_aceita(self):
+        aceita, _m, _t = V.avaliar_alinhamento_forma(
+            [0.001] * 100, {"x": 0.5, "y": 1.0, "z": 1.0})
+        self.assertFalse(aceita)
+        aceita, _m, _t = V.avaliar_alinhamento_forma(
+            [0.001] * 100, {"x": 1.25, "y": 1.0, "z": 1.0})
+        self.assertTrue(aceita)
+
+
+class TestAvisoVistasIgnoradas(unittest.TestCase):
+    """D-T2-3: o aviso nomeia o passo certo por modo."""
+
+    def test_vertice_nao_menciona_bake(self):
+        aviso = worker._aviso_vistas_ignoradas(
+            {"modo_cor": "vertice", "vistas_ignoradas": ["diagonal"]})
+        self.assertIn("passo vertice", aviso)
+        self.assertNotIn("bake v1", aviso)  # "(sem bake)" diz que NAO ha bake
+
+    def test_projecao_menciona_bake(self):
+        aviso = worker._aviso_vistas_ignoradas(
+            {"modo_cor": "projecao", "vistas_ignoradas": ["topo"]})
+        self.assertIn("bake", aviso)
+
+    def test_sem_chave_nao_quebra_s4_2(self):
+        aviso = worker._aviso_vistas_ignoradas({"modo_cor": "projecao"})
+        self.assertIn("bake", aviso)
+
+
 if __name__ == "__main__":
     unittest.main()

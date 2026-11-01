@@ -66,7 +66,7 @@ def selecionar_vistas(imagens, job_dir=None):
     Devolve ``(vistas, ausentes, ignoradas)``: ``vistas`` e a lista
     ``[{"vista", "arquivo"}]`` na ordem de VISTAS_COR (primeira ocorrencia
     vence em caso de duplicata); ``ausentes`` sao as canonicas sem imagem;
-    ``ignoradas`` sao as etiquetas presentes que o bake v1 nao usa.
+    ``ignoradas`` sao as etiquetas presentes que o passo de cor nao usa.
     Levanta ValueError sem nenhuma vista canonica, ou com arquivo
     ausente/ilegivel para uma vista canonica.
     """
@@ -160,7 +160,11 @@ def rodar_passo_cor(job_dir, glb_refinado, imagens, pasta_cor=None, progresso=No
     avisar(100, "cor: bake pronto")
 
     previas = [_rel(job_dir, p) for p in (res_cor.get("previas") or [])]
-    return {"vistas_usadas": [v["vista"] for v in vistas],
+    return {"modo_cor": "projecao",
+            "rotulo": "padrao",
+            "rotulo_motivo": ("bake T1 (projecao das vistas canonicas): "
+                             "caminho oficial da Etapa COR (o modo vertice e o rascunho)"),
+            "vistas_usadas": [v["vista"] for v in vistas],
             "vistas_ausentes": ausentes,
             "vistas_ignoradas": ignoradas,
             "metricas_uv": met_uv,

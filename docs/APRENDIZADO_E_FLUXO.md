@@ -69,6 +69,8 @@ Antes de convocar o Critico, o executor confere e resolve CADA item. A ideia (AP
 - [ ] Checagem de lado ANTES de instalar qualquer vista gerada: cabeca, cauda, flanco, motivo do chifre/ancora lateralizada e correlacao com o perfil correspondente; rotulo e parte da fidelidade, nao metadado cosmetico; conferir tambem rotulos textuais existentes que citem o arquivo pelo nome antigo. [licao L-34]
 - [ ] Comparacao de previas do Blender por IDAT/pixels, nunca por bytes brutos: o Blender grava metadado tEXt (Date, RenderTime) que muda a cada render sem mudar um pixel. [licao L-32]
 - [ ] Docstring de tempo distingue chamada nativa de total: "nativa (~97 s)" quando a nativa e 84 s e o total 97 s vira divergencia documental na proxima auditoria. [licao S4-1 da D-COR05]
+- [ ] Probe grava o resultado de cada caso ao terminar (ou tolera o erro esperado): resumo so no fim se perde no primeiro caso que falha por desenho. [licao L-35]
+- [ ] Verificador reprova entrada malformada em vez de excecao, e guarda valida a completude da entrada antes de julgar (chaves obrigatorias; entrada incompleta = recusa). [licoes L-36/L-37]
 
 ---
 
@@ -303,6 +305,21 @@ flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
 - **Custo:** uma rodada inteira de retrabalho (renomeacao + re-verificacao + registro) para desfazer um erro que uma checagem de lado pre-instalacao teria pego; e um risco real de modelo espelhado se o rotulo errado tivesse sido usado.
 - **Regra:** nenhuma vista entra no arsenal sem a checagem de lado feita ANTES da instalacao (cabeca, cauda, flanco, motivo do chifre/ancora lateralizada, correlacao com o perfil correspondente); ao renomear, renomear tambem as evidencias derivadas (zooms) e registrar o mapeamento novo por escrito (hashes por nome + convencao) junto do relatorio historico, para o mapeamento antigo nao sobreviver como unica referencia escrita. (Checklist pre-Critico, item novo.)
 
+### L-35 - Probe que quebra no caso esperado perde o resumo: resultado por caso, nao so no fim (01/11/2026)
+- **Caso:** o probe da D-T2 quebrou no caso X2 (o erro do passo era o comportamento ESPERADO da recusa) antes de gravar o resumo final - o `resumo_passo.json` alegado nunca existiu e os numeros ficaram espalhados em log + JSONs por job; o Critico teve de registrar a lacuna e reler os artefatos.
+- **Custo:** uma ressalva documental no veredito e trabalho de re-leitura na auditoria seguinte.
+- **Regra:** probe grava o resultado de CADA caso assim que ele termina (ou tolera o erro esperado e le o resultado parcial) - resumo final so no fim e resumo perdido no primeiro erro esperado. (Checklist pre-Critico, item novo.)
+
+### L-36 - Verificador que quebra diante de entrada quebrada nao verifica: falhar fechado (01/11/2026)
+- **Caso:** o `verificar_glb_vertice` (defesa em profundidade da D-T2-4) dava `IndexError` com acessor COLOR_0 invalido, em vez de `ok=False` - a defesa furava exatamente no caso quebrado.
+- **Custo:** ressalva S4-1 do Critico e uma rodada de correcao + prova S41 no fechamento.
+- **Regra:** funcao de verificacao trata entrada malformada como REPROVACAO, nunca como excecao: cada acesso a indice/contagem vai em guarda que conta o item como falho. (Checklist pre-Critico, item novo.)
+
+### L-37 - Guarda que aceita entrada incompleta nao guarda: validar a completude do que ela checa (01/11/2026)
+- **Caso:** `avaliar_alinhamento_forma` aceitava um dict de razoes com so o eixo X - os eixos ausentes simplesmente nao eram checados. O unico chamador real passa os tres eixos, mas a guarda, como funcao, aceitava ser contornada por omissao.
+- **Custo:** ressalva S4-2 do Critico; o mesmo padrao de "guarda que nao guarda" que a D-T2-1 acabara de corrigir, em versao menor.
+- **Regra:** toda guarda valida a COMPLETUDE da entrada antes de julgar (chaves obrigatorias presentes, tipos esperados) - entrada incompleta e recusa com motivo proprio, nunca aceite silencioso. (Checklist pre-Critico, item novo.)
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:
@@ -325,6 +342,7 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Bateria COR-05 (integracao) | Parse binario proprio do GLB final (sem trimesh, sem costura.py) + reconciliacao commit a commit do delta da suite + prova de nao-regressao por diff + job pre-integracao + julgamento explicito da D1 aberta como nao-bloqueio | FECHADO (integracao); D-COR05-1 (S3, janela de cancelamento na gerar_uv), D-COR05-2 (S3, sem job sem-cor sob worker novo), D-COR05-3 (S4, campo glb_refinado_preservado), D-COR05-4 (S4, divergencias documentais); delta +2 EXPLICADO (252 de 17462aa + 2 de aa2758c + 9 = 263); proxima bateria exigida: reexecucao deterministica da cor (SHAs devem reproduzir) |
 | 01/11/2026 | Bateria D-COR05 (pendencias da integracao) | Comparacao byte a byte de TODOS os artefatos do determinismo contra a prova (inclui uv.npz, modelo_uv.glb e as 9 previas, com decomposicao de chunks PNG e comparacao pixel a pixel) + proveniencia do worker nos 3 jobs e fila vazia ao fim + tentativa do validador glTF independente + recontagem da cadeia de vertices incluindo o .npz | D-COR05 FECHADA (D1 segue ABERTA e ortogonal); achado da escalada: previas pixel-identicas com bytes divergentes so em metadado tEXt do Blender (licao L-32); ressalvas S4: docstring 97 s vs nativa 84 s, modelo.glb do refino em job em erro, cancelamento vivo nao exercido, validador glTF pendente; suite 263+4 = 267 reconciliada |
 | 01/11/2026 | Fechamento REF-01 lote 3 (Caprileo) | Verificacao de rotulo pos-renomeacao (SHA por nome nos dois lados + checklist C1 nos arquivos renomeados) + consistencia de rotulos no conjunto (busca por referencias textuais ao rotulo pre-troca) | C1 FECHADO por medida (3/3 itens nos dois arquivos, hashes PC = local); lote 3 FECHADO; pendencias C2/C3/C4 (S3) e C5 (S4) nomeadas; zooms renomeados para acompanhar a troca |
+| 01/11/2026 | Bateria D-T2 (fechamento das pendencias do T2) | Reproducao propria da sabotagem + sabotagem em Y e Z + caso misto vistas + forma recusada + arestas do verificador (3o primitivo sem cor, sem meshes) + D-T2-2 fora do mock (passo de projecao real) + suite conferida arquivo a arquivo | X2/Y2/Y0,5/Z2 recusadas; misto conclui pelas vistas com forma 0%; S4-1/S4-2 de robustez; D-T2-1 FECHADA |
 
 ---
 

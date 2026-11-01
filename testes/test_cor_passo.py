@@ -184,5 +184,45 @@ class TestSha256Worker(unittest.TestCase):
         self.assertEqual(worker._sha256(p), hashlib.sha256(b"oficina3d-dc05").hexdigest())
 
 
+class TestPassoCorDeclaraModo(unittest.TestCase):
+    """D-T2-2: o passo de projecao declara modo_cor/rotulo como o vertice."""
+
+    def test_projecao_declara_modo_e_rotulo(self):
+        import oficina3d.cor as cor_pkg
+        from oficina3d import uv_xatlas
+        from oficina3d.refino import previa
+
+        orig_gerar, orig_blender, orig_cor = (uv_xatlas.gerar_uv,
+                                              previa.rodar_blender,
+                                              cor_pkg.rodar_cor)
+        try:
+            uv_xatlas.gerar_uv = lambda glb, npz, progresso=None: {"ocupacao": 0.5}
+            def _fake_blender(*a, **k):
+                # O passo exige o modelo_uv entregue pelo Blender.
+                Path(a[1]["saida_glb"]).write_bytes(b"glb")
+                return {"metricas_uv": {"ocupacao": 0.5}}
+
+            previa.rodar_blender = _fake_blender
+
+            def _fake_cor(pedido, pasta, progresso=None, timeout_s=1800):
+                Path(pedido["saida_glb"]).write_bytes(b"glb")
+                Path(pedido["saida_textura"]).write_bytes(b"png")
+                return {"previas": []}
+
+            cor_pkg.rodar_cor = _fake_cor
+            tmp = TEMP_TESTES / "cor_declara"
+            tmp.mkdir(exist_ok=True)
+            glb = tmp / "refinado.glb"
+            glb.write_bytes(b"")
+            res = passo.rodar_passo_cor(tmp, glb, _imgs(tmp, ["frente", "costas"]),
+                                        pasta_cor=tmp / "cor")
+            self.assertEqual(res["modo_cor"], "projecao")
+            self.assertEqual(res["rotulo"], "padrao")
+            self.assertIn("T1", res["rotulo_motivo"])
+        finally:
+            uv_xatlas.gerar_uv, previa.rodar_blender, cor_pkg.rodar_cor = (
+                orig_gerar, orig_blender, orig_cor)
+
+
 if __name__ == "__main__":
     unittest.main()
