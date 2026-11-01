@@ -113,6 +113,21 @@ Cada licao nasce de um caso real. Formato: caso -> o que aconteceu -> custo -> r
 - **Custo:** ressalva permanente no arsenal do Orc; um detalhe de convencao que o gerador nao adivinha.
 - **Regra:** todo pedido de geracao de referencia lista as convencoes de pose por extenso (palmas para baixo, pes para a frente, pernas afastadas, lado de cada acessorio) - nada de convencao implicita. (Checklist pre-Critico, item 6: conferir as convencoes antes de convocar o Critico.)
 
+### L-10 - Blender 5.2: ray_cast sem acerto nao devolve None; BVH exige transform aplicado (01/11/2026)
+- **Caso:** o teste de oclusao do bake (T1) quebrou com `TypeError` na primeira face: `BVHTree.ray_cast` sem acerto devolve `(None, None, None, None)`, nao `None`. Em paralelo, o cubo sintetico estava sem `transform_apply`: os vertices lidos de `me.vertices` estavam em coords locais (z=0) enquanto o BVH trabalhava em coords de mundo (z=1) - o enquadramento e a oclusao sairiam deslocados sem erro visivel.
+- **Custo:** um run sintetico perdido; o erro so apareceu porque o script checa o retorno do raio em vez de confiar no `None`.
+- **Regra:** em codigo Blender, tratar "sem acerto" como `hit is None or hit[0] is None`; e, antes de qualquer BVH ou leitura de vertices para calculo, aplicar location/rotation/scale do objeto (o `importar_glb` ja fazia; o `criar_cubo` nao fazia). Teste minimo de raio (cubo, 6 faces) antes de depurar o bake inteiro.
+
+### L-11 - Medir a UV antes de culpar a projecao; entrada errada nao e defeito do mecanismo (01/11/2026)
+- **Caso:** o primeiro run do Orc falhou ("malha sem UV") porque a entrada era `refino/limpa.glb` - que e a ENTRADA do refino (via pymeshlab, sem UV), nao a saida refinada (`saida/modelo.glb`, com UV). Depois, com a entrada certa, a cobertura direta de so 20% parecia defeito da projecao - mas a medida independente (decode do GLB) mostrou a causa real: o Smart UV do refino cobre 4,32% do quadrado UV (8.098 ilhas), ou seja, ~1 texel por face em 1024 px. A projecao nao tinha resolucao para pintar detalhe.
+- **Custo:** um run perdido + uma conclusao quase errada ("a projecao nao presta") que teria condenado o mecanismo certo pelo gargalo errado.
+- **Regra:** (1) conferir o que cada arquivo de job realmente e (entrada vs saida da etapa) antes de usa-lo como insumo; (2) antes de julgar um bake, medir a UV (area total, ilhas, ocupacao) por via independente do codigo sob teste - e o T5 que protege o T1, nao o contrario. (Eco da L-08: isolar a variavel antes de culpar.)
+
+### L-12 - Tarefa agendada com cmd.exe: citacao e cwd quebram em silencio (01/11/2026)
+- **Caso:** a suite completa via tarefa agendada falhou 2x: na primeira, o `cmd /c` rodou fora de `app` (ImportError "Start directory is not importable"); na segunda, o redirecionamento com citacao aninhada nao truncou o log e o erro antigo permaneceu no arquivo, parecendo "a mesma falha".
+- **Custo:** duas rodadas de diagnostico confundido por log velho.
+- **Regra:** trabalho agendado no PC usa um script `.py` proprio que fixa o cwd, escreve o proprio log e devolve o resumo (`SUITE_RESULT ...`) - nunca `cmd /c` com citacao aninhada; e log velho se apaga antes do run, nao depois.
+
 ---
 
 ## 5. Regra de escalada do Critico (APR-01)
@@ -129,6 +144,7 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Auditoria no 3 (Fase 1) | Conferencia de lastro documental: afirmacao x commit x linha em DECISOES | C3-1, C3-2, C3-3 (QUAL-01 sem commit e sem linha) |
 | 01/11/2026 | Bateria REF-01 lote 1 (abaixo) | Consistencia cruzada ENTRE as vistas geradas (vista x vista, nao so vista x fonte) + checagem geometrica da T-pose (simetria medida na imagem) | Verificado na rodada 2: consistencia cruzada PASSA nas 3 vistas v2; simetria medida (IoU 0,809, extensoes 653 px/lado) |
 | 01/11/2026 | Rodada 2 REF-01 lote 1 v2 | Contagem de dedos por mao com zoom (numero contado, nao estimado) + simetria espelhada MEDIDA da silhueta (IoU mascara x espelho) + auditoria de ancoras de LADO, ancora por ancora, nas costas v2 E no 3/4 v2 (16/16) | D1/D2/D3/D10 fechados; D15 (palmas para a frente, S4) achado |
+| 01/11/2026 | Bateria T1-mecanismo (Etapa COR) | Auditoria de proveniencia por texel (percentual pintado direto x por dilatacao, com consequencia visual) + medida INDEPENDENTE da area UV (decode do GLB, fora do codigo sob teste) + teste anti-atravessamento com medicao (nao so olho) + determinismo por SHA em 2 runs | A definir pelo veredito do Critico desta tranche |
 
 ---
 
