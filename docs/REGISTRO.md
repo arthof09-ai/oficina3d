@@ -852,3 +852,9 @@ Relatorio integral: docs/CRITICO-dt2-relatorio.md (SHA-256 05527A062D7076E72485F
 - **Verificações novas do Crítico (escalada APR-01, seção 6):** N1 pureza do 3/4 traseiro; N2 diversidade angular
   MEDIDA do par (os três critérios obrigatórios); N3 tom medido por amostragem anatômica com filtro oliva.
   Registradas no checklist pré-Crítico e na lição L-38.
+
+## 2026-11-01 - LIC-01 registrada: licenças não bloqueiam as frentes técnicas (decisão do Mestre)
+
+- **Decisão do Mestre (01/11, 14:19), literal:** "Não precisa se preocupar com nenhuma licença, pode deixar que depois eu vou resolver isso." Registrada como **LIC-01** em DECISOES.md.
+- **Efeito:** os fatos de licença do estudo de reuso × recriação (`docs/ESTUDO_REUSO_RECRIACAO.md`, copiado nesta rodada) — FLUX.2 sob BFL não-comercial, LoRAs/decoder do UltraTex com concessão não estabelecida, UltraTex/StableGen GPL-3.0, adaptador do SUPRA-Tex sob licença de pesquisa, Eyek/Comfy BlenderTools sem licença publicada — passam a ser INFORMAÇÃO registrada, não bloqueador: spikes, testes e estudos seguem sem trava de licença.
+- **Limites da decisão:** adoção comercial de qualquer peça fica para quando o Mestre resolver as licenças; os fatos continuam registrados no estudo e no Gate 0 do T7; a DONO-01 (independência técnica) permanece valendo por mérito próprio.
