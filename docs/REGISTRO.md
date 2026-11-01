@@ -592,3 +592,5 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
   entregue), D1 (fidelidade de detalhe do Orc, segue ABERTA). Tarefas
   agendadas da tranche removidas apos o uso (Oficina3D_D2D7,
   D2D7Suite, D2D7Rep, D2D7Flat). Espelho no Drive validado: REGISTRO 96FFD62D, ESTADO F8E3A2CD, CRITICO 821BD6C9, VERIFICACAO 0AC21EF0 (SHA-256 conferidos na volta, G:).
+
+- 2026-11-01 ~09:07 - ESTUDO T3 (Hunyuan Paint) protocolado em docs/ESTUDO_T3_PAINT.md: veredito = spike pratico unico com regua pre-registrada (venv isolado; Orc Prata; perfil mmgp 5->4; aceite: VRAM <= 8188 MB, <= 45 min, SSIM frontal nao pior que o T1, zero OOM). O Paint usa 1 vista e inventa as demais: nao substitui a projecao (T1); papel possivel = Plano C (zonas cegas). Spike entra na fila do backlog.
