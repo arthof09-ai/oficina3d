@@ -25,3 +25,20 @@ Ordem: (0) atualizar e medir a suite; (1) Gate 0 Paint 2.0/2GP em venv proprio, 
 - SHA-256 suite.log: 1A2BA5BD825954061F01B09EEDEFB5993408F746DD1D2771AEB40E5B36A48207
 
 - SHA-256 resultado.json: 841B3EDA23E801AA93582983B8EEBED1C455B9B1DEA3E5156C4F3BB322E8D209
+
+- Preparacao do venv: tentativa inicial de Copy-Item por enumeracao expandiu os filhos dos pacotes em vez de preservar as pastas. Interrompida antes de qualquer build. Corrigida somente a site-packages Codex (caminho absoluto validado antes da limpeza), usando copia por diretorio. Python 3.10 tambem copiado para runtime proprio; nao ha system-site-packages nem link ao ambiente principal. O erro de preparacao nao sera apresentado como falha do Paint.
+
+## Entrega 1 — Gate 0 T3 REPROVADO neste ambiente
+
+- Ambiente proprio: `.venv_paint`, runtime CPython 3.10.22 (MSC v.1944, AMD64), torch 2.5.1+cu124, CUDA do wheel 12.4, setuptools 84.2.1, wheel 0.48.0, pybind11 3.1.0, ninja 1.13.2. Pacotes torch/dependencias copiados fisicamente; ferramentas de build instaladas somente no venv Codex. Codigo 2GP copiado da base (manifesto do projeto aponta f2456e0; sem .git no motor local, nao alego verificar o commit por git).
+- Comando nas duas pastas de extensao: `.venv_paint/Scripts/python.exe -B setup.py build_ext --inplace`. Executar novamente, se necessario: `.venv_paint/Scripts/python.exe -B app/testes/codex/gate0_paint.py`.
+- `custom_rasterizer`: exit 1 em **2,6017 s**; erro literal `OSError: CUDA_HOME environment variable is not set. Please set it to your CUDA install root.` O toolkit nao foi localizado no PATH/diretorio padrao. CUDA do wheel/driver nao implica compilador nvcc instalado.
+- `differentiable_renderer`: exit 1 em **0,3714 s**; erro literal `Microsoft Visual C++ 14.0 or greater is required`. MSVC nao localizado pelo build. Nao instalei compiladores no sistema: alteracao fora da copia, e a regua manda seguir apos falha.
+- Import `custom_rasterizer` tambem falhou por PIL ausente no venv minimo de build; isso e dependencia Python adicional, NAO a causa do erro CUDA. Import direto do kernel nativo confirmou `ModuleNotFoundError: custom_rasterizer_kernel`.
+- **Autoauditoria adversarial:** `import mesh_processor` retornou sucesso, mas carregou `mesh_processor.py`, fallback Python do fork. Conferencia por EXTENSION_SUFFIXES reprova o falso positivo: nao existe .pyd no texgen. O executor reproduzivel agora exige extensao NATIVA e compilacao com exit 0; importar um .py nao passa o Gate 0. Nenhum peso Paint/Delight baixado, nenhuma inferencia GPU executada.
+- Decisao: **T3 arquivado nesta tentativa/ambiente por falha de compilacao**. Nao e prova de que o algoritmo seja impossivel em uma RTX 4060 com toolchain preparado; e o resultado do Gate 0 solicitado neste PC. VRAM/RAM/tempo de inferencia, SSIM/DeltaE, cobertura e qualidade visual: NAO MEDIDOS. O Gate 0 nao autoriza afirmar qualidade boa ou ruim.
+- Evidencias: `../evidencias/gate0/resultado.json` e logs por build/import/native; tamanhos e SHA-256 individuais registrados no JSON. Espaco livre apos preparo: **36.714.708.992 bytes**. Venv ocupa disco mas permanece como evidencia reproduzivel; nenhuma remocao/arquivo no Drive foi feita fora da copia.
+- Proximo: Entrega 2, reproduzir T2/D-T2 na mesma malha e vistas; investigar conversao de espaco de cor com tons intermediarios (o teste sintetico atual usa so primarias 0/1, insuficientes para detectar erro de gamma). Isto e HIPOTESE a medir, nao causa confirmada.
+- Suite apos Gate 0: **296 executados, 0 falhas, 0 erros, 1 skip**, **25,168 s** (log `../evidencias/gate0/suite.log`). Nenhum codigo do app alterado nesta entrega.
+- Gate 0 SHA-256 resultado.json: 8674F7A0B982CD61A103FA541FF8E9AB56ADAF6F869DFEB837794CD6C17F6482
+- Gate 0 SHA-256 suite.log: 6F48D581474C14B0FE9DE9E84FE34561BFC2D574AFB95710622A9E4192AFC112
