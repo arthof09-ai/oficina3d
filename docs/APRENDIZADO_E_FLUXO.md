@@ -66,6 +66,7 @@ Antes de convocar o Critico, o executor confere e resolve CADA item. A ideia (AP
 - [ ] Vistas geradas entregues com autotestes geometricos MEDIDOS pelo executor: lateralizacao das diagonais contra a familia canonica (ancora lateralizada nao cruza a linha media) e pureza da planta (elemento frontal nao le de frente; se le inteiro, NAO e topo e nao se entrega com esse rotulo). Desvio estrutural nunca descrito com diminutivo ("levemente", "quase") sem medida que o sustente. [licao L-26]
 - [ ] Deploy de worker em loop: matar o processo com a fila vazia e deixar o supervisor relancar (o processo vivo NAO herda codigo novo sozinho); confirmar o PID novo + o lock antes de criar o job de prova. [licao L-28]
 - [ ] Numero da suite nunca carregado entre tranches: re-medir por discovery e reconciliar commit a commit (o log antigo pode ser de arvore anterior ao ultimo commit de testes). [licao L-29]
+- [ ] Checagem de lado ANTES de instalar qualquer vista gerada: cabeca, cauda, flanco, motivo do chifre/ancora lateralizada e correlacao com o perfil correspondente; rotulo e parte da fidelidade, nao metadado cosmetico; conferir tambem rotulos textuais existentes que citem o arquivo pelo nome antigo. [licao L-34]
 - [ ] Comparacao de previas do Blender por IDAT/pixels, nunca por bytes brutos: o Blender grava metadado tEXt (Date, RenderTime) que muda a cada render sem mudar um pixel. [licao L-32]
 - [ ] Docstring de tempo distingue chamada nativa de total: "nativa (~97 s)" quando a nativa e 84 s e o total 97 s vira divergencia documental na proxima auditoria. [licao S4-1 da D-COR05]
 
@@ -297,6 +298,11 @@ flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
 - **Custo:** comparar por bytes brutos teria declarado o determinismo quebrado por metadado — um falso S2.
 - **Regra:** comparacao de previas do Blender = `IDAT` ou pixels; bytes brutos so valem para artefatos sem metadado de render (textura, GLB, .npz). (Checklist pre-Critico, item novo.)
 
+### L-34 - Rotulo trocado e defeito de fidelidade: checagem de lado ANTES da instalacao (01/11/2026)
+- **Caso:** o lote 3 do Caprileo chegou a instalacao com os rotulos das diagonais traseiras trocados; o defeito era de rotulo, nao de pixels, e nenhuma medicao de cor ou margem o pegaria - so a atribuicao de lado (5 ancoras) o pegou, ja com os arquivos instalados e com o relatorio da rodada 1 ainda fora dos docs do projeto.
+- **Custo:** uma rodada inteira de retrabalho (renomeacao + re-verificacao + registro) para desfazer um erro que uma checagem de lado pre-instalacao teria pego; e um risco real de modelo espelhado se o rotulo errado tivesse sido usado.
+- **Regra:** nenhuma vista entra no arsenal sem a checagem de lado feita ANTES da instalacao (cabeca, cauda, flanco, motivo do chifre/ancora lateralizada, correlacao com o perfil correspondente); ao renomear, renomear tambem as evidencias derivadas (zooms) e registrar o mapeamento novo por escrito (hashes por nome + convencao) junto do relatorio historico, para o mapeamento antigo nao sobreviver como unica referencia escrita. (Checklist pre-Critico, item novo.)
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:
@@ -318,6 +324,7 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Rodada 2 do retrabalho REF-01 lote 2 (Besta v2) | Coerencia interna do conjunto (ancora x ancora ENTRE as vistas candidatas) + diversidade angular medida do par de diagonais (correlacao + impressao lateral) | B1/B2/B3/B4/B5/B6 fechados por medida; achados novos B10 DEF S3 (maos do topo em roseta) e B11 TXT S3 (tom do topo); B7 estendido ao par; lote 2 FECHADO |
 | 01/11/2026 | Bateria COR-05 (integracao) | Parse binario proprio do GLB final (sem trimesh, sem costura.py) + reconciliacao commit a commit do delta da suite + prova de nao-regressao por diff + job pre-integracao + julgamento explicito da D1 aberta como nao-bloqueio | FECHADO (integracao); D-COR05-1 (S3, janela de cancelamento na gerar_uv), D-COR05-2 (S3, sem job sem-cor sob worker novo), D-COR05-3 (S4, campo glb_refinado_preservado), D-COR05-4 (S4, divergencias documentais); delta +2 EXPLICADO (252 de 17462aa + 2 de aa2758c + 9 = 263); proxima bateria exigida: reexecucao deterministica da cor (SHAs devem reproduzir) |
 | 01/11/2026 | Bateria D-COR05 (pendencias da integracao) | Comparacao byte a byte de TODOS os artefatos do determinismo contra a prova (inclui uv.npz, modelo_uv.glb e as 9 previas, com decomposicao de chunks PNG e comparacao pixel a pixel) + proveniencia do worker nos 3 jobs e fila vazia ao fim + tentativa do validador glTF independente + recontagem da cadeia de vertices incluindo o .npz | D-COR05 FECHADA (D1 segue ABERTA e ortogonal); achado da escalada: previas pixel-identicas com bytes divergentes so em metadado tEXt do Blender (licao L-32); ressalvas S4: docstring 97 s vs nativa 84 s, modelo.glb do refino em job em erro, cancelamento vivo nao exercido, validador glTF pendente; suite 263+4 = 267 reconciliada |
+| 01/11/2026 | Fechamento REF-01 lote 3 (Caprileo) | Verificacao de rotulo pos-renomeacao (SHA por nome nos dois lados + checklist C1 nos arquivos renomeados) + consistencia de rotulos no conjunto (busca por referencias textuais ao rotulo pre-troca) | C1 FECHADO por medida (3/3 itens nos dois arquivos, hashes PC = local); lote 3 FECHADO; pendencias C2/C3/C4 (S3) e C5 (S4) nomeadas; zooms renomeados para acompanhar a troca |
 
 ---
 

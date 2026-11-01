@@ -681,3 +681,57 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **Codigo (commit desta tranche):** novos `oficina3d/cor/vertice.py` (puro) e `oficina3d/cor/_blender_vertice.py`; `cor/passo.py` (`rodar_passo_vertice` + `_forma_tem_color0`); `cor/__init__.py` (`rodar_vertice`); `config.py` (`MODOS_COR` + opcao `cor_modo`); `job.py` (validacao de `cor_modo`); `worker.py` (despacho por modo, mensagens e aviso de rascunho); `cli.py` (`--cor-modo`); novo `testes/test_cor_vertice.py` (18 testes: amostragem, mescla, propagacao, baricentricas, passo com runner mockado, opcao, CLI, despacho do worker).
 - **Testes rapidos (pre-suite, .venv_app):** `test_cor_vertice` + `test_cor_passo` = 31 testes OK (18 novos + 13 herdados).
 - **Estado:** T2 EXECUTADA (codigo + testes unitarios). Pendente nesta tranche: suite completa, sintetico no Blender, jobs de prova na fila real (3 personagens + TripoSR + determinismo + regressao) e veredito do Critico senior - NAO autoaprovada.
+
+
+## 2026-11-01 — REF-01 lote 3 FECHADO (Capríleo): C1 fechado por renomeação
+
+- **Geração (rodada ~09:54–10:10):** 3 vistas avulsas a partir das 4 fontes douradas
+  (`testes/dourado/imagens/caprileo_{frente,costas,esquerda,direita}.png`): `caprileo_diag_tras_esq.png`
+  (1600x1600), `caprileo_diag_tras_dir.png` (1920x1280) e `caprileo_topo.png` (1600x1600), instaladas em
+  `testes/referencias/` com hashes PC == local e fora do git (gitignored).
+- **Veredito da rodada 1 (docs/CRITICO-ref01-lote3.md): LOTE REPROVADO por um único defeito S2 — C1 (SYM):**
+  os rótulos das duas diagonais traseiras estavam trocados (o arquivo `esq` continha a vista traseira-direita e
+  vice-versa, provado por 5 âncoras: cabeça, cauda, flanco, motivo do chifre próximo e correlação com os perfis).
+  O topo foi APROVADO como planta verdadeira na mesma rodada. Retrabalho especificado: só renomear, sem regenerar.
+- **Retrabalho (rodada ~11:00, árvore limpa, HEAD 61c3a37):** troca simultânea dos nomes nos DOIS lados
+  (PC `testes/referencias/` + cópias locais) via nome temporário, sem sobrescrita direta. Hashes por conteúdo
+  intactos e idênticos PC = local. Mapeamento NOVO, por nome: `caprileo_diag_tras_esq.png` =
+  `46CBE2B9B645163909A6EB6AC745EB8B9D0694717122FDEDFC8348D10D1EF07A` (1955953 B);
+  `caprileo_diag_tras_dir.png` = `EFD00A7D77E0830F609025A12307F6F00485032BB86D91F7496FE02EE59FA180` (2065375 B);
+  `caprileo_topo.png` = `F09270071BDEA23CD587DA96EE4B52BF4BB29B3204D47CA369AA4BA3C238B634` (inalterado).
+  Nenhum arquivo temporário restante; `git check-ignore` confirma os PNGs fora do git.
+- **Re-verificação C1 (checklist da seção 7 do relatório da rodada 1):** executor, com os olhos, nos arquivos
+  renomeados — `diag_tras_esq`: cabeça à esquerda + chifre próximo com segundo anel pequeno e fechado + cauda à
+  direita (3/3); `diag_tras_dir`: cabeça à direita + chifre próximo em gancho aberto em "C" + cauda à esquerda
+  (3/3). Crítico Visual sênior de fechamento, independente (docs/CRITICO-ref01-lote3-fechamento.md), confirmou
+  os mesmos 3/3 itens nos dois arquivos e os três hashes acima no local e no PC (via `Get-FileHash`).
+  **C1 FECHADO; LOTE 3 FECHADO.**
+- **Registro adiado duas vezes pela regra anti-colisão** (árvore suja com tranches da frente principal) e concluído
+  nesta rodada com a árvore limpa (HEAD 8ce9860, antes de qualquer escrita): instalados docs/CRITICO-ref01-lote3.md
+  e docs/CRITICO-ref01-lote3-fechamento.md junto destas edições. Os arquivos guardados da rodada anterior
+  (pc_docs_lote3, base ~11:00) NÃO foram subidos como estavam — as tranches D-COR05 e COR-07/T2 avançaram os docs
+  desde então; as edições foram reaplicadas sobre os docs frescos, com âncoras conferidas, para não sobrescrever
+  o trabalho da frente principal.
+- **Conjunto final do Capríleo no arsenal:** 4 cardeais canônicos + `diag_tras_esq` + `diag_tras_dir`
+  (corretamente rotuladas) + `topo`. Pendências nomeadas que NÃO bloqueiam: C2 (S3, pernas espraiadas do topo —
+  modelar a articulação pelos perfis/costas, nunca pelo topo), C3 (S3, espirais dos chifres do topo mais fechadas,
+  "caracol" — modelar o número de voltas pelos perfis), C4 (S3, diagonais rasas, próximas dos perfis — futura
+  diagonal profunda ~45° opcional), C5 (S4, margens das bases 2,3–3,7%, abaixo dos 5% pedidos, nada cortado).
+- **Convenção de nomes registrada:** `diag_tras_esq/dir` = lado do animal visível (= lado da câmera) na vista traseira.
+- **Verificação nova do fechamento (escalada APR-01): consistência de rótulos no conjunto.** Varredura do Crítico de
+  fechamento em `~/workspace/oficina-audit/**/*.md` e em `app\docs\*.md` no PC: nenhum documento do projeto citava
+  os nomes das diagonais (só menções genéricas ao Capríleo); o relatório da rodada 1 é documento histórico datado
+  que descreve o mapeamento pré-troca e é complementado por esta entrada com o mapeamento novo. Zooms de evidência
+  em `zooms_lote3/` foram renomeados localmente acompanhando a troca (`esq_*` ↔ `dir_*`) — conferido pelo executor
+  com os próprios olhos nesta rodada (`esq_cabeca_chifres.png` mostra cabeça à esquerda e chifre próximo com
+  segundo anel fechado, conteúdo de vista traseira-esquerda, coerente com o nome). Os brutos
+  `media-generation-caprileo-diag-tras-*` mantêm os nomes originais do pedido de geração (artefatos intermediários,
+  fora do arsenal) — quem reconstituir o lote a partir deles precisa saber da troca.
+- **Autoauditoria adversarial do executor (APR-02, antes de submeter):** (1) recusou subir os arquivos guardados da
+  rodada anterior sem conferir o diff — o diff mostrou que eles sobrescreveriam D-COR05 e COR-07/T2; (2) re-mediu
+  os hashes no PC e no local nesta rodada em vez de copiar os da rodada anterior; (3) verificou a renomeação dos
+  zooms com os próprios olhos em vez de aceitar a afirmação do rascunho; (4) corrigiu a posição da linha de
+  escalada na tabela (após D-COR05, não após COR-05) para manter a cronologia.
+  (5) detectou colisão de numeração (L-30 já ocupado pelo cancelamento em chamada nativa da D-COR05 e L-33
+  pela APR-02) e renumerou a lição nova para L-34 antes de subir.
+- **Próximo sujeito da fila REF-01:** diagonais do Orc; depois, a classificação das 5 bestas novas de 31/10.
