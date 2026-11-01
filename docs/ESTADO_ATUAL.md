@@ -1,6 +1,6 @@
 # ESTADO ATUAL - Oficina 3D
 
-**Atualizado:** 01/11/2026, ~02:05 (Muse, CM-000009, diretrizes REF-01/APR-01/CORPO-01/REG-01 registradas; REF-01 em andamento)
+**Atualizado:** 01/11/2026, ~02:45 (Muse, CM-000009, REF-01 lote 1 FECHADO: Critico Visual rodada 2 APROVOU as 3 vistas v2 do Orc; Etapa COR segue prioridade 1)
 **Fase 1 PRONTA** (veredito do Critico senior, auditoria no 3 + adendo, 01/11 ~01:10). O app hoje e o ESQUELETO (CORPO-01): a prioridade agora e CONSTRUIR o corpo que falta - Etapa COR (cor/textura) primeiro, depois retrabalho local e as demais frentes do backlog; testes validam cada parte nova quando ela nasce.
 
 ## O que esta provado (com evidencia)
@@ -23,8 +23,8 @@ QUAL-01 (niveis de qualidade), QUAL-02 (forma nao e o app pronto: textura/pintur
 
 ## Proximos passos (atualizado em 01/11/2026, por REG-01)
 
-1. **Etapa COR (prioridade 1, CORPO-01):** construir a cor/textura - T1 projecao das vistas canonicas com bake no Blender (caminho padrao do estudo), T2 cor de vertice, T5 UV. Cada parte nova nasce com a sua bateria de validacao.
-2. **REF-01 (em andamento):** arsenal de referencias - lote 1 = Orc (T-pose + folha de angulos a partir da arte dourada), aguardando o Critico Visual (bateria em docs/APRENDIZADO_E_FLUXO.md). Fila: Besta Cristalina, Caprileo e o acervo do indice do Drive.
+1. **Etapa COR (prioridade 1, CORPO-01):** construir a cor/textura - T1 projecao das vistas canonicas com bake no Blender (caminho padrao do estudo), T2 cor de vertice, T5 UV. Cada parte nova nasce com a sua bateria de validacao. Levantamento pronto: Blender 5.2 instalado; infra headless reutilizavel em refino/_blender_refino.py e refino/_blender_previa.py (cameras ortograficas calibradas nos 8 angulos).
+2. **REF-01 lote 1 FECHADO (Orc):** Critico Visual rodada 2 APROVOU as 3 vistas v2 (orc_tpose_v2, orc_costas_v2, orc_tresquartos_v2) em testes/referencias/ - D1/D2/D3/D10 fechados, nenhum S1/S2 restante; ressalvas registradas: D5 (S3, pele da T-pose mais clara - a frente canonica e a autoridade de tom de pele) e D15 (S4, palmas para a frente - convencao a explicitar nos proximos pedidos). Folha de angulos abandonada em favor de vistas avulsas. Proximo: lote 2 = Besta Cristalina; fila: Caprileo e o acervo do indice do Drive.
 3. **Retrabalho local (QUAL-03):** caso inaugural = machado do Orc Lenario (laminas multiplas/fundidas; a referencia tem lamina unica) - rotas R1/R4 do estudo (secao 8).
 4. **APR-01 (criado):** docs/APRENDIZADO_E_FLUXO.md - fluxograma geral, protocolo de antecipacao, diario de licoes e regra de escalada do Critico; atualizar a cada tranche (REG-01).
 5. Guardian do notebook: adiado pelo Mestre (sem o notebook agora).
