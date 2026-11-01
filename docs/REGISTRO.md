@@ -237,3 +237,9 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **C3-2 (MEDIO, meu erro):** faltava a linha QUAL-01 em DECISOES.md (o ESTADO a citava como registrada). Linha incluida com a data real da ordem e a nota da formalizacao tardia. A lista de diretivas da entrada anterior fica corrigida por esta: QUAL-01..03, ANIM-01, MET-01..03, ARMAZ-01.
 - **C3-3 (BAIXO):** com o commit feito e a linha registrada, a afirmacao do item 6 no ESTADO volta a ter lastro; a conferencia curta e dirigida do Critico decide o carimbo.
 - Espelho do REGISTRO no Drive (G:) segue pendente: nesta noite a pasta G: nao esta lendo (0 bytes/ausente nas leituras); GitHub e a copia local sao o lastro ate o Drive voltar.
+
+## 01/11/2026, ~01:10 - Critico senior: **FASE 1 PRONTA**
+
+- A conferencia curta e dirigida (adendo da auditoria no 3) conferiu C3-1, C3-2 e C3-3 com evidencia propria no git: os itens 6, 7 e 8 da definicao de pronta passam. Somados aos itens 1-5 provados na auditoria no 3 (suite 218, Prova C integral 18/18 com determinismo nas 6 combinacoes, 5 motores, worker/web/MCP vivos, trabalhos arquivados), **a Fase 1 da Oficina3D esta PRONTA** - palavra do Critico, nao do executor.
+- Relatorios: docs/CRITICO-fase1-auditoria-3.md e docs/CRITICO-fase1-auditoria-3-adendo.md.
+- Isto NAO e o app pronto (QUAL-02): faltam textura/pintura e as demais frentes do backlog, e no fim de TUDO o portao MET-03 (tres Criticos senior, baterias diferentes).
