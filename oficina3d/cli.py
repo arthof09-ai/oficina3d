@@ -85,6 +85,9 @@ def cmd_enviar(a) -> int:
         opcoes["simetrizar"] = True
     if a.cor:
         opcoes["cor"] = True
+    if a.cor_modo:
+        opcoes["cor"] = True
+        opcoes["cor_modo"] = a.cor_modo
     if a.motor and a.motor not in motores.MOTORES:
         print(f"erro: motor desconhecido: {a.motor} (use: {', '.join(motores.MOTORES)})", file=sys.stderr)
         return 1
@@ -249,6 +252,9 @@ def montar_parser() -> argparse.ArgumentParser:
     e.add_argument("--simetrizar", action="store_true")
     e.add_argument("--cor", action="store_true",
                    help="pinta a malha apos o refino (UV xatlas + bake T1; etapa opcional COR-05)")
+    e.add_argument("--cor-modo", default=None, choices=config.MODOS_COR,
+                   help="modo da etapa cor (COR-07): projecao = bake T1 (padrao); "
+                        "vertice = cor de vertice T2 (rascunho); implica --cor")
     e.add_argument("--qualidade", default=None, choices=qualidades.NOMES,
                    help="perfil de qualidade QUAL-01 (bronze, prata, ouro, ouro-negro, lendario)")
     e.add_argument("--nome")

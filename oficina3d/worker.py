@@ -8,7 +8,7 @@ Etapas (docs/ARQUITETURA.md + plano v2 6.2):
     1. entrada  (0–10%)   oficina3d.entrada.preparar        (pulada no modo so-refinar)
     2. forma    (10–80%)  oficina3d.motores.gerar -> forma\\forma.glb   (gpu.lock dentro do gerar)
     3. refino   (80–95%)  oficina3d.refino.refinar -> saida\\
-    3b. cor     (95–98%)  oficina3d.cor.passo.rodar_passo_cor (so se opcoes["cor"])
+    3b. cor     (95–98%)  oficina3d.cor.passo por opcoes["cor_modo"] (so se opcoes["cor"])
     4. exportar (98–100%) saida\\relatorio.json = job + métricas de todas as etapas
     11. arquivar (gancho) oficina3d.arquivar.arquivar_job(job_dir, apagar_local=False): cópia conferida
         no Drive; quem apaga a cópia local depois é arquivar_pendentes() (política de 3 dias / nota).
@@ -226,8 +226,10 @@ def _motor_do_job(jb: dict, op: dict) -> str:
     return job.motor_padrao(jb.get("modo", "livre"), vistas)
 
 
-def _etapa_cor(job_dir: Path, glb_refinado: Path, imagens: list[dict], progresso=None) -> dict:
-    """Etapa `cor` (COR-05): UV xatlas + bake, via oficina3d.cor.passo.
+def _etapa_cor(job_dir: Path, glb_refinado: Path, imagens: list[dict], progresso=None,
+               modo: str = "projecao", glb_forma: Path | None = None) -> dict:
+    """Etapa `cor` (COR-05/COR-07): despacha por `cor_modo` - "projecao"
+    (UV xatlas + bake T1) ou "vertice" (cor de vertice T2, rascunho).
 
     O import e tardio para o worker nao pagar o custo do passo nos jobs
     sem cor (e para um passo ausente virar erro legivel da etapa, nao
@@ -237,6 +239,13 @@ def _etapa_cor(job_dir: Path, glb_refinado: Path, imagens: list[dict], progresso
         from oficina3d.cor import passo as passo_cor
     except ModuleNotFoundError as e:
         raise ErroEtapa("cor", f"modulo cor.passo ainda nao disponivel ({e})") from e
+    if modo == "vertice":
+        return passo_cor.rodar_passo_vertice(job_dir, glb_refinado, imagens,
+                                             pasta_cor=job_dir / "cor", progresso=progresso,
+                                             glb_forma=glb_forma)
+    if modo != "projecao":
+        raise ErroEtapa("cor", f"cor_modo desconhecido: {modo!r} "
+                               f"(use {', '.join(config.MODOS_COR)})")
     return passo_cor.rodar_passo_cor(job_dir, glb_refinado, imagens,
                                      pasta_cor=job_dir / "cor", progresso=progresso)
 
@@ -332,12 +341,16 @@ def processar_job(job_id: str) -> dict:
         if op.get("cor"):
             etapa_atual = "cor"
             _verificar_cancelado(jb)
-            _registrar(jb, "cor", "pintando a malha (UV xatlas + bake)",
+            _registrar(jb, "cor", "pintando a malha (cor de vertice, rascunho T2)"
+                       if op.get("cor_modo") == "vertice" else
+                       "pintando a malha (UV xatlas + bake)",
                        progresso=FAIXAS["cor"][0])
             t = time.time()
             try:
                 res_cor = _etapa_cor(job_dir, modelo_final, imagens_motor,
-                                     progresso=_Progresso(jb, job_dir, "cor"))
+                                     progresso=_Progresso(jb, job_dir, "cor"),
+                                     modo=op.get("cor_modo") or "projecao",
+                                     glb_forma=glb_cru)
             except ValueError as e:
                 raise ErroEtapa("cor", str(e)) from e
             tempos["cor"] = round(time.time() - t, 1)
@@ -363,8 +376,15 @@ def processar_job(job_id: str) -> dict:
                 "sha256": _sha256(sem_cor)}
             modelo_final = job_dir / "saida" / "modelo.glb"
             jb["cor_previas"] = res_cor["arquivos"]["previas"]
-            _registrar(jb, "cor", f"cor pronta: textura {res_cor['arquivos']['textura']}",
-                       progresso=FAIXAS["cor"][1])
+            if res_cor.get("modo_cor") == "vertice":
+                jb["avisos"].append("cor: modo vertice (T2) = rascunho/rede de "
+                                    "seguranca; nao e a cor final do modelo")
+                _registrar(jb, "cor", "cor pronta (vertice, rascunho): COLOR_0 em "
+                           + res_cor["arquivos"]["modelo_cor"],
+                           progresso=FAIXAS["cor"][1])
+            else:
+                _registrar(jb, "cor", f"cor pronta: textura {res_cor['arquivos']['textura']}",
+                           progresso=FAIXAS["cor"][1])
 
         # 4. exportar --------------------------------------------------------
         etapa_atual = "exportar"

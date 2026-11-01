@@ -223,6 +223,10 @@ VISTAS_MV_HUNYUAN = {"frente": "front", "costas": "back", "esquerda": "left", "d
 
 MODOS = ("livre", "corpo-base", "multivista", "so-refinar")
 
+# Modos da etapa cor (opcoes.cor_modo, T2/COR-07): projecao = bake T1
+# (padrao); vertice = cor de vertice, rascunho/rede de seguranca.
+MODOS_COR = ("projecao", "vertice")
+
 # Motores aceitos em opcoes.motor (plano 6.3; o hunyuan-full ficou de fora na v2).
 MOTORES = ("hunyuan-mini", "hunyuan-mini-turbo", "hunyuan-mv", "hunyuan-mv-turbo", "triposr")
 MOTORES_MULTIVISTA = ("hunyuan-mv", "hunyuan-mv-turbo")
@@ -235,6 +239,7 @@ OPCOES_PADRAO = {
     "motor": None,           # None = automático: hunyuan-mv-turbo com 2+ vistas, hunyuan-mini-turbo com 1
     "qualidade": None,        # None = sem perfil; slugs em oficina3d/qualidades.py (QUAL-01)
     "cor": False,          # False = etapa cor desligada (COR-05; True = UV xatlas + bake pos-refino)
+    "cor_modo": "projecao",  # modo da etapa cor (COR-07): ver MODOS_COR
     "passos": None,          # None = padrão do motor
     "octree": 256,
     "seed": 1234,

@@ -504,6 +504,10 @@ def _validar_opcao(k: str, v):
         if not isinstance(v, bool):
             raise ValueError(f"opção {k} precisa ser true/false, recebi {v!r}")
         return v
+    if k == "cor_modo":
+        if v not in config.MODOS_COR:
+            raise ValueError(f"cor_modo desconhecido: {v!r} (use {', '.join(config.MODOS_COR)})")
+        return v
     if k == "qualidade":
         if v not in qualidades.PERFIS:
             raise ValueError(f"qualidade desconhecida: {v!r} (use {', '.join(qualidades.PERFIS)})")

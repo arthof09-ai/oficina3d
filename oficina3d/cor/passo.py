@@ -171,3 +171,107 @@ def rodar_passo_cor(job_dir, glb_refinado, imagens, pasta_cor=None, progresso=No
                          "modelo_cor": _rel(job_dir, modelo_cor),
                          "textura": _rel(job_dir, textura),
                          "previas": previas}}
+
+
+TIMEOUT_VERTICE_S = 900
+PREVIAS_VERTICE = ("frente", "direita", "esquerda", "costas")
+
+
+def _forma_tem_color0(caminho) -> bool:
+    """True se algum primitivo do GLB da forma tem COLOR_0 (parse do JSON).
+
+    Qualquer erro de leitura = False: a fonte forma e oportunista - sem
+    ela, o passo segue com vistas + propagacao (e o resultado registra
+    ``forma.color_0 = False``).
+    """
+    import json
+    import struct
+    try:
+        with open(caminho, "rb") as f:
+            cab = f.read(12)
+            if len(cab) < 12 or struct.unpack("<I", cab[:4])[0] != 0x46546C67:
+                return False
+            tam, tipo = struct.unpack("<II", f.read(8))
+            if tipo != 0x4E4F534A:
+                return False
+            g = json.loads(f.read(tam).decode("utf-8"))
+        return any("COLOR_0" in (prim.get("attributes") or {})
+                   for malha in g.get("meshes", [])
+                   for prim in malha.get("primitives", []))
+    except (OSError, ValueError, KeyError, struct.error):
+        return False
+
+
+def rodar_passo_vertice(job_dir, glb_refinado, imagens, pasta_cor=None, progresso=None,
+                        glb_forma=None):
+    """Etapa `cor` em modo vertice (T2, COR-07): COLOR_0, sem textura.
+
+    Regras (desenho em docs/DECISOES.md, COR-07):
+
+    - ROTULO: o resultado declara ``modo_cor = "vertice"`` e
+      ``rotulo = "rascunho"`` - cor de vertice e o nivel Bronze/rede de
+      seguranca da Etapa COR, nunca a cor final (a bateria do T2 reprova
+      relatorio sem a declaracao do modo).
+    - Sem UV xatlas e sem bake: a amostragem e por vertice
+      (``cor/_blender_vertice.py``), com as mesmas vistas canonicas da
+      projecao; vistas nao-canonicas sao ignoradas e registradas, como
+      no passo de projecao.
+    - Sem nenhuma vista canonica, o passo FALHA - EXCETO quando a forma
+      tem COLOR_0 (ex.: TripoSR): ai a rede de seguranca prossegue so
+      com a cor da forma, com ``vistas_ausentes`` = as 4 no resultado.
+      Arquivo de vista declarado e ausente continua erro (dado quebrado,
+      nao falta de insumo).
+    - ``glb_forma`` sem COLOR_0 (motores Hunyuan) e simplesmente nao
+      usado como fonte; o passo nao falha por isso.
+    """
+    from oficina3d.cor import rodar_vertice  # noqa: PLC0415
+
+    job_dir = Path(job_dir)
+    glb_refinado = Path(glb_refinado)
+    if not glb_refinado.is_file():
+        raise ValueError(f"etapa cor: GLB refinado nao encontrado: {glb_refinado}")
+    pasta_cor = Path(pasta_cor) if pasta_cor is not None else job_dir / "cor"
+    pasta_cor.mkdir(parents=True, exist_ok=True)
+
+    forma_ok = bool(glb_forma) and Path(glb_forma).is_file() and _forma_tem_color0(glb_forma)
+    ignoradas: list[str] = []
+    try:
+        vistas, ausentes, ignoradas = selecionar_vistas(imagens, job_dir)
+    except ValueError as e:
+        if not forma_ok or not str(e).startswith("etapa cor sem nenhuma vista canonica"):
+            raise
+        vistas, ausentes = [], list(VISTAS_COR)
+
+    def avisar(pct, msg):
+        if progresso is not None:
+            progresso(pct, msg)
+
+    avisar(5, "cor (vertice): amostrando vistas e forma nos vertices")
+    pasta_previas = pasta_cor / "previas"
+    modelo_cor = pasta_cor / "modelo_cor.glb"
+    pedido = {"modo": "glb", "glb": str(glb_refinado),
+              "glb_forma": str(glb_forma) if forma_ok else None,
+              "vistas": vistas,
+              "saida_glb": str(modelo_cor),
+              "pasta_previas": str(pasta_previas),
+              "previas": list(PREVIAS_VERTICE)}
+    res = rodar_vertice(pedido, pasta_cor, progresso=progresso,
+                        timeout_s=TIMEOUT_VERTICE_S)
+    if not modelo_cor.is_file():
+        raise RuntimeError("etapa cor (vertice): Blender nao entregou modelo_cor.glb")
+    avisar(100, "cor (vertice): pronto")
+
+    previas = [_rel(job_dir, p) for p in (res.get("previas") or [])]
+    return {"modo_cor": "vertice",
+            "rotulo": "rascunho",
+            "rotulo_motivo": "cor de vertice (T2): nivel Bronze/rede de seguranca; "
+                             "qualidade limitada pela densidade de vertices",
+            "vistas_usadas": [v["vista"] for v in vistas],
+            "vistas_ausentes": ausentes,
+            "vistas_ignoradas": ignoradas,
+            "forma": {"glb": _rel(job_dir, glb_forma) if glb_forma else None,
+                      "color_0": forma_ok},
+            "cobertura_vertices": res.get("cobertura"),
+            "resultado_vertice": res,
+            "arquivos": {"modelo_cor": _rel(job_dir, modelo_cor),
+                         "previas": previas}}
