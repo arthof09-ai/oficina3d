@@ -74,6 +74,8 @@ Antes de convocar o Critico, o executor confere e resolve CADA item. A ideia (AP
 - [ ] Lateralizacao do PAR medida, nao so de cada imagem isolada: um par dir/esq so e aceito se cumprir OS TRES criterios de N2 (IoU entre as silhuetas < 0,85; assimetria da faixa inferior INVERTIDA entre elas, > 1,4 de um lado e < 0,7 do outro; pe em perfil em lados opostos). Cada traseira isolada passava nas ancoras de costas; o defeito era do par. [licao L-38]
 - [ ] Pureza do 3/4 traseiro (N1) conferida antes de submeter: rosto SO em perfil parcial, capa dominando o dorso abaixo da cintura, pes apontando para longe do observador. [licao L-38]
 - [ ] Tom medido por amostragem anatomica (N3), nao a olho: mesma caixa anatomica na fonte e no lote, filtro oliva, mediana RGB + saturacao, com o saiote vermelho como controle interno (delta <= 3). [licao L-38]
+- [ ] Caminho de salvamento de textura no Blender: `view_transform` fixo em `Standard` antes de `save_render`; nunca julgar cor pelo `textura.png` salvo sob o default AgX (branco 255 vira 197) — amostrar o GLB ate o fix. [licao L-39]
+- [ ] IoU medido a 256 px e invariante ao tamanho da textura: nunca usa-lo para provar efeito de resolucao; e campo de metrica com nome que nao corresponde ao conteudo (dilatacao total sob o nome 'restrita') e defeito, nao detalhe. [licao L-40]
 
 ---
 
@@ -328,6 +330,16 @@ flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
 - **Custo:** um lote parcial reprovado (metade do que o par prometia) + uma rodada de retrabalho com especificacao numerica; e um arquivo reprovado que permanece no arsenal ate a substituicao, com risco de uso por engano se o registro falhasse.
 - **Regra:** (a) pedir diagonais opostas nunca se valida imagem por imagem — a lateralizacao do PAR tem que ser medida (N2: IoU < 0,85, assimetria da faixa inferior invertida > 1,4 / < 0,7, pe em perfil em lados opostos, os tres); (b) pedido de diagonal frontal carrega instrucao anti-espelho explicita (lado de cada acessorio em coordenadas de quem olha + "NAO espelhar"); (c) retrabalho de lado NUNCA e espelho no editor (falso esquerdo com textura invertida) — gera-se de novo do lado oposto; (d) arquivo reprovado substituido, nunca mantido ao lado da refeita. (Checklist pre-Critico, itens novos; verificacoes N1/N2/N3 do Critico.)
 
+### L-39 - Save do Blender sob AgX falsifica o textura.png: fixar Standard antes de salvar (01/11/2026)
+- **Caso:** na COR-08, o Critico mediu a cadeia completa: a arte e lida sem decodificacao sRGB, as medias sao tiradas em espaco sRGB, e o `save_render` sob o default AgX mapeia branco 255 -> 197. O `textura.png` entregue era AgX(textura do GLB); o GLB, fiel aos bytes da arte. Quem seguisse a D10 no arquivo media cores AgX, nao as entregues.
+- **Custo:** uma pendencia S2 pre-existente (v1) que atingia em cheio a afirmacao de "fidelidade" da tranche; nenhuma prova anterior tinha sondado o caminho de salvamento com valores conhecidos.
+- **Regra:** todo caminho que salva textura fixa `view_transform = "Standard"` antes do `save_render` e prova com valores conhecidos (Standard = identidade byte a byte); "Raw" nao e correcao (curva de potencia 2.2). (Checklist pre-Critico: item do caminho de salvamento.)
+
+### L-40 - IoU@256 nao prova efeito de resolucao; nome de campo que mente e defeito (01/11/2026)
+- **Caso:** na COR-08, o argumento "IoUs identicos aos da baseline @2048" era vazio: o IoU@256 e invariante ao tamanho da textura por construcao. A evidencia valida era a cobertura direta (19,44% -> 48,12%). No mesmo veredito: o campo `texels_por_dilatacao_restrita` carregava o total irrestrito no modo `uv`.
+- **Custo:** nenhum bloqueio ao mecanismo, mas uma citacao sem lastro (IoUs da ancora) e um campo com nome falso teriam virado "prova" nas proximas tranches.
+- **Regra:** antes de usar uma metrica como argumento, perguntar "o que faria este numero mudar?" — se a variavel testada nao o move, o argumento e vazio; e campo de relatorio com nome que nao corresponde ao conteudo se renomeia, nao se documenta em volta. (Checklist pre-Critico: item do IoU invariante.)
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:
@@ -352,6 +364,7 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Fechamento REF-01 lote 3 (Caprileo) | Verificacao de rotulo pos-renomeacao (SHA por nome nos dois lados + checklist C1 nos arquivos renomeados) + consistencia de rotulos no conjunto (busca por referencias textuais ao rotulo pre-troca) | C1 FECHADO por medida (3/3 itens nos dois arquivos, hashes PC = local); lote 3 FECHADO; pendencias C2/C3/C4 (S3) e C5 (S4) nomeadas; zooms renomeados para acompanhar a troca |
 | 01/11/2026 | Bateria REF-01 lote 4 parcial (Orc, traseiras) | Diversidade angular MEDIDA do par (N2: IoU + assimetria invertida + pe em perfil oposto) + pureza do 3/4 traseiro (N1) + tom medido por amostragem anatomica (N3) | SYM-4.1 S2 (tras_esq = direita duplicada, IoU 0,915); lote parcial REPROVADO; tras_dir APROVADA; frontais reprovadas antes pelo executor (espelho) |
 | 01/11/2026 | Bateria D-T2 (fechamento das pendencias do T2) | Reproducao propria da sabotagem + sabotagem em Y e Z + caso misto vistas + forma recusada + arestas do verificador (3o primitivo sem cor, sem meshes) + D-T2-2 fora do mock (passo de projecao real) + suite conferida arquivo a arquivo | X2/Y2/Y0,5/Z2 recusadas; misto conclui pelas vistas com forma 0%; S4-1/S4-2 de robustez; D-T2-1 FECHADA |
+| 01/11/2026 | Bateria COR-08 (ataque a D1) | Auditoria sRGB completa do caminho de salvamento (sondas Blender com valores conhecidos) + auditoria de proveniencia v2 com parse proprio do GLB + casos-limite adversariais proprios do codigo novo (14 checagens) + confrontacao da autoauditoria do executor ponto a ponto | S2-COR08-1 (AgX falsifica o textura.png; GLB fiel); S3-COR08-2/3/4; S4-COR08-5/6; D1 confirmada ABERTA |
 
 ---
 

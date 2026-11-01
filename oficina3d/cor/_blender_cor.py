@@ -9,6 +9,8 @@ pedido.json:
     vistas: [{"vista", "arquivo"}]  (modo "glb"; ex.: frente/costas/esquerda/direita)
     saida_glb, saida_textura, resultado, pasta_previas,
     tamanho (px da textura, padrao 1024), dilatacao (passes max, padrao 256),
+    alinhamento: "otimizado" (padrao, COR-08/A1) | "bbox" (v1, controle),
+    preenchimento: "3d" (padrao, COR-08/A3) | "uv" (v1, controle),
     previas: ["frente", "direita", ...] (render Workbench com textura)
 
 Modo "sintetico": cubo com Smart UV + 4 vistas de cor solida (frente=vermelho,
@@ -46,6 +48,7 @@ if APP not in sys.path:
     sys.path.insert(0, APP)
 
 from oficina3d.cor import projecao as P  # noqa: E402
+from oficina3d.cor import preenchimento as PF  # noqa: E402
 
 ANGULOS = P.ANGULOS
 CORES_SINTETICO = {"frente": (1.0, 0.0, 0.0), "costas": (0.0, 0.0, 1.0),
@@ -182,13 +185,15 @@ def ler_imagem(caminho, limiar_alfa=10.0):
         bpy.data.images.remove(img)
 
 
-def iou_malha_vs_arte(verts, faces, centro, vista, ortho_scale, mascara_arte):
-    """IoU@256 entre a silhueta da malha e a da arte, APOS o alinhamento v1.
+def _mascaras_256(verts, faces, centro, vista, ortho_scale, mascara_arte):
+    """(masc_malha, masc_arte, out_w, out_h) na grade de trabalho 256.
 
-    A malha e projetada, sua mascara e deformada pela mesma afinidade
-    (caixa-da-mascara-da-arte sobre caixa-da-mascara-da-malha) usada no bake,
-    e o IoU e medido contra a mascara da arte reduzida para 256 px. Mede o
-    acordo de silhueta que o bake realmente enxerga, nao o enquadramento cru.
+    A malha e projetada (com centro, como o bake apos a A0) e rasterizada
+    a 256 px; a arte e reduzida pela mesma amostragem por indices do v1
+    (linspace), para o IoU otimizado ser comparavel ao IoU v1 numero a
+    numero. A grade 256 e a do estudo (COR-08/A1); o transform otimizado
+    nela e reescalado para a resolucao cheia no bake (erro < 1 px da
+    grade 256), e o IoU reportado e o da grade 256.
     """
     hi, wi = mascara_arte.shape
     out_w = 256
@@ -199,18 +204,50 @@ def iou_malha_vs_arte(verts, faces, centro, vista, ortho_scale, mascara_arte):
     iy = np.linspace(0, hi - 1, out_h).astype(int)
     ix = np.linspace(0, wi - 1, out_w).astype(int)
     masc_arte = mascara_arte[np.ix_(iy, ix)]
+    return masc_malha, masc_arte, out_w, out_h
+
+
+def iou_malha_vs_arte(verts, faces, centro, vista, ortho_scale, mascara_arte):
+    """IoU@256 entre a silhueta da malha e a da arte, APOS o alinhamento v1.
+
+    A malha e projetada, sua mascara e deformada pela mesma afinidade
+    (caixa-da-mascara-da-arte sobre caixa-da-mascara-da-malha) usada no bake
+    v1, e o IoU e medido contra a mascara da arte reduzida para 256 px. Mede
+    o acordo de silhueta que o bake v1 enxerga, nao o enquadramento cru.
+    Refatorada na A1 para o helper compartilhado + ``P.aplicar_alinhamento``
+    (o mapeamento inverso e o mesmo de antes, byte a byte no resultado).
+    """
+    masc_malha, masc_arte, _w, _h = _mascaras_256(
+        verts, faces, centro, vista, ortho_scale, mascara_arte)
     bbox_m = P.bbox_mascara(masc_malha)
     bbox_a = P.bbox_mascara(masc_arte)
     if bbox_m is None or bbox_a is None:
         return 0.0
     ax, bx, ay, by = P.alinhamento_silhueta(bbox_a, bbox_m)
-    xs, ys = np.meshgrid(np.arange(out_w), np.arange(out_h))
-    mx = ((xs - bx) / ax).astype(int)
-    my = ((ys - by) / ay).astype(int)
-    dentro = (mx >= 0) & (mx < out_w) & (my >= 0) & (my < out_h)
-    alinhada = np.zeros((out_h, out_w), dtype=bool)
-    alinhada[dentro] = masc_malha[my[dentro], mx[dentro]]
-    return P.iou(alinhada, masc_arte)
+    return P.iou(P.aplicar_alinhamento(masc_malha, ax, bx, ay, by), masc_arte)
+
+
+def alinhamento_otimizado_vista(verts, faces, centro, vista, ortho_scale, mascara_arte):
+    """((ax, bx, ay, by) em pixels da imagem cheia, info) ou (None, info).
+
+    COR-08/A1: parte do alinhamento por caixas ROBUSTAS (percentis) nas
+    mascaras 256 e otimiza o IoU em grade deterministica; o transform e
+    reescalado para a resolucao cheia (ax/ay inalterados, bx/by vezes
+    wi/256 e hi/out_h). Mascara vazia (malha ou arte) -> (None, info com
+    o motivo): o chamador cai para o bbox, nunca falha o bake por isso.
+    """
+    hi, wi = mascara_arte.shape
+    masc_malha, masc_arte, out_w, out_h = _mascaras_256(
+        verts, faces, centro, vista, ortho_scale, mascara_arte)
+    bbox_m = P.bbox_robusta_mascara(masc_malha)
+    bbox_a = P.bbox_robusta_mascara(masc_arte)
+    if bbox_m is None or bbox_a is None:
+        return None, {"motivo": "mascara vazia (malha ou arte)"}
+    inicial = P.alinhamento_silhueta(bbox_a, bbox_m)
+    ax, bx, ay, by, info = P.otimizar_alinhamento(masc_malha, masc_arte, inicial)
+    fx = wi / out_w
+    fy = hi / out_h
+    return (ax, bx * fx, ay, by * fy), info
 
 
 def verificar_glb_texturizado(caminho):
@@ -292,6 +329,14 @@ def main():
     t0 = time.perf_counter()
     try:
         tamanho = int(pedido.get("tamanho", 1024))
+        modo_alinhamento = pedido.get("alinhamento", "otimizado")
+        if modo_alinhamento not in ("bbox", "otimizado"):
+            raise ValueError(f"alinhamento desconhecido no pedido: {modo_alinhamento!r}")
+        res["alinhamento"] = modo_alinhamento
+        modo_preenchimento = pedido.get("preenchimento", "3d")
+        if modo_preenchimento not in ("3d", "uv"):
+            raise ValueError(f"preenchimento desconhecido no pedido: {modo_preenchimento!r}")
+        res["preenchimento"] = modo_preenchimento
         # Dilatacao v1 = "cor vizinha mais proxima": passes bastantes para
         # preencher o interior das zonas cegas, nao so as costuras. Cada passe
         # e 1 px (numpy, barato); 256 cobre regioes cegas de ate ~256 px de
@@ -363,13 +408,35 @@ def main():
                     visivel[fi] = True
                 elif hit[3] is not None and hit[3] >= dist_cam - diag * 1e-3:
                     visivel[fi] = True
-            vistas_prontas.append({"vista": vista, "imagem": rgb, "mascara": masc,
-                                   "visivel": visivel, "peso_face": facing_face})
+            entrada_vista = {"vista": vista, "imagem": rgb, "mascara": masc,
+                             "visivel": visivel, "peso_face": facing_face}
             iou_v = iou_malha_vs_arte(verts, faces, np.array(centro), vista, ortho, masc)
+            bloco_alinh = {"modo": "bbox"}
+            iou_bake = float(iou_v)
+            if modo_alinhamento == "otimizado":
+                transf, info_ot = alinhamento_otimizado_vista(
+                    verts, faces, np.array(centro), vista, ortho, masc)
+                if transf is not None:
+                    entrada_vista["alinhamento"] = transf
+                    bloco_alinh = {"modo": "otimizado",
+                                   "iou_inicial_256": info_ot["iou_inicial"],
+                                   "iou_otimizado_256": info_ot["iou_final"],
+                                   "escala_x": info_ot["escala_x"],
+                                   "escala_y": info_ot["escala_y"],
+                                   "deslocamento_px_256": info_ot["deslocamento_px"],
+                                   "candidatos_avaliados": info_ot["candidatos_avaliados"],
+                                   "estagio_vencedor": info_ot["modo"]}
+                    iou_bake = float(info_ot["iou_final"])
+                else:
+                    bloco_alinh = {"modo": "bbox (mascara vazia na otimizacao)",
+                                   "motivo": info_ot.get("motivo")}
+            vistas_prontas.append(entrada_vista)
             por_vista[vista] = {"origem_mascara": origem,
                                 "faces_visiveis": int(visivel.sum()),
                                 "faces_totais": int(len(faces)),
-                                "iou_silhueta_256": round(float(iou_v), 4)}
+                                "iou_silhueta_256": round(float(iou_v), 4),
+                                "iou_bake_256": round(float(iou_bake), 4),
+                                "alinhamento": bloco_alinh}
             progresso(45, f"Blender COR: vista {vista} pronta ({int(visivel.sum())} faces visiveis)")
 
         progresso(55, "Blender COR: rasterizando a textura por projecao")
@@ -383,8 +450,40 @@ def main():
         area_uv_texels = int(masc_uv.sum())
         pintados_uv = int((pintado & masc_uv).sum())
         cegos_antes = area_uv_texels - pintados_uv
-        progresso(75, "Blender COR: dilatando costuras e zonas cegas")
-        tex, pintado_final, n_dilat = P.dilatar(tex, pintado, dilatacao)
+        if modo_preenchimento == "3d":
+            # COR-08/A3: zonas cegas herdam a cor da face vizinha NO CORPO
+            # (difusao por adjacencia soldada), nao do texel vizinho na UV.
+            # A dilatacao UV sobrevive so como ultimo recurso anti-halo,
+            # restrita a faixa de 8 px em torno da UV (o gutter da D-T5-1)
+            # e nunca sobre faces de componente sem fonte (ficam sem_cor).
+            progresso(75, "Blender COR: preenchimento 3D das zonas cegas (A3)")
+            texel_face = PF.mapa_texel_face(faces_uv, tamanho)
+            cores_face, tem_cor, _cont = PF.cores_diretas_por_face(
+                tex, pintado, texel_face, len(faces))
+            adj = PF.adjacencia_faces(faces, verts)
+            cores_final, anel, alcancavel = PF.difundir(adj, cores_face, tem_cor)
+            tex, pintado, masc_3d = PF.aplicar_preenchimento(
+                tex, pintado, texel_face, cores_final, alcancavel)
+            dominio = PF.dominio_dilatacao_restrita(
+                masc_uv, texel_face, alcancavel, passes=8)
+            progresso(78, "Blender COR: dilatacao restrita anti-halo (A3)")
+            tex, pintado_final, n_dilat = P.dilatar(tex, pintado, dilatacao,
+                                                    dominio=dominio)
+            n_3d = int(masc_3d.sum())
+            preenchidas = (anel > 0) & alcancavel
+            info_preench = {
+                "modo": "3d",
+                "faces_com_fonte_direta": int(tem_cor.sum()),
+                "faces_preenchidas_3d": int(preenchidas.sum()),
+                "faces_sem_fonte_alcancavel": int((~alcancavel).sum()),
+                "anel_medio": round(float(anel[preenchidas].mean()), 2) if preenchidas.any() else 0.0,
+                "anel_max": int(anel[preenchidas].max()) if preenchidas.any() else 0,
+            }
+        else:
+            progresso(75, "Blender COR: dilatando costuras e zonas cegas (v1)")
+            tex, pintado_final, n_dilat = P.dilatar(tex, pintado, dilatacao)
+            n_3d = 0
+            info_preench = {"modo": "uv"}
         # Texels UV ainda sem cor apos a dilatacao (ilhas isoladas alem do alcance).
         sem_cor = int((masc_uv & ~pintado_final).sum())
         for vista in por_vista:
@@ -397,6 +496,9 @@ def main():
             "texels_cegos_antes_dilatacao": cegos_antes,
             "cegos_pct": round(100.0 * cegos_antes / max(1, area_uv_texels), 2),
             "texels_por_dilatacao": int(n_dilat),
+            "texels_preenchimento_3d": n_3d,
+            "texels_por_dilatacao_restrita": int(n_dilat),
+            "preenchimento_3d": info_preench,
             "texels_uv_sem_cor_apos_dilatacao": sem_cor,
         }
 
