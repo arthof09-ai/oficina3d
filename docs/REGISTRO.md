@@ -803,3 +803,52 @@ Relatorio integral: docs/CRITICO-dt2-relatorio.md (SHA-256 05527A062D7076E72485F
 
 **Pendencias apos o fechamento:** D1 ABERTA (proximo passo: COR-08, frente de fidelidade da cor); S2-3 (troca esq/dir da Besta) ABERTA e bloqueando a textura base; exposicao web/MCP de `cor`/`cor_modo` pendente desde a COR-05; T7 (UltraTex) segue como spike a frente do T3.
 - **Espelho no Drive (fechamento D-T2):** ESTADO_ATUAL, REGISTRO, DECISOES, APRENDIZADO_E_FLUXO e CRITICO-dt2-relatorio atualizados em `Oficina3D_v2\REGISTRO` via G: e conferidos por SHA-256 na volta (Drive = PC; 5/5). A copia espelhada do REGISTRO difere desta versao commitada so por esta linha de espelho.
+
+## 2026-11-01 — REF-01 lote 4 parcial (diagonais traseiras do Orc): tras_dir APROVADA, tras_esq REPROVADA
+
+- **Geração (rodada anterior, ~14:0x):** 4 diagonais do Orc a partir das fontes reais (frente/costas canônicas +
+  `orc_tresquartos_v2.png` aprovada no lote 1), dentro do teto de 4 imagens por rodada. Convenções das lições:
+  tom verde-oliva da frente canônica (D5), palmas para baixo (D15), zero bolsinhas (D9/D11), sem machado
+  (como a tresquartos aprovada), corpo inteiro sem corte.
+- **AUTOAUDITORIA adversarial do executor (APR-02, antes do Crítico):** o par FRONTAL foi reprovado pelo próprio
+  executor — SYM S2, espelhamento (cabeça-de-lobo à esquerda de quem olha numa vista frontal, impossível sem
+  espelho) — e NÃO foi instalado no PC nem submetido ao Crítico. SHAs dos reprovados, guardados só como registro
+  do erro: frente-dir 3936A192…, frente-esq 6214C6B1…. Arquivo da autoauditoria:
+  `oficina-audit/autoauditoria-orc-diag-tras.md`. A tresquartos_v2 aprovada já cobre a diagonal frontal DIREITA
+  (ombreira proeminente à esquerda de quem olha); falta, portanto, só a diagonal frontal ESQUERDA.
+- **Veredito do Crítico Visual sênior (docs/CRITICO-ref01-lote4-tras.md), só o par traseiro: tras_dir APROVADA;
+  tras_esq REPROVADA; LOTE 4 parcial (traseiras) REPROVADO.** Sem defeitos S1.
+- **Defeito único com força de reprovação — SYM-4.1 S2: a "esq" é a diagonal direita duplicada.** Provas medidas
+  pelo Crítico: rosto em perfil à direita nas duas; pé em perfil à direita nas duas; assimetria da faixa inferior
+  no mesmo sentido (tras_dir 1,78; tras_esq 1,75; costas retas 1,02 — uma esquerda genuína exigiria ~0,56); IoU
+  entre as silhuetas 0,915, maior que a semelhança de cada uma com as costas retas (0,765/0,779). Diversidade
+  lateral zero, não apenas baixa. Cada traseira isolada passava nas âncoras de costas — o defeito só aparece no PAR.
+- **DEF-4.2 S4 (não bloqueia):** tom de pele levemente mais escuro/saturado que `costas_v2` (saturação +0,05,
+  direção oposta ao D5); saiote vermelho conforme (Δ ≤ 3). Suspeitas da autoauditoria resolvidas: pés/mãos e alça
+  dorsal fechados a favor das imagens; alça descer para o mesmo lado na frente e nas costas é convenção já
+  consagrada pela autoridade, não defeito deste lote.
+- **Arquivos:** `orc_diag_tras_dir.png` (SHA ACB515D2…B7372250B, 2.277.440 B) APROVADA — entra no arsenal do Orc
+  como diagonal traseira direita. `orc_diag_tras_esq.png` (SHA 6D0B0B35…37A6CA26413, 2.128.241 B) REPROVADA e
+  PERMANECE por enquanto em `testes/referencias/` no PC por causa do bloqueio anti-colisão desta rodada anterior —
+  está REPROVADA e NÃO deve ser usada como referência; na próxima rodada ela deve ser SUBSTITUÍDA pela refeita
+  (nunca mantida ao lado dela, conforme o relatório do Crítico).
+- **Registro adiado uma vez pela regra anti-colisão** (árvore suja com a tranche da frente principal, HEAD 4b8384e)
+  e concluído nesta rodada com a árvore limpa (HEAD c75cdd3, antes de qualquer escrita): instalado
+  docs/CRITICO-ref01-lote4-tras.md junto destas edições. A numeração da lição nova foi confirmada nesta rodada
+  (L-38: L-33 é a nota APR-02 e L-34 a L-37 já estavam ocupadas; o rascunho anterior dizia "L-29, a confirmar").
+- **Retrabalho especificado pelo Crítico (tras_esq — próxima rodada):** NÃO espelhar `tras_dir` no editor (falso
+  esquerdo com textura do dorso invertida). Gerar de novo do lado oposto: câmera na retaguarda ESQUERDA (lado da
+  cabeça-de-lobo); rosto em perfil parcial apontando para a ESQUERDA; cabeça-de-lobo proeminente em primeiro
+  plano à esquerda; ombreira recuada à direita; pé viewer-ESQUERDO em perfil apontando para a esquerda;
+  pé viewer-direito traseiro; alça com fivela central descendo para o quadril viewer-ESQUERDO; caveira grande do
+  cinto à ESQUERDA; capa proeminente à esquerda abaixo da cintura até meia-canela; zero bolsinhas, zero machado,
+  corpo inteiro, fundo cinza-claro, tom oliva de `costas_v2`. Critério de aceite numérico do novo par: IoU com
+  `tras_dir` < 0,85 E razão dir/esq da faixa inferior < 0,7 E pé em perfil no lado esquerdo — os três. A refeita
+  volta ao Crítico antes de ser instalada como definitiva.
+- **Retrabalho especificado pelo executor (frontal esquerda — próxima rodada):** pedido com instrução anti-espelho
+  explícita ("a cabeça-de-lobo, que fica no ombro ESQUERDO dele, tem que aparecer à DIREITA da imagem; a ombreira
+  de espinhos, no ombro DIREITO dele, à ESQUERDA da imagem; NÃO espelhar"). Orçamento da próxima rodada:
+  2 imagens (tras_esq refeita + frontal esquerda), dentro do teto de 4.
+- **Verificações novas do Crítico (escalada APR-01, seção 6):** N1 pureza do 3/4 traseiro; N2 diversidade angular
+  MEDIDA do par (os três critérios obrigatórios); N3 tom medido por amostragem anatômica com filtro oliva.
+  Registradas no checklist pré-Crítico e na lição L-38.
