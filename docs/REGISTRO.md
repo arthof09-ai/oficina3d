@@ -282,3 +282,11 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
   - Costas avulsa: coerente no conjunto, mas a peca de lobo saiu no ombro ESPELHADO em relacao a fonte (SYM); bolsinhas no cinto sao completacao nao pedida (EXT leve).
   - Estilo gerado mais liso que a textura da arte-fonte; cores e desenho fieis. NENHUMA imagem foi aprovada pelo executor: sao insumo de teste aguardando o Critico Visual e a palavra do Mestre.
 - **Proximo passo (plano escrito):** Critico Visual do lote 1 (bateria na secao 6 do APRENDIZADO_E_FLUXO); em paralelo de prioridade, a Etapa COR (CORPO-01); lote 2 da REF-01 = Besta Cristalina.
+
+## 01/11/2026 - Critico Visual senior (independente): REF-01 lote 1 (Orc) - LOTE REPROVADO no criterio de aceite
+
+- **Relatorio completo:** docs/CRITICO-ref01-lote1.md (bateria da secao 6 do APRENDIZADO_E_FLUXO item a item, com evidencia visual e medicoes; tabela de defeitos D1-D14 na taxonomia do protocolo).
+- **Vereditos por imagem:** orc_tpose.png REPROVADA (D1 MIS S2 - massa de pele do ombro direito perdida); orc_angulos.png REPROVADA (D7 MIS S2 - folha sem a vista de costas); orc_costas_ref.png REPROVADA (D10 SYM S2 - personagem INTEIRO espelhado: lobo E ombreira de espinhos trocados de lado).
+- **Correcoes as confissoes do executor:** (1) angulo dos bracos MEDIDO por regressao sobre a silhueta: ~30 graus abaixo da horizontal (31,6/29,9), nao 20-25; (2) a afirmacao "ombreira no lado certo" nas costas foi REFUTADA - o espelhamento e do personagem inteiro; (3) bolsinha EXT tambem existe na folha (D9), nao so nas costas avulsas.
+- **Escalada APR-01 desta bateria (verificacao nova):** amostragem quantitativa de paleta por classe de cor (mediana RGB de pele verde e de tecido vermelho, fonte x geradas) - paleta FIEL (vermelho delta 3 na T-pose; pele delta 41 = levemente mais clara; folha delta 17; costas delta 10); o desvio de estilo do lote e de TEXTURA (grao), nao de cor. Medicao geometrica de pose tambem incorporada a bateria.
+- **Retrabalho exigido (especificacao no relatorio):** T-pose v2 com pele do ombro direito restaurada, bracos a 90 graus e dedos separados; folha de angulos abandonada em favor de vistas AVULSAS; costas v2 com ancoras de lado explicitas, sem bolsinhas e com a alca diagonal. Todos os defeitos ABERTOS; a palavra final de fidelidade e do Mestre.
