@@ -392,5 +392,53 @@ class TestMetricasUV(unittest.TestCase):
         self.assertGreater(met["margem_min_px"], 0)
 
 
+class TestSaveRenderStandard(unittest.TestCase):
+    """S2-COR08-1: o save da textura usa view_transform Standard.
+
+    O default AgX falsifica o textura.png (branco 255 vira 197); Standard
+    e identidade byte a byte e "Raw" nao e correcao (potencia 2.2). O
+    teste e estatico de proposito: a suite nao roda Blender (o bake real
+    e provado pelo job de prova). Ele trava a ORDEM dentro de main() --
+    o Standard tem de vir antes do save_render, sem outra atribuicao de
+    view_transform entre os dois -- e trava que existe UM unico caminho
+    de save_render no app, para nenhum segundo caminho sem fix surgir
+    em silencio.
+
+    Rigidez documentada (S4-1/S4-2 do Critico S2, opcao "documentar"):
+    o teste casa a GRAFIA exata `bpy.context.scene...` — um fix
+    semanticamente igual via variavel local `cena` (padrao do proprio
+    `renderizar_previas`) falharia aqui, por desenho estrito; e o
+    teste 1 fatia de `def main():` ate o EOF, valido enquanto main()
+    for a ultima funcao do arquivo (o teste 2 pegaria um segundo
+    save_render futuro em qualquer funcao).
+    """
+
+    def _fonte_cor(self):
+        return (APP / "oficina3d" / "cor" / "_blender_cor.py").read_text(encoding="utf-8")
+
+    def test_standard_antes_do_save_render_em_main(self):
+        fonte = self._fonte_cor()
+        main = fonte.split("def main():", 1)[1]
+        linhas = main.splitlines()
+        idx_standard = [i for i, ln in enumerate(linhas)
+                        if ln.strip() == 'bpy.context.scene.view_settings.view_transform = "Standard"']
+        idx_save = [i for i, ln in enumerate(linhas) if "save_render(" in ln]
+        self.assertEqual(len(idx_save), 1)
+        self.assertEqual(len(idx_standard), 1)
+        self.assertLess(idx_standard[0], idx_save[0])
+        entre = linhas[idx_standard[0] + 1:idx_save[0]]
+        self.assertFalse(any("view_transform" in ln for ln in entre))
+
+    def test_um_unico_save_render_no_app(self):
+        achados = []
+        for caminho in (APP / "oficina3d").rglob("*.py"):
+            for ln in caminho.read_text(encoding="utf-8").splitlines():
+                if "save_render(" in ln:
+                    achados.append(caminho.relative_to(APP))
+        # Comparar Path, nao string: no Windows o relativo usa "\", e a
+        # string com "/" falhava la (defeito achado pela propria suite).
+        self.assertEqual(achados, [Path("oficina3d/cor/_blender_cor.py")])
+
+
 if __name__ == "__main__":
     unittest.main()

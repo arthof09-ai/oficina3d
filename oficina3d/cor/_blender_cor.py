@@ -537,6 +537,13 @@ def main():
         img.filepath_raw = pedido["saida_textura"]
         img.file_format = "PNG"
         img.pixels.foreach_set(rgba.ravel())
+        # S2-COR08-1: o save_render aplica o view_transform da cena; o
+        # default AgX falsifica a textura (branco 255 vira 197). Standard
+        # e identidade byte a byte (sonda do Critico COR-08); "Raw" NAO
+        # e correcao (curva de potencia 2.2). Sem try/except de proposito:
+        # se a cena nao aceitar Standard, o bake deve falhar alto, nao
+        # entregar textura falsificada em silencio.
+        bpy.context.scene.view_settings.view_transform = "Standard"
         img.save_render(pedido["saida_textura"])
         mat = bpy.data.materials.new("cor")
         mat.use_nodes = True

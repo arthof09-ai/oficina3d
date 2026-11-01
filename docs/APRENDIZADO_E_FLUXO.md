@@ -76,6 +76,8 @@ Antes de convocar o Critico, o executor confere e resolve CADA item. A ideia (AP
 - [ ] Tom medido por amostragem anatomica (N3), nao a olho: mesma caixa anatomica na fonte e no lote, filtro oliva, mediana RGB + saturacao, com o saiote vermelho como controle interno (delta <= 3). [licao L-38]
 - [ ] Caminho de salvamento de textura no Blender: `view_transform` fixo em `Standard` antes de `save_render`; nunca julgar cor pelo `textura.png` salvo sob o default AgX (branco 255 vira 197) — amostrar o GLB ate o fix. [licao L-39]
 - [ ] IoU medido a 256 px e invariante ao tamanho da textura: nunca usa-lo para provar efeito de resolucao; e campo de metrica com nome que nao corresponde ao conteudo (dilatacao total sob o nome 'restrita') e defeito, nao detalhe. [licao L-40]
+- [ ] Status de prova regenerado apos qualquer correcao: artefato que guarda corrida velha (suite FAILED pre-correcao) contradiz o log final e mente no registro — reescrever/anotar antes do commit, com o original preservado. [licao L-41]
+- [ ] Ancora conferida por SHA/tamanho antes de comparar: diretorio de job pode guardar bake antigo (1024) e nao a reproducao COR-08 (2048, cor08rep) — comparar contra a ancora errada diverge sem ser defeito. [licao L-42]
 
 ---
 
@@ -339,6 +341,16 @@ flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
 - **Caso:** na COR-08, o argumento "IoUs identicos aos da baseline @2048" era vazio: o IoU@256 e invariante ao tamanho da textura por construcao. A evidencia valida era a cobertura direta (19,44% -> 48,12%). No mesmo veredito: o campo `texels_por_dilatacao_restrita` carregava o total irrestrito no modo `uv`.
 - **Custo:** nenhum bloqueio ao mecanismo, mas uma citacao sem lastro (IoUs da ancora) e um campo com nome falso teriam virado "prova" nas proximas tranches.
 - **Regra:** antes de usar uma metrica como argumento, perguntar "o que faria este numero mudar?" — se a variavel testada nao o move, o argumento e vazio; e campo de relatorio com nome que nao corresponde ao conteudo se renomeia, nao se documenta em volta. (Checklist pre-Critico: item do IoU invariante.)
+
+### L-41 - Prova destacada morre com a sessao SSH; status velho mente (01/11/2026)
+- **Caso:** na S2-COR08-1, o driver de prova lancado via Start-Process destacado morreu junto com a sessao SSH (sem status, sem stderr); relancado via tarefa agendada pythonw (invisivel), funcionou. No mesmo episodio, o `status.json` guardou a corrida da suite ANTERIOR a correcao do Path e ficou contraditorio com o log final (FAILED vs 343 OK) — o Critico cobrou como S3-1.
+- **Custo:** uma prova perdida sem rastro + um artefato de registro que, lido sozinho, concluiria suite vermelha.
+- **Regra:** trabalho longo so via tarefa agendada com arquivo de status (nunca processo destacado de sessao SSH); e o status de prova e regenerado/anotado apos qualquer correcao, antes do commit — corrida velha guardada vira contradicao no registro. (Checklist pre-Critico: itens de tarefa agendada e de status regenerado.)
+
+### L-42 - Diretorio de job nao e ancora (01/11/2026)
+- **Caso:** o Critico da S2 comparou primeiro contra `jobs/20261101-101528-corint-orc-s7/cor/` como se fosse a COR-08 e divergiu muito (1024 vs 2048, 211.268 vs 845.063 texels) — aquele diretorio guarda um bake ANTIGO a 1024; a baseline correta era `jobs_teste/cor08-critico/cor08rep/` (2048). Contra a ancora certa, tudo fechou (diff de resultado vazio, previas 100%).
+- **Custo:** uma rodada de comparacao invalida; sem a checagem de ancora, viraria "defeito" falso.
+- **Regra:** antes de comparar, conferir a ancora por SHA/tamanho (o que o diretorio guarda, nao o que o nome sugere) e registrar qual diretorio e a ancora. (Checklist pre-Critico: item da ancora conferida.)
 
 ## 5. Regra de escalada do Critico (APR-01)
 
