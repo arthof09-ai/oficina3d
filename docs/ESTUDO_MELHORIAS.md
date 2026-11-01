@@ -476,3 +476,10 @@ Para cada job avaliado, um **relatório do Crítico Visual** (arquivo do job + e
 **Curto prazo:** R1 na versão degrau zero (remoção local assistida no Blender + acessório via R2) para salvar o acervo fundido que vale a pena — a começar pelo caso inaugural. **Estrutural:** R4 (corpo-base + acessórios separados) como **convenção de nascimento** de todo modelo novo — é a mesma decisão do P-0/IBX-178, agora com um motivo a mais: ela transforma "retrabalho" em "troca de peça". **Estudo vigiado:** R3 (HoloPart/PartCrafter), reavaliar após R1.
 
 **Fontes deste adendo (web, 01/11/2026):** HoloPart open source — segmentação amodal e completação de partes, partes substituíveis e prontas para animação: https://www.tripo3d.ai/blog/holopart-generate-parts-for-3d-model · PartCrafter — geração estruturada em partes a partir de 1 imagem, sem segmentação prévia: https://arxiv.org/pdf/2506.05573 · Caso inaugural e números do job Lendário: relatório da prova de qualidade (provaq) e prévias conferidas com o Mestre, 01/11/2026 (registros do projeto).
+
+
+## Adendo 2026-11-01 — Pesquisa de texturizacao (ChatGPT) e o spike T7
+
+- **T7 — Spike UltraTex Modular (NOVO; entra a frente do T3 na fila de spikes da Etapa COR).** Motor de pintura via ComfyUI que aceita as referencias canonicas do projeto (frente/costas/laterais/topo/base) e exporta GLB pintado com rugosidade/metalicidade. Regua pre-registrada completa em `docs/ESTUDO_T7_PESQUISA_TEXTURA.md`: Gate 0 = inventario de disco antes de baixar; aceite exige VRAM <= 8.188 MB, tempo <= 45 min, SSIM frontal nao pior que o T1 e zero OOM — qualquer regua quebrada arquiva o T7 como plano C com evidencia. Aguarda o relatorio de verificacao factual da pesquisa.
+- **T3 — Hunyuan Paint:** rebaixado para depois do T7 (divergencia de VRAM registrada no estudo T7: oficial 2.1 = 21 GB recomendados; fork 2GP = alvo ~6 GB com OOM relatado). Gate 0 do T3 permanece como desenhado.
+- **Retrabalho local:** Yedp UV Painter (pintura por regiao, desenhado para 8 GB, MVP) entra como candidato observado da frente. **T1:** Eyek (addon Blender de projecao multivista) entra como leitura comparativa.
