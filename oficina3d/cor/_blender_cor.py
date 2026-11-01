@@ -226,10 +226,8 @@ def verificar_glb_texturizado(caminho):
         g = json.loads(f.read(tam).decode("utf-8"))
     imagens = g.get("images", [])
     mats = g.get("materials", [])
-    tem = False
-    if mats:
-        pbr = mats[0].get("pbrMetallicRoughness", {})
-        tem = "baseColorTexture" in pbr
+    # Qualquer material com textura conta (antes: so materials[0] - D8).
+    tem = any("baseColorTexture" in m.get("pbrMetallicRoughness", {}) for m in mats)
     return {"imagens_no_glb": len(imagens), "material_com_textura": bool(tem),
             "materiais": len(mats)}
 

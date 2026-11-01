@@ -123,6 +123,11 @@ Cada licao nasce de um caso real. Formato: caso -> o que aconteceu -> custo -> r
 - **Custo:** um run perdido + uma conclusao quase errada ("a projecao nao presta") que teria condenado o mecanismo certo pelo gargalo errado.
 - **Regra:** (1) conferir o que cada arquivo de job realmente e (entrada vs saida da etapa) antes de usa-lo como insumo; (2) antes de julgar um bake, medir a UV (area total, ilhas, ocupacao) por via independente do codigo sob teste - e o T5 que protege o T1, nao o contrario. (Eco da L-08: isolar a variavel antes de culpar.)
 
+### L-13 - Prova sem artefato nao e prova; nome de teste tem de dizer o que ele testa (01/11/2026)
+- **Caso:** o Critico do T1-mecanismo nao reprovou o mecanismo, mas negou o determinismo "como provado": o REGISTRO trazia so a frase "2 runs deram SHA identicos", sem nenhum artefato do 1o run para um auditor conferir. No mesmo relatorio: o teste `test_maior_facing_vence` usava duas vezes a mesma vista (testava o empate) e o IoU sintetico 1,0 era vacuo (mascara solida estica qualquer geometria para 1,0).
+- **Custo:** re-prova do determinismo com 2 runs novos guardados (detA/detB) + renomeacao do teste + teste verdadeiro de maior-facing; leitura do IoU corrigida no REGISTRO.
+- **Regra:** (1) toda alegacao de determinismo/repeticao guarda os artefatos comparados (os dois resultado.json, nao so a frase com os hashes); (2) o nome do teste descreve o caso que ele realmente exercita - nome que promete mais do que o teste faz e defeito de teste, nao detalhe; (3) numero "perfeito" (IoU 1,0, 100%) exige perguntar "o que faria este numero NAO ser perfeito?" - se nada faria, ele nao prova nada. (Checklist pre-Critico, itens 2 e 7: lastro apontavel + numeros de arquivo lido.)
+
 ### L-12 - Tarefa agendada com cmd.exe: citacao e cwd quebram em silencio (01/11/2026)
 - **Caso:** a suite completa via tarefa agendada falhou 2x: na primeira, o `cmd /c` rodou fora de `app` (ImportError "Start directory is not importable"); na segunda, o redirecionamento com citacao aninhada nao truncou o log e o erro antigo permaneceu no arquivo, parecendo "a mesma falha".
 - **Custo:** duas rodadas de diagnostico confundido por log velho.
@@ -144,7 +149,7 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Auditoria no 3 (Fase 1) | Conferencia de lastro documental: afirmacao x commit x linha em DECISOES | C3-1, C3-2, C3-3 (QUAL-01 sem commit e sem linha) |
 | 01/11/2026 | Bateria REF-01 lote 1 (abaixo) | Consistencia cruzada ENTRE as vistas geradas (vista x vista, nao so vista x fonte) + checagem geometrica da T-pose (simetria medida na imagem) | Verificado na rodada 2: consistencia cruzada PASSA nas 3 vistas v2; simetria medida (IoU 0,809, extensoes 653 px/lado) |
 | 01/11/2026 | Rodada 2 REF-01 lote 1 v2 | Contagem de dedos por mao com zoom (numero contado, nao estimado) + simetria espelhada MEDIDA da silhueta (IoU mascara x espelho) + auditoria de ancoras de LADO, ancora por ancora, nas costas v2 E no 3/4 v2 (16/16) | D1/D2/D3/D10 fechados; D15 (palmas para a frente, S4) achado |
-| 01/11/2026 | Bateria T1-mecanismo (Etapa COR) | Auditoria de proveniencia por texel (percentual pintado direto x por dilatacao, com consequencia visual) + medida INDEPENDENTE da area UV (decode do GLB, fora do codigo sob teste) + teste anti-atravessamento com medicao (nao so olho) + determinismo por SHA em 2 runs | A definir pelo veredito do Critico desta tranche |
+| 01/11/2026 | Bateria T1-mecanismo (Etapa COR) | Auditoria de proveniencia por texel (percentual pintado direto x por dilatacao, com consequencia visual) + medida INDEPENDENTE da area UV (decode do GLB, fora do codigo sob teste) + teste anti-atravessamento com medicao (nao so olho) + determinismo por SHA em 2 runs | Pegou: D3 (trilha de determinismo sem artefato do 1o run), D4 (teste mal nomeado), D5 (IoU sintetico vacuo), D6 (lacunas de teste), D8 (iou vazia, verificacao GLB fraca) - e CONFIRMOU a UV 4,32% como causa da fragmentacao; veredito APROVA o mecanismo |
 
 ---
 

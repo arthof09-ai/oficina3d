@@ -69,6 +69,19 @@ class TestAlinhamento(unittest.TestCase):
         with self.assertRaises(ValueError):
             projecao.iou(a, np.zeros((3, 3), dtype=bool))
 
+    def test_iou_vazias_zero_e_nao_um(self):
+        # D8: duas mascaras vazias nao tem acordo mensuravel; 1,0 mentia.
+        vazio = np.zeros((3, 3), dtype=bool)
+        self.assertEqual(projecao.iou(vazio, vazio), 0.0)
+
+    def test_alinhamento_aspectos_distintos(self):
+        # D6: escalas x/y independentes (mascara larga, malha quadrada).
+        ax, bx, ay, by = projecao.alinhamento_silhueta((0, 0, 20, 10), (0, 0, 10, 10))
+        self.assertAlmostEqual(ax, 2.0)
+        self.assertAlmostEqual(ay, 1.0)
+        self.assertAlmostEqual(ax * 5 + bx, 10.0)
+        self.assertAlmostEqual(ay * 5 + by, 5.0)
+
 
 class TestBake(unittest.TestCase):
     def _triangulo(self):
@@ -110,15 +123,16 @@ class TestBake(unittest.TestCase):
             verts, faces, norm, fuv, [vista], 16, np.array([0.0, 0.0, 0.5]), (1.0, 1.0, 1.0), 2.0)
         self.assertEqual(int(pintado.sum()), 0)
 
-    def test_maior_facing_vence(self):
+    def test_empate_mantem_primeira_fonte(self):
+        # Nome corrigido (D4 do Critico T1): este teste usa DUAS VEZES a mesma
+        # vista, logo o peso por texel e igual; a primeira fonte vence no
+        # empate (ganha = pes > melhor, estrito). O teste de maior-facing
+        # de verdade e o seguinte, com duas vistas distintas.
         verts, faces, norm, fuv = self._triangulo()
         vermelha = np.zeros((10, 10, 3))
         vermelha[:] = [1.0, 0.0, 0.0]
         azul = np.zeros((10, 10, 3))
         azul[:] = [0.0, 0.0, 1.0]
-        # Mesma vista, duas "fontes": a segunda tem facing maior por texel? Não:
-        # o peso por texel vem da normal interpolada (igual); então a primeira
-        # fonte vence no empate (ganha = pes > melhor, estrito). Testa o empate.
         v1 = {"vista": "frente", "imagem": vermelha, "mascara": np.ones((10, 10), dtype=bool),
               "visivel": np.array([True]), "peso_face": np.array([1.0])}
         v2 = {"vista": "frente", "imagem": azul, "mascara": np.ones((10, 10), dtype=bool),
@@ -126,6 +140,69 @@ class TestBake(unittest.TestCase):
         tex, pintado, _, _ = projecao.rasterizar_textura(
             verts, faces, norm, fuv, [v1, v2], 16, np.array([0.0, 0.0, 0.5]), (1.0, 1.0, 1.0), 2.0)
         self.assertTrue(np.all(tex[pintado] == np.array([1.0, 0.0, 0.0])))
+
+    def test_maior_facing_vence_entre_vistas(self):
+        # D4: triangulo com normal inclinada entre frente (-Y) e esquerda (+X):
+        # facing frente = 0,894, esquerda = 0,447. A vista de maior facing tem
+        # de vencer nos dois pedidos (ordem nao pode decidir).
+        n = np.array([0.5, -1.0, 0.0])
+        n = n / np.linalg.norm(n)
+        centro = np.array([0.0, 0.0, 0.5])
+        e1 = np.cross(n, np.array([0.0, 0.0, 1.0]))
+        e1 = e1 / np.linalg.norm(e1)
+        e2 = np.cross(n, e1)
+        verts = np.array([centro, centro + e1 * 0.5, centro + e2 * 0.5])
+        faces = np.array([[0, 1, 2]])
+        norm = np.array([n, n, n])
+        fuv = np.array([[[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]]])
+        vermelha = np.zeros((10, 10, 3))
+        vermelha[:] = [1.0, 0.0, 0.0]
+        azul = np.zeros((10, 10, 3))
+        azul[:] = [0.0, 0.0, 1.0]
+        vf = {"vista": "frente", "imagem": vermelha, "mascara": np.ones((10, 10), dtype=bool),
+              "visivel": np.array([True]), "peso_face": np.array([0.894])}
+        ve = {"vista": "esquerda", "imagem": azul, "mascara": np.ones((10, 10), dtype=bool),
+              "visivel": np.array([True]), "peso_face": np.array([0.447])}
+        for ordem in ([vf, ve], [ve, vf]):
+            tex, pintado, _, _ = projecao.rasterizar_textura(
+                verts, faces, norm, fuv, ordem, 16, centro, (1.0, 1.0, 1.0), 2.0)
+            self.assertGreater(int(pintado.sum()), 0)
+            self.assertTrue(np.all(tex[pintado] == np.array([1.0, 0.0, 0.0])))
+
+    def test_mascara_rejeita_amostra(self):
+        # D6: caminho amostra_ok = mascara & facing nunca era exercitado
+        # (todos os testes usavam mascara toda-verdadeira).
+        verts, faces, norm, fuv = self._triangulo()
+        img = np.zeros((10, 10, 3))
+        img[:] = [1.0, 0.0, 0.0]
+        vista = {"vista": "frente", "imagem": img, "mascara": np.zeros((10, 10), dtype=bool),
+                 "visivel": np.array([True]), "peso_face": np.array([1.0])}
+        _, pintado, _, _ = projecao.rasterizar_textura(
+            verts, faces, norm, fuv, [vista], 16, np.array([0.0, 0.0, 0.5]), (1.0, 1.0, 1.0), 2.0)
+        self.assertEqual(int(pintado.sum()), 0)
+
+    def test_uv_degenerada_pula_sem_quebrar(self):
+        # D6: triangulo UV colinear (area zero) nao pinta nada e nao quebra.
+        verts, faces, norm, _ = self._triangulo()
+        fuv = np.array([[[0.0, 0.0], [0.5, 0.5], [1.0, 1.0]]])
+        img = np.zeros((10, 10, 3))
+        img[:] = [1.0, 0.0, 0.0]
+        vista = {"vista": "frente", "imagem": img, "mascara": np.ones((10, 10), dtype=bool),
+                 "visivel": np.array([True]), "peso_face": np.array([1.0])}
+        _, pintado, _, info = projecao.rasterizar_textura(
+            verts, faces, norm, fuv, [vista], 16, np.array([0.0, 0.0, 0.5]), (1.0, 1.0, 1.0), 2.0)
+        self.assertEqual(int(pintado.sum()), 0)
+        self.assertEqual(info["faces_pintadas_por_vista"]["frente"], 0)
+
+    def test_dilatacao_nao_atravessa_borda(self):
+        # D6: o np.roll com anulacao da faixa nao pode vazar para o lado oposto.
+        tex = np.zeros((5, 5, 3))
+        tex[0, 0] = [1.0, 0.0, 0.0]
+        pin = np.zeros((5, 5), dtype=bool)
+        pin[0, 0] = True
+        _, pin2, _ = projecao.dilatar(tex, pin, 1)
+        self.assertTrue(pin2[1, 0] and pin2[0, 1])
+        self.assertFalse(pin2[4, 0] or pin2[0, 4] or pin2[4, 4])
 
     def test_dilatacao_preenche_e_para(self):
         tex = np.zeros((5, 5, 3))
@@ -150,6 +227,14 @@ class TestMetricasUV(unittest.TestCase):
         self.assertAlmostEqual(met["ocupacao"], 1.0, places=2)
         self.assertEqual(met["ilhas"], 1)
         self.assertIsNone(met["margem_min_px"])
+
+    def test_distorcao_diferente_de_zero(self):
+        # D6: areas UV desiguais com areas 3D iguais tem de dar distorcao > 0.
+        # (A distorcao mede distribuicao relativa, nao escala absoluta.)
+        fuv = np.array([[[0.0, 0.0], [0.2, 0.0], [0.0, 1.0]],
+                        [[0.0, 0.0], [1.8, 0.0], [0.0, 1.0]]])
+        met = projecao.metricas_uv(fuv, np.array([0.5, 0.5]), 16)
+        self.assertGreater(met["distorcao_media"], 0.5)
 
     def test_quadrados_separados_duas_ilhas(self):
         # Vizinhos horizontais (mesma faixa de linhas) para a varredura medir.

@@ -150,13 +150,16 @@ def alinhamento_silhueta(bbox_arte: tuple[int, int, int, int],
 
 
 def iou(a: np.ndarray, b: np.ndarray) -> float:
-    """IoU entre duas mascaras booleanas do mesmo formato."""
+    """IoU entre duas mascaras booleanas do mesmo formato.
+
+    Uniao vazia (duas mascaras sem nenhum pixel) retorna 0,0: nao ha acordo
+    mensuravel, e 1,0 seria "acordo perfeito" sobre nada (D8 do Critico T1).
+    """
     if a.shape != b.shape:
         raise ValueError(f"mascaras de formatos diferentes: {a.shape} x {b.shape}")
-    inter = bool(np.logical_and(a, b).sum())
     uniao = bool(np.logical_or(a, b).sum())
     if uniao == 0:
-        return 1.0
+        return 0.0
     return float(np.logical_and(a, b).sum() / np.logical_or(a, b).sum())
 
 
