@@ -778,6 +778,7 @@ Pendencias nomeadas (nenhuma bloqueia o fechamento; entram na fila da Etapa COR)
 - **D-T2-3 (S4):** aviso do worker menciona "bake v1" tambem no modo vertice (texto velho; no vertice nao ha bake).
 - **D-T2-4 (S4, latente):** `verificar_glb_vertice` inspeciona so o primeiro primitivo do primeiro mesh - inalcancavel hoje (a importacao unifica os objetos; a prova multi-objeto do Critico saiu com 1 primitivo); defesa em profundidade futura: iterar todos os primitivos de todos os meshes.
 - **Herdadas e inalteradas:** D1 ABERTA; exposicao web/MCP de `cor`/`cor_modo` pendente desde a COR-05; S2-3 (troca esquerda/direita nas imagens da Besta) aberta.
+- **Espelho no Drive (fechamento formal do T2 + registro da COR-08):** ESTADO_ATUAL, REGISTRO, ESTUDO_MELHORIAS e ESTUDO_D1_FIDELIDADE atualizados em `Oficina3D_v2\REGISTRO` via conector e conferidos por MD5 na volta (Drive = PC; 7/7 com CRITICO-t2-relatorio, DECISOES e APRENDIZADO_E_FLUXO, que ja estavam identicos). SHA-256 (prefixos de 12 hex): ESTADO_ATUAL 3E44D47C8A8A, REGISTRO 450572584E41 (versao espelhada; o REGISTRO commitado difere dela so por esta linha de espelho), ESTUDO_MELHORIAS 3C640E62F597, ESTUDO_D1_FIDELIDADE 467D866EB198, CRITICO-t2-relatorio 3DF49D3BDA2F. Com isso a T2 (COR-07) esta FECHADA em todas as vias (repo, GitHub e Drive); proximo passo declarado no ESTADO: COR-08 como prioridade da fidelidade de cor; T7 (UltraTex) segue como spike a frente do T3.
 
 
 ## 2026-11-01 - T2 (COR-07) FECHADA formalmente + COR-08 registrada (frente de fidelidade da cor, ataque a D1)
