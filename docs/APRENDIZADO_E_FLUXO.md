@@ -79,6 +79,13 @@ Antes de convocar o Critico, o executor confere e resolve CADA item. A ideia (AP
 - [ ] Status de prova regenerado apos qualquer correcao: artefato que guarda corrida velha (suite FAILED pre-correcao) contradiz o log final e mente no registro — reescrever/anotar antes do commit, com o original preservado. [licao L-41]
 - [ ] Ancora conferida por SHA/tamanho antes de comparar: diretorio de job pode guardar bake antigo (1024) e nao a reproducao COR-08 (2048, cor08rep) — comparar contra a ancora errada diverge sem ser defeito. [licao L-42]
 
+- [ ] Lateralizacao por vista cruzada (N4) antes de escrever qualquer item de especificacao de lado: para cada item fixo ao corpo, registrar o lado em imagem em TODAS as vistas aprovadas/canonicas; exigir da vista nova a coerencia com a sua familia (traseiras com traseiras, frontais com frontais), nunca um espelho postulado. [licao L-43]
+- [ ] Novidade angular medida (N5) antes de instalar qualquer vista nova: IoU bbox-alinhado contra TODAS as vistas ja aprovadas do mesmo personagem; IoU > 0,90 contra vista aprovada do mesmo lado = angulo duplicado, reprova como adicao, qualquer que seja a qualidade do render. [licao L-43]
+- [ ] Leitura obrigatoria dos vereditos anteriores (N6): antes de julgar um retrabalho, o Critico le TODOS os relatorios anteriores sobre as mesmas imagens/personagem e, para cada afirmacao decisiva anterior, ou a reproduz com medicao propria ou a refuta explicitamente com medicao propria. Julgar sem ler invalida o veredito, mesmo quando o checklist local passa. [licao L-43]
+- [ ] Regra nova nao retroage seletivamente (N7): toda regra nova e executada contra TODAS as vistas ja aprovadas da familia ANTES de ser aplicada a candidata; se a regra reprova uma autoridade aprovada, quem volta para revisao e a regra, nao a autoridade; um mesmo traco jamais recebe severidades diferentes em imagens diferentes sem diferenca medida entre elas. [licao L-43]
+- [ ] Coordenada decisiva exige grade e referencial (N8): toda coordenada x/y usada como evidencia decisiva e lida em recorte com grade impressa (ou computada por script) e declara o referencial (imagem x bbox) e a convencao de qualquer razao (dir/esq x esq/dir). Coordenada "a olho" sem grade nao e medicao. [licao L-43]
+- [ ] REGRA FINAL do Orc (familia das vistas): kit fixo ao corpo exatamente como nas vistas aprovadas da mesma familia — caveira grande sempre a DIREITA do losango e alca sempre na diagonal superior-esquerda → inferior-direita em coordenadas de imagem; mudam de lado apenas os sinais da camera (lobo, ombreira, perfil do rosto, pe em perfil). Fisica de corpo rigido NAO governa este arsenal (o canone viola a faixa continua e o anel rigido) — quem governa e o canone. [licao L-43]
+
 ---
 
 ## 4. Diario de licoes
@@ -352,6 +359,27 @@ flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
 - **Custo:** uma rodada de comparacao invalida; sem a checagem de ancora, viraria "defeito" falso.
 - **Regra:** antes de comparar, conferir a ancora por SHA/tamanho (o que o diretorio guarda, nao o que o nome sugere) e registrar qual diretorio e a ancora. (Checklist pre-Critico: item da ancora conferida.)
 
+### L-43 - Kit fixo ao corpo não é sinal de câmera; regra nova não retroage; coordenada sem grade não é medição (01/11/2026)
+
+- **O que aconteceu:** no retrabalho do lote 4, a especificação exigia alça e
+  caveira espelhadas na traseira esquerda; a imagem certa foi quase reprovada
+  por dois itens errados. Um segundo Crítico reprovou-a pela regra nova NV-1
+  e aprovou a frontal duplicada sem medir novidade. O terceiro Crítico
+  (reconciliação, ordem do Mestre) re-mediu tudo: a refeita estava certa, a
+  frontal era duplicata, a NV-1 reprovaria o próprio cânone.
+- **Regra:** (a) item fixo ao corpo (cinto, alça) não se trata como sinal de
+  lado da câmera — antes de escrever o item, auditar o lado dele em TODAS as
+  vistas (N4); (b) novidade angular se mede contra TODAS as aprovadas (N5:
+  IoU > 0,90 = duplicata); (c) Crítico lê os vereditos anteriores antes de
+  julgar (N6); (d) regra nova se testa contra TODAS as aprovadas antes de
+  valer para a candidata (N7); (e) coordenada decisiva exige grade e
+  referencial declarado (N8); (f) no Orc, kit fixo segue a família das
+  vistas aprovadas e só os sinais da câmera mudam de lado — física de corpo
+  rígido não governa um arsenal cujo cânone já a viola.
+- **Custo evitado:** uma refeita certa refeita com o cinto espelhado (a única
+  traseira inconsistente do arsenal) e uma frontal duplicada instalada como
+  "nova" ao lado da vista que ela copia.
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:
@@ -375,6 +403,9 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Bateria D-COR05 (pendencias da integracao) | Comparacao byte a byte de TODOS os artefatos do determinismo contra a prova (inclui uv.npz, modelo_uv.glb e as 9 previas, com decomposicao de chunks PNG e comparacao pixel a pixel) + proveniencia do worker nos 3 jobs e fila vazia ao fim + tentativa do validador glTF independente + recontagem da cadeia de vertices incluindo o .npz | D-COR05 FECHADA (D1 segue ABERTA e ortogonal); achado da escalada: previas pixel-identicas com bytes divergentes so em metadado tEXt do Blender (licao L-32); ressalvas S4: docstring 97 s vs nativa 84 s, modelo.glb do refino em job em erro, cancelamento vivo nao exercido, validador glTF pendente; suite 263+4 = 267 reconciliada |
 | 01/11/2026 | Fechamento REF-01 lote 3 (Caprileo) | Verificacao de rotulo pos-renomeacao (SHA por nome nos dois lados + checklist C1 nos arquivos renomeados) + consistencia de rotulos no conjunto (busca por referencias textuais ao rotulo pre-troca) | C1 FECHADO por medida (3/3 itens nos dois arquivos, hashes PC = local); lote 3 FECHADO; pendencias C2/C3/C4 (S3) e C5 (S4) nomeadas; zooms renomeados para acompanhar a troca |
 | 01/11/2026 | Bateria REF-01 lote 4 parcial (Orc, traseiras) | Diversidade angular MEDIDA do par (N2: IoU + assimetria invertida + pe em perfil oposto) + pureza do 3/4 traseiro (N1) + tom medido por amostragem anatomica (N3) | SYM-4.1 S2 (tras_esq = direita duplicada, IoU 0,915); lote parcial REPROVADO; tras_dir APROVADA; frontais reprovadas antes pelo executor (espelho) |
+| 01/11/2026 | Bateria REF-01 lote 4 retrabalho (Critico 1) | Auditoria de lateralizacao por vista cruzada (N4) + auditoria de novidade angular (N5: IoU contra TODAS as aprovadas) | ESP-4.1/ESP-4.2 (2 itens da especificacao provados errados); DUP-4.3 S2 (frente_esq = tresquartos_v2, IoU 0,960); refeita APROVADA (N2 nos tres) |
+| 01/11/2026 | Bateria REF-01 lote 4 v2 (Critico 2) | Lateralizacao do cinto por vista (NV-1) + linha do solo/pes plantados (NV-2) + uniformidade do fundo/margens (NV-3) | NV-1 achou SYM-5.1/5.2 — mas a regra foi REFUTADA na reconciliacao (reprovaria o proprio canone); NV-2/NV-3 validas como medicao, sem forca de reprovacao aqui |
+| 01/11/2026 | Reconciliacao REF-01 lote 4 (terceiro Critico, ordem do Mestre) | Re-medicao propria com 3 limiares + grade impressa de 0,1 + kit como objeto 3D unico (anel rigido e faixa continua) + meta-auditoria dos dois Criticos (N6/N7/N8) | Critico 1 certo nos vereditos (justificativa do ESP-4.1 errada); Critico 2 certo nos fatos, errado em todas as decisoes; REGRA FINAL do Orc; par traseiro FECHADO; frente_esq rejeitada |
 | 01/11/2026 | Bateria D-T2 (fechamento das pendencias do T2) | Reproducao propria da sabotagem + sabotagem em Y e Z + caso misto vistas + forma recusada + arestas do verificador (3o primitivo sem cor, sem meshes) + D-T2-2 fora do mock (passo de projecao real) + suite conferida arquivo a arquivo | X2/Y2/Y0,5/Z2 recusadas; misto conclui pelas vistas com forma 0%; S4-1/S4-2 de robustez; D-T2-1 FECHADA |
 | 01/11/2026 | Bateria COR-08 (ataque a D1) | Auditoria sRGB completa do caminho de salvamento (sondas Blender com valores conhecidos) + auditoria de proveniencia v2 com parse proprio do GLB + casos-limite adversariais proprios do codigo novo (14 checagens) + confrontacao da autoauditoria do executor ponto a ponto | S2-COR08-1 (AgX falsifica o textura.png; GLB fiel); S3-COR08-2/3/4; S4-COR08-5/6; D1 confirmada ABERTA |
 
@@ -413,7 +444,7 @@ O executor conferiu as imagens ANTES do Critico (protocolo de antecipacao) e ja 
 
 1. **Besta Cristalina (monstro)** - arte dourada instalada no PC: `testes/dourado/imagens/besta_{frente,costas,esquerda,direita}.png` (768x512); kit completo de 8 vistas recuperavel do Drive pelo indice da auditoria do Codex (relatorio de continuidade v002). Pose: a mais adequada a modelagem de uma criatura serpentina de cristal - sem T-pose.
 2. **Caprileo (monstro)** - arte dourada instalada: `testes/dourado/imagens/caprileo_{frente,costas,esquerda,direita}.png`; 8 vistas no mesmo indice do Drive. Pose adequada de quadrupede.
-3. **Orc - vistas diagonais** - o kit original tem 8 angulos; alem dos 4 cardeais instalados, as diagonais sao recuperaveis do Drive pelo mesmo indice (completar o conjunto de entrada multivista). (Lote 4 parcial 01/11: tras_dir APROVADA; tras_esq REPROVADA SYM-4.1 — retrabalho pendente + frontal esquerda; a tresquartos_v2 ja cobre a frontal direita.)
+3. **Orc - vistas diagonais** - o kit original tem 8 angulos; alem dos 4 cardeais instalados, as diagonais sao recuperaveis do Drive pelo mesmo indice (completar o conjunto de entrada multivista). (Lote 4 FECHADO nas traseiras 01/11: tras_dir + tras_esq refeita, apos reconciliacao de tres Criticos; tresquartos_v2 = diagonal frontal ESQUERDA — correcao da nota anterior; vaga aberta = diagonal frontal DIREITA, especificacao no §7 da reconciliacao, 7 tentativas reprovadas em autoauditoria por vies do gerador — nao repetir fraseado, decidir a rota antes de gerar de novo.)
 4. **Bestas novas de 31/10 (Drive)** - 5 referencias em `05 - Imagens e referencias/Referencias visuais/2026-10-31_RPG_besta-*.jpg` ("besta lendaria" / "besta do vazio"), localizadas pela sessao do Claude no PC e registradas no REGISTRO; nao foram usadas na Prova C (nao sao o kit nomeado). Classificar: se forem seres vivos com arte aproveitavel, entram na fila REF-01.
 
 

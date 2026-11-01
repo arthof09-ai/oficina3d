@@ -906,3 +906,106 @@ Relatorio integral: docs/CRITICO-dt2-relatorio.md (SHA-256 05527A062D7076E72485F
 - **Limites registrados pelo Critico (nao inventados):** a figura "15,5%" da COR-08 foi re-medida como 15,554% sobre a imagem inteira do par antigo (o relatorio a descreve sobre texels UV — ressalva de dominio, nao divergencia); contagens da suite por arquivo nao re-extraidas (total 343 conferido).
 - **Pendencias apos o fechamento:** S2-pipeline-linear ABERTA (nova); S3-COR08-2/3/4; S4-COR08-5/6. **PROXIMO PASSO (ordem do Mestre 18:59, secao Observacao do ESTADO): diagnostico de raiz da D1 (H1/H2/H3) ANTES de novas tranches de cor; o diagnostico reordena o ataque.** S3/S4 seguem nomeados para apos o diagnostico.
 - **Espelho no Drive (fechamento S2-COR08-1):** ESTADO_ATUAL, REGISTRO, APRENDIZADO_E_FLUXO, ESTUDO_MELHORIAS e CRITICO-s2cor08-1-relatorio atualizados em `Oficina3D_v2\REGISTRO` via G: e conferidos por SHA-256 na volta (Drive = PC; 5/5; prefixos de 12 hex: ESTADO_ATUAL 266992A854C3, REGISTRO 24882232768D, APRENDIZADO_E_FLUXO 871ADCB56347, ESTUDO_MELHORIAS B324126D4EB9, CRITICO-s2cor08-1-relatorio 0B469D2A3F44; DECISOES.md ja identica, sem alteracao nesta tranche). O REGISTRO commitado difere do espelhado so por esta linha de espelho.
+
+## 2026-11-01 — REF-01 lote 4 FECHADO nas traseiras (reconciliação de três Críticos) + frontal direita aberta
+
+- **Histórico do atraso (anti-colisão, 3 adiamentos):** o retrabalho foi julgado
+  em 01/11 ~15:2x (Crítico 1), o conflito entre Críticos em ~16:07 (Crítico 2) e
+  a reconciliação por ordem do Mestre em ~16:41 (terceiro Crítico) — e em todas
+  as rodadas seguintes a árvore do PC estava suja pela frente principal
+  (tranche COR-08, HEAD `0e8746e`; depois `27704b1` com a tranche S2-COR08-1 em
+  curso em 01/11 ~19:0x, o que adiou a aplicação mais uma vez). Pela regra
+  anti-colisão da frente REF-01, NENHUMA escrita foi feita no repo nessas
+  rodadas. [Aplicacao: rodada REF-01 agendada 01/11/2026 19:54, arvore limpa confirmada antes de qualquer escrita (git status vazio), HEAD f4942ae; S2-COR08-1 ja fechado no commit 22b9d5c.]
+- **Instalação (testes/referencias/, gitignored — arte do RPG nunca entra no
+  git, conferido com `git check-ignore`):** `orc_diag_tras_esq.png` SUBSTITUÍDA
+  pela refeita aprovada — SHA-256 PC após a cópia =
+  `ad57447a31c9743b9d40967a0824d0fee3d85848c84d3b2665d6ce59c95c618e`
+  (2.274.898 B), idêntico ao local e ao da reconciliação. A reprovada
+  `6D0B0B35…37A6CA26413` NÃO existe mais no PC como referência (não há duas
+  "esquerdas"); o conteúdo reprovado segue preservado só no bruto local do
+  executor. `orc_diag_tras_dir.png` conferida intacta após a troca:
+  `ACB515D2…B7372250B`. **NÃO instalada** `orc_diag_frente_esq.png`
+  (reprovada por duplicidade; fica só local, como registro do erro).
+- **Vereditos finais (relatórios integrais em docs/, sem apagar nenhum):**
+  `docs/CRITICO-ref01-lote4-retrabalho.md` (Crítico 1),
+  `docs/CRITICO-ref01-lote4-v2.md` (Crítico 2 — registro-resumo fiel; o texto
+  integral do handoff ~16:07 não ficou preservado em arquivo, e isso está
+  declarado no cabeçalho do próprio documento, sem tabelas recriadas) e
+  `docs/CRITICO-ref01-lote4-reconciliacao.md` (terceiro Crítico, ordem do
+  Mestre) — este último PREVALECE.
+- **Crítico 1 (retrabalho):** refeita APROVADA — N2 nos três critérios por
+  medição independente (IoU com `tras_dir` 0,732 < 0,85; faixa 0,521 contra
+  1,774 da direita, sentidos invertidos; pé em perfil em lados opostos);
+  N1 passa; N3 passa (saiote Δ=(1,4,3) contra a frente canônica). **ESP-4.1 /
+  ESP-4.2 — dois itens da especificação anterior provados ERRADOS contra as
+  fontes (corrigir o item, não a imagem):** item 5 (alça descendo para o
+  quadril viewer-esquerdo) — nas costas a diagonal é superior-esquerda →
+  inferior-direita, descendo para o quadril viewer-direito, como em
+  `costas_v2`/`tras_dir`; item 6 (caveira grande à esquerda) — o conjunto
+  caveira+argolas+pingente está à DIREITA em TODAS as cinco vistas existentes.
+  **Frente esquerda REPROVADA como entrada nova — DUP-4.3 S2:** é a
+  `tresquartos_v2` re-renderizada (IoU 0,960, todas as âncoras iguais).
+  Verificações novas: N4 (lateralização por vista cruzada) e N5 (novidade
+  angular: IoU > 0,90 contra vista aprovada = duplicata).
+- **Crítico 2 (v2):** refeita REPROVADA (SYM-5.1 alça não espelhada + SYM-5.2
+  caveira à direita, regra nova NV-1 "exigir inversão entre frente e
+  costas"); frente esquerda APROVADA (S3 giro fraco ~20°) sem mencionar a
+  duplicidade; `tras_dir` mantida "com o desvio anotado" pelo mesmo traço —
+  incoerência interna. Verificações novas dele: NV-1, NV-2 (solos, > 0,04 =
+  pé fora do solo), NV-3 (fundo + margens).
+- **Reconciliação (terceiro Crítico, re-medição própria com 3 limiares de
+  fundo + grade impressa de 0,1):** Crítico 1 acertou os DOIS vereditos; Crítico
+  2 acertou os FATOS e errou todas as decisões. Números do reconciliador:
+  IoU refeita × `tras_dir` 0,734 (0,730–0,738); faixa 0,580 × 1,601 (invertida);
+  grade da caveira: frente 0,57 / costas 0,56 / refeita 0,64 — sempre à direita
+  (o 0,76 do Crítico 2 erra por +0,12); IoU frente_esq × `tresquartos_v2`
+  0,962 (DUP-4.3 confirmado). **REGRA FINAL (§5 da reconciliação, uma frase):**
+  em qualquer vista nova do Orc, o kit fixo ao corpo se desenha exatamente
+  como nas vistas aprovadas da mesma família — caveira grande sempre à
+  DIREITA do losango em coordenadas de imagem e alça sempre na diagonal
+  superior-esquerda → inferior-direita — mudando de lado apenas os sinais da
+  câmera (lobo, ombreira, perfil do rosto, pé em perfil). Fundamento corrigido
+  do ESP-4.1: a física NÃO governa este arsenal (cinto como anel rígido
+  exigiria a caveira em φ≈+50° na frente e φ≈220° nas costas — impossível;
+  faixa contínua exigiria diagonais opostas frente×costas, que o próprio
+  cânone viola); quem governa é o cânone. NV-1 RETIRADA (substituída por N7);
+  POS-5.1 reclassificado S4 (Δ sola 0,054 = profundidade da postura; a
+  `tras_dir` aprovada tem 0,039); CAP-5.1 confirmado S4. **LOTE 4: traseiras
+  FECHADAS; frontal permanece aberta só na vaga direita.**
+- **Correção de nomenclatura (vale sobre a nota do lote 4 parcial):** a
+  `tresquartos_v2` É a diagonal frontal ESQUERDA do arsenal (lobo à direita de
+  quem olha, lado esquerdo próximo) — a nota anterior a chamava de frontal
+  direita, o que estava errado. A vaga aberta no par frontal é a diagonal
+  frontal DIREITA, com especificação exata no §7 da reconciliação (câmera na
+  frente-direita; ombreira proeminente à esquerda de quem olha; rosto em 3/4
+  para a esquerda; pé viewer-esquerdo em perfil para a esquerda; kit PELA
+  REGRA, sem espelhar; aceite N5 < 0,85 contra `tresquartos_v2` E contra a
+  frente).
+- **AUTOAUDITORIA do executor nesta rodada de aplicação (APR-02):** conferi
+  com os meus olhos a refeita antes de instalar — lobo proeminente à
+  esquerda, rosto em perfil para a esquerda, pé viewer-esquerdo em perfil
+  para a esquerda, pé viewer-direito traseiro com sola visível e um pouco
+  mais alto (S4 de profundidade, não flutuação), capa proeminente à esquerda
+  abaixo da cintura, losango central, caveira grande à direita do losango,
+  alça na diagonal superior-esquerda → inferior-direita, zero bolsinhas,
+  zero machado, corpo inteiro, fundo cinza-claro liso, tom oliva. Nenhum
+  defeito novo achado por mim; os restantes são os S4 já registrados
+  (POS-5.1, CAP-5.1, saturação de um braço) e a vaga da frontal direita.
+  Não autoaprovei nada: a instalação executa o veredito final da
+  reconciliação, não um juízo meu.
+- **Frontal direita — situação ao fechar esta rodada (NÃO é lote concluído,
+  NÃO vai ao Mestre como entrega):** 7 tentativas geradas em duas rodadas
+  anteriores (3 + 4), TODAS reprovadas na autoauditoria adversarial do
+  executor, nenhuma submetida ao Crítico nem instalada — viés sistemático do
+  gerador 7/7 (rosto à direita, lobo proeminente à direita, pé em perfil à
+  direita, quando a vaga exige o oposto). Próxima rodada REF-01: NÃO repetir
+  variação de fraseado sobre frente/T-pose (espaço varrido); decidir entre
+  edição controlada, âncora nas traseiras, consulta de processo ao Crítico,
+  ou decisão do Mestre — ver as autoauditorias
+  `autoauditoria-orc-diag-frente-dir.md` e `autoauditoria-orc-diag-frente-dir-r2.md`.
+  Depois da frontal direita: classificação das 5 bestas novas de 31/10.
+- **Commit desta rodada (só documentos):** instalar os 3 relatórios em
+  `docs/` + esta entrada + ESTADO_ATUAL + APRENDIZADO_E_FLUXO (L-43, N4–N8).
+  A imagem instalada é gitignored e não entra no commit — como manda a regra
+  da frente (arte do RPG nunca no git).
