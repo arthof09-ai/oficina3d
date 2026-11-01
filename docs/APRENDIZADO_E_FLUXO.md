@@ -194,6 +194,17 @@ diferentes na frente. Causa: o PNG do Blender carrega metadado que varia
 entre runs; o raster e identico. Regra: regressao visual de previas se mede
 por diferenca de pixels (0 px = identica), nunca por SHA do arquivo.
 
+
+### L-23 - Flip V duplo se cancela no modelo_cor.glb (01/11/2026)
+Caso: o Critico D-T5-1 comparou as UVs do modelo_cor.glb com o .npz
+aplicando o flip e achou maxdiff 1,0 (falso alarme). Causa: o
+modelo_cor.glb passa por DOIS round-trips glTF (npz -> modelo_uv.glb ->
+modelo_cor.glb) e o flip se cancela; sem flip, casa com maxdiff 2,98e-08.
+O modelo_uv.glb (UM round-trip) precisa do flip; o modelo_cor.glb (DOIS)
+nao. Custo: um falso alarme e uma re-medicao. Regra: antes de comparar
+UVs de um GLB com o .npz, contar os round-trips do arquivo - 1 aplica o
+flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:

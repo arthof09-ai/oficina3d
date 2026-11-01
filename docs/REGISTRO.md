@@ -437,3 +437,60 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
   convocar o Critico. D-T5-1 FECHADA como correcao se o Critico aprovar.
   Proximo: D2 (adversarial) + D7 (costura) com a UV nova, depois
   integracao a fila. Espelho no Drive apos o veredito.
+
+## 01/11/2026, ~08:01 - Critico senior (independente): D-T5-1 APROVADA
+
+- **Relatorio completo:** docs/CRITICO-dt51-relatorio.md (SHA-256 BE2B9AF5...,
+  conferido apos o scp; scripts e brutos em jobs_teste/critico_dt51/, fora
+  do git). **Veredito: APROVA a D-T5-1 como correcao.** Nenhum defeito S1
+  ou S2 introduzido pela D-T5-1. D-T5-1 FECHADA.
+- **O que o Critico provou por conta propria:** margem pelo metodo do
+  executor reproduzida (2@512, 4@1024, **9@2048** - regua >= 8 cumprida) e
+  por metodo proprio euclidiano (menor distancia centro-a-centro entre
+  bordas de ilhas diferentes = **10,0 px @2048**, com prova de otimalidade
+  -> 9 texels vazios reais; a brecha diagonal do metodo linha/coluna nao
+  afeta este resultado); determinismo re-executado bit a bit identico ao
+  uv_a.npz; metricas reproduzidas (distorcao 0,07446, ocupacao 0,23287@512
+  / 0,23332@1024, 6.578 ilhas, 4,92 texels/face, 2,49% < 1 texel); SHAs
+  recalculados e iguais (textura 5660c824..., modelo_cor 9aa12f8e...,
+  modelo_uv 64782391...); geometria intacta (49.750 faces, ordem
+  preservada); UV do GLB exata (modelo_cor.glb casa com o .npz com maxdiff
+  2,98e-08); suite rodada por ele (247 testes OK, skipped=1, 33,359 s);
+  IoUs conferidos em arquivo (0,7947 / 0,7241 / 0,793 / 0,7872) - o bake
+  nao foi re-executado em Blender (limite declarado, como na T5).
+- **Escalada APR-01 (verificacoes novas desta bateria):** (1) margem
+  euclidiana (acima); (2) distorcao LOCAL: a UV nova e melhor que a T5 em
+  todos os percentis (p95 0,275 vs 0,359; p99 0,541 vs 0,627; max 5,01 vs
+  12,64; faces com razao >2: 0,070% vs 0,147%) - nenhum estiramento local
+  escondido; (3) halo por blocos mistos (teste direto da razao da D-T5-1):
+  UV nova = **0 blocos mistos em 2x2 (mip 512) e 4x4 (mip 256)**; T5 = 40
+  blocos @2x2 e **5.680 blocos @4x4 (32.292 texels, 22,8% com desvio >30)**
+  - o gutter elimina a mistura entre ilhas nos dois primeiros mips;
+  (4) faces que perderam tinta: **771 faces perderam todo texel** (0,31%
+  da area 3D - so faces miudas, cobertas pela dilatacao), 28 ganharam, 100
+  nunca tiveram; faces com exatamente 1 texel saltaram de 319 para 3.468
+  (preco a vigiar no T1-completo).
+- **Defeitos (classificacao do Critico):** S3 - (a) nota de flip no
+  docstring de uv_xatlas.py incompleta (faltava dizer que o caminho do
+  bake cancela o flip no modelo_cor.glb) - **CORRIGIDA nesta tranche**
+  (docstring atualizado; quem decodificar o modelo_cor.glb NAO aplica o
+  flip, quem decodificar o modelo_uv.glb aplica); (b) fragilidade dos
+  3.468 faces de 1 texel - vigilancia no T1-completo, sem nova queda de
+  densidade sem re-medir; (c) limitacao do metodo de margem linha/coluna
+  no codigo - fechada para esta UV pela prova euclidiana, mas baterias
+  futuras devem inclui-la como padrao. S4 - resultado_cor.json em prova/
+  conferido: e o bake da rodada 3 (faces pintadas 8.723/10.916/8.299/
+  7.424); 5 faces degeneradas (iguais na T5 e na nova, sem efeito).
+- **Falso alarme do Critico, registrado como licao (nao defeito do
+  projeto):** a primeira comparacao de UV do GLB aplicou o flip ao
+  modelo_cor.glb e deu maxdiff 1,0; o arquivo passou por DOIS round-trips
+  glTF e o flip se cancela - sem flip, casa exato (2,98e-08) na nova e na
+  T5. Virou a licao L-23 do diario.
+- **Julgamento do preco (ocupacao 0,233): ACEITAVEL, com numeros:** margem
+  cumprida por dois metodos; halo eliminado nos mips 512/256; densidade
+  restante 5,4x o Smart UV; distorcao local melhorou; max_cost 8 so
+  recuperaria +14,9% (5,653 texels/face) ao custo de trocar o charting
+  provado - desproporcional. O gutter de 8 px em 2048 e a correcao certa,
+  no tamanho certo.
+- **Estado:** D-T5-1 FECHADA. Proximo: D2 (adversarial) + D7 (costura) com
+  a UV nova, depois integracao a fila. Espelho no Drive apos este commit.
