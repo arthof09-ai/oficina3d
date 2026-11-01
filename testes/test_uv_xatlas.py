@@ -81,3 +81,43 @@ class TestUvXatlas(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestUvMargemD_T5_1(unittest.TestCase):
+    def test_margem_padrao_cubo_em_2048_cumpre_regua(self):
+        # O cubo tem 6 ilhas grandes; o raster em 2048 e barato (12 faces).
+        verts, faces = cubo()
+        _, indices, uvs = uv_xatlas.parametrizar(verts, faces)
+        faces_uv = uvs[indices]
+        a, b, c = verts[faces[:, 0]], verts[faces[:, 1]], verts[faces[:, 2]]
+        areas = np.linalg.norm(np.cross(b - a, c - a), axis=1) * 0.5
+        met = P.metricas_uv(faces_uv, areas, 2048)
+        self.assertIsNotNone(met["margem_min_px"])
+        self.assertGreaterEqual(met["margem_min_px"], 8)
+
+    def test_margem_sintetica_dois_quadrados_mede_o_gap(self):
+        # Dois quadrados UV separados por um gap conhecido (0,01 em U):
+        # o metodo tem de devolver uma faixa proporcional (~5-6 px em 512).
+        # Valida o METODO de medicao (D-T5-6), nao o xatlas.
+        q1 = np.array([[0.10, 0.10], [0.20, 0.10], [0.20, 0.20], [0.10, 0.20]])
+        q2 = q1 + np.array([0.11, 0.0])
+        faces_uv = np.array([
+            [q1[0], q1[1], q1[2]], [q1[0], q1[2], q1[3]],
+            [q2[0], q2[1], q2[2]], [q2[0], q2[2], q2[3]],
+        ])
+        areas = np.ones(4)
+        met = P.metricas_uv(faces_uv, areas, 512)
+        self.assertEqual(met["ilhas"], 2)
+        self.assertIsNotNone(met["margem_min_px"])
+        self.assertGreaterEqual(met["margem_min_px"], 4)
+        self.assertLessEqual(met["margem_min_px"], 8)
+
+    def test_gerar_uv_registra_parametros_do_empacotamento(self):
+        verts, faces = cubo()
+        with tempfile.TemporaryDirectory() as tmp:
+            glb = os.path.join(tmp, "cubo.glb")
+            trimesh.Trimesh(vertices=verts, faces=faces).export(glb)
+            npz = os.path.join(tmp, "cubo.npz")
+            met = uv_xatlas.gerar_uv(glb, npz)
+            self.assertEqual(met["padding_px"], 8)
+            self.assertEqual(met["resolucao"], 2048)

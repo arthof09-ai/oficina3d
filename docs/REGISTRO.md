@@ -348,3 +348,92 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **Correcao pos-veredito (D-T5-2 FECHADO):** `_blender_uv_xatlas.py` agora aceita `ocupacao_esperada` (+ `tolerancia_ocupacao`, padrao 0,02) no pedido e falha (ok=False, exit 3) quando a ocupacao medida diverge; `uv_xatlas.py` e o script Blender documentam o flip V (`v_glb = 1 - v_npz`). Prova nos dois sentidos via tarefa agendada `Oficina3D_T5Guard` (sem trigger, so Start; removida apos o uso): com esperada 0,61398 passou (medida 0,61398); com esperada 0,10 falhou como esperado (ValueError, exit 3). O runner `run_t5.py` ja comparava a ocupacao; a guarda agora vive tambem no script, como a docstring prometia.
 - **Estado:** codigo da T5 commitado e pushado como ac8c15a antes do Critico; correcao D-T5-2 + este registro + relatorio do Critico seguem em commit apos o veredito. T5 FECHADA como passo de UV. Proximo passo obrigatorio antes do T1-completo (ordem aceita): D-T5-1 (margem) + D2 (adversarial).
 - **Espelho no Drive (ARMAZ-01, apos o veredito):** REGISTRO.md, ESTADO_ATUAL.md e CRITICO-t5-relatorio.md copiados para Oficina3D_v2/REGISTRO no Drive (G:) e conferidos por SHA-256 na volta (prefixos de 8 digitos iguais nos 3 arquivos: REGISTRO 65CBC0D7, ESTADO D1F84F55, CRITICO C6D8B77E). O espelho desta etapa esta validado.
+
+## 01/11/2026, ~07:34 - Muse (CM-000009): Etapa COR, D-T5-1 - gutter real na UV xatlas (aguarda Critico)
+
+- **Escopo (ordem do Critico T5, aceita):** a margem minima entre ilhas estava
+  abaixo da regua (>= 8 px em 2048). O padrao anterior (padding 0) media
+  1 px em 512 e em 1024. A correcao e padding real no empacotamento xatlas.
+- **Experimento 1 - varredura de padding no Orc Prata**
+  (`jobs_teste/cor_margem/resultado_exp.json`, tarefa Oficina3D_MargemExp):
+  baseline reproduzida exatamente (ocupacao 0,61398, distorcao 0,08787,
+  6.578 ilhas, 12,937 texels/face, margem 1@512 e 1@1024); padding 8@2048:
+  margem 2@512, 4@1024 e **9@2048 (medicao direta) - REGUA CUMPRIDA**,
+  ocupacao 0,23332, texels/face 4,92, distorcao 0,07446, ilhas 6.578
+  (inalteradas); padding 12: margem 5@1024, ocupacao 0,161, texels 3,39;
+  padding 16: margem 6@1024, ocupacao 0,117, texels 2,46.
+- **Achado central (custo geometrico do gutter):** com 6.578 ilhas pequenas,
+  o gutter de 8 px em 2048 custa mais area UV que as proprias ilhas
+  (perimetro total x gutter); o empacotador reduz a escala para caber:
+  ocupacao 0,614 -> 0,233. A troca e real e foi medida, nao assumida. O
+  numero de ilhas nao muda e a distorcao nao piora (0,0745 vs 0,0879). Em
+  1024 (textura do bake), 4,92 texels/face segue 5,4x acima do Smart UV
+  (0,91). Em bake 2048, a mesma UV daria ~19,7 texels/face - registrado
+  como dado, nao como mudanca de padrao (o bake segue em 1024).
+- **Experimento 2 - max_cost do charting** (`resultado_exp2.json`, tarefa
+  Oficina3D_MargemExp2): max_cost 4: 5.365 ilhas, ocupacao 0,253, texels
+  5,33, distorcao 0,0720; max_cost 8: 4.575 ilhas, ocupacao 0,268, texels
+  5,65, distorcao 0,0742; max_cost 16: 4.475 ilhas, ocupacao 0,270, texels
+  5,69, distorcao 0,0756. **NAO ADOTADO:** ganho modesto (+15% de densidade
+  no max_cost 8) ao custo de mudar o charting provado na T5, com risco nao
+  medido de distorcao LOCAL (a media nao se move, mas a media nao ve
+  estiramento local). Fica registrado como otimizacao futura, com numeros,
+  para o Critico julgar.
+- **Equivalencia de implementacao** (`resultado_cmp.json`, tarefa
+  Oficina3D_MargemCmp): a API Atlas com padding 0 e resolucao 0 e BIT A BIT
+  identica a conveniencia parametrize no Orc Prata (vmapping, indices e uvs
+  com maxdiff 0,0) - a troca de implementacao em `parametrizar()` e neutra;
+  so o padding muda o resultado.
+- **Codigo** (commitado e pushado antes do Critico - licao C3-1):
+  `oficina3d/uv_xatlas.py` passa a usar a API Atlas com PADDING_PX_PADRAO=8
+  e RESOLUCAO_PADRAO=2048, guarda atlas_count==1 (o bake assume uma unica
+  textura) e registra padding/resolucao/max_cost nas metricas do gerar_uv.
+  Testes novos em `testes/test_uv_xatlas.py` (classe TestUvMargemD_T5_1):
+  margem do cubo com o padrao em 2048 >= 8 (medido 15); gap sintetico de
+  0,01 UV medido 6 px em 512 (valida o METODO, D-T5-6); gerar_uv registra
+  padding 8 e resolucao 2048. Suite: **247 testes OK, skipped=1**
+  (240 do T1 + 4 da T5 + 3 novos da D-T5-1).
+- **Prova completa** (`jobs_teste/cor_margem/prova/`, tarefa
+  Oficina3D_MargemProva, `resultado_prova.json`): (0) determinismo do
+  gerar_uv novo - 2 runs com .npz bit a bit identicos (vmapping, indices,
+  uvs) e metricas iguais; (1) Blender aplica a UV - metricas IDENTICAS ao
+  lado xatlas (ocupacao 0,23287, distorcao 0,07446, ilhas 6.578, margem 2@512,
+  texels 4,92), guarda de ocupacao passa (esperada = medida = 0,23287);
+  (2) bake COR - IoUs IDENTICOS aos da T5 nas 4 vistas (frente 0,7947,
+  costas 0,7241, esquerda 0,793, direita 0,7872) e mesmas faces visiveis -
+  a geometria nao mudou; faces pintadas levemente menores (8.723/10.916/
+  8.299/7.424 vs 8.778/11.100/8.397/7.498 - efeito esperado da menor
+  densidade: menos faces capturam um centro de texel); cobertura: texels
+  UV 244.649 (antes 643.613), pintados direto 46.343 (antes 121.567, 38,1%
+  = a razao de ocupacao 0,233/0,614), cegos 81,06% (antes 81,11% - a fracao
+  cega nao mudou), 0 texels sem cor apos a dilatacao; (3) margens em 2048
+  com o MESMO metodo nos dois artefatos (D-T5-6 unificado): **.npz 9 px e
+  GLB exportado 9 px** - regua cumprida nos dois; area UV do GLB 0,23341 =
+  .npz; 49.750 faces. SHAs: textura 5660c824..., modelo_cor 9aa12f8e...,
+  modelo_uv 64782391....
+- **Determinismo ponta a ponta do caminho novo** (`det_resultado.json`,
+  tarefa Oficina3D_MargemDet): refazer Blender + bake com o mesmo .npz
+  devolve os 3 SHAs IDENTICOS (textura, modelo_cor, modelo_uv). O primeiro
+  det "falhou" por um artefato do proprio script: o nome da imagem
+  embutida no GLB vem do nome do arquivo de saida ("textura" vs
+  "textura_det" = +4 bytes) - com os mesmos nomes de arquivo, tudo bate.
+  Licao L-21. As previas das rodadas 2 e 3 sao pixel-identicas (0 px
+  diferentes na frente) com SHA diferente - metadado PNG do Blender;
+  comparacao de previas e por pixels, nao por SHA (licao L-22).
+- **Bugs da prova (da prova, nao do passo):** (1) a v1 do run_prova
+  comparava `tempo_s` nas metricas e reprovou um passo bit a bit identico
+  (licao L-20: determinismo nunca compara relogio); (2) o trimesh nao le
+  UV de GLB sem textura (modelo_uv.glb vira ColorVisuals) - a margem do
+  GLB foi medida no modelo_cor.glb, cuja UV e a mesma (area UV bate com o
+  .npz; o bake nao altera UVs).
+- **Leitura do executor (antecipacao; quem julga e o Critico):** A/B das 4
+  previas (nova x T5): nenhuma regressao visual - sem massas pretas novas,
+  sem mancha branca, mesmas familias de cor; o torso segue em mosaico
+  (D1 segue ABERTO, como esperado: o gargalo continua sendo alinhamento +
+  geometria-vs-arte, nao densidade). O detalhe fino sai um pouco mais
+  macio que na T5, coerente com 4,92 vs 12,94 texels/face - preco medido
+  do gutter, nao defeito novo.
+- **Estado:** codigo + testes + prova commitados e pushados antes de
+  convocar o Critico. D-T5-1 FECHADA como correcao se o Critico aprovar.
+  Proximo: D2 (adversarial) + D7 (costura) com a UV nova, depois
+  integracao a fila. Espelho no Drive apos o veredito.

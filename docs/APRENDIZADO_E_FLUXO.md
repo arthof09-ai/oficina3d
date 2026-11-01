@@ -160,6 +160,40 @@ Cada licao nasce de um caso real. Formato: caso -> o que aconteceu -> custo -> r
 - **Custo:** correcao pos-veredito (guarda implementada no script + prova nos dois sentidos) em vez de um paragrafo de pendencia.
 - **Regra:** docstring que promete comportamento de falha e especificacao testavel: ou o codigo cumpre, ou a docstring nao promete. (Checklist pre-Critico, item 2: lastro apontavel - vale tambem para o proprio codigo.)
 
+
+### L-19 - Primeira linha do stdout some com o progresso CLIXML (01/11/2026)
+Caso: ao ler a saida do helper SSH, a primeira linha real sumia (ex.: defaults
+do PackOptions, lista de ChartOptions). Causa: o PowerShell emite o registro de
+progresso em CLIXML no stdout sem quebra de linha no fim, e a primeira linha
+real cola nele; o filtro `grep -v CLIXML` do Muse descartava o conjunto.
+Custo: duas sondas repetidas e uma leitura errada (defaults "ausentes").
+Regra: scripts de prova imprimem uma linha em branco sacrificada antes de
+qualquer saida; leitura critica confere o ARQUIVO de log, nao so a tela.
+
+### L-20 - Determinismo nao compara relogio (01/11/2026)
+Caso: a prova da D-T5-1 reprovou o passo novo por `metricas_iguais=False`
+quando os 3 arrays do .npz eram bit a bit identicos. Causa: a comparacao
+incluia `tempo_s`, que varia entre runs e nao e dado do passo. Custo: uma
+prova abortada no passo 0 e um re-run (suite + 2x gerar_uv + Blender + bake).
+Regra: comparacao de determinismo exclui tempo de execucao (e qualquer outro
+campo de medicao, nao de resultado); o que prova determinismo sao os
+artefatos bit a bit + as metricas de resultado.
+
+### L-21 - Nome do arquivo de saida entra no GLB (01/11/2026)
+Caso: o det ponta a ponta "falhou" com modelo_cor.glb diferente embora a
+textura, a geometria e as UVs fossem identicas. Causa: o bake nomeia a imagem
+embutida pelo nome do arquivo de saida ("textura" vs "textura_det" = +4
+bytes no GLB). Custo: um diagnostico completo (decode dos dois GLBs) ate
+isolar a causa. Regra: prova de determinismo usa os MESMOS nomes de arquivo
+de saida (pasta diferente, nomes iguais); se os nomes diferirem, compara-se
+o conteudo (JSON do GLB + geometria + textura), nao o SHA do arquivo.
+
+### L-22 - Previa PNG: comparar pixels, nao SHA (01/11/2026)
+Caso: previas das rodadas 2 e 3 do bake tinham SHA diferente com 0 px
+diferentes na frente. Causa: o PNG do Blender carrega metadado que varia
+entre runs; o raster e identico. Regra: regressao visual de previas se mede
+por diferenca de pixels (0 px = identica), nunca por SHA do arquivo.
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:

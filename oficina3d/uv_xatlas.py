@@ -21,7 +21,19 @@ do GLB exportado com este .npz fora do Blender tem de aplicar o flip.
 Dentro do Blender o bake usa as loop UVs lidas do GLB importado, logo
 o flip nao afeta o bake; a correspondencia e por face/loop, nunca por
 vertice (o Blender muda a contagem de vertices ao importar/exportar).
+
+Gutter real (D-T5-1, Critico T5): o empacotamento usa padding real em
+texels na resolucao dada, de modo que a menor faixa vazia entre ilhas
+mede >= 8 px em 2048 (regua do Critico T5; o padrao anterior, padding 0,
+media 1 px em 512 e em 1024 - abaixo da regua, com halo sob mipmapping).
+Custo medido no Orc Prata (ver REGISTRO D-T5-1): com 6.578 ilhas, o
+gutter de 8 px em 2048 encolhe as ilhas (ocupacao 0,614 -> 0,233,
+12,94 -> 4,92 texels/face em 1024) - o empacotador reduz a escala para
+caber o perimetro total com gutter. A margem medida no Orc com o padrao
+novo e 9 px em 2048 (direto) e 4 px em 1024. O numero de ilhas nao muda
+(o gutter nao funde nem divide ilhas) e a distorcao nao piora.
 """
+
 from __future__ import annotations
 
 import json
@@ -29,6 +41,12 @@ import time
 from pathlib import Path
 
 import numpy as np
+
+# Padrao D-T5-1: gutter de 8 texels numa resolucao de 2048 -> faixa vazia
+# minima >= 8 px em 2048 (medido: 9 px no Orc Prata). Mudar o padrao exige
+# re-medir a margem no Orc e atualizar este comentario com os numeros.
+PADDING_PX_PADRAO = 8
+RESOLUCAO_PADRAO = 2048
 
 
 def carregar_malha_glb(caminho: str | Path) -> tuple[np.ndarray, np.ndarray]:
@@ -46,11 +64,31 @@ def carregar_malha_glb(caminho: str | Path) -> tuple[np.ndarray, np.ndarray]:
     return np.asarray(malha.vertices, dtype=np.float64), np.asarray(malha.faces, dtype=int)
 
 
-def parametrizar(vertices: np.ndarray, faces: np.ndarray):
-    """(vmapping, indices, uvs) do xatlas, na ordem das faces de entrada."""
+def parametrizar(vertices: np.ndarray, faces: np.ndarray, padding_px: int = PADDING_PX_PADRAO,
+                 resolucao: int = RESOLUCAO_PADRAO, max_cost: float = 2.0):
+    """(vmapping, indices, uvs) do xatlas, na ordem das faces de entrada.
+
+    Usa a API Atlas (bit a bit identica a conveniencia parametrize no
+    Orc Prata - prova em jobs_teste/cor_margem/resultado_cmp.json) para
+    poder fixar o padding do empacotamento. ``padding_px`` sao texels na
+    ``resolucao`` dada; ``max_cost`` e o custo maximo de crescimento das
+    ilhas (2.0 = padrao do xatlas, o mesmo da T5). Exige um unico atlas:
+    o bake do T1 assume uma unica textura.
+    """
     import xatlas
 
-    vmapping, indices, uvs = xatlas.parametrize(vertices, faces)
+    atlas = xatlas.Atlas()
+    atlas.add_mesh(np.asarray(vertices, dtype=np.float32),
+                   np.asarray(faces, dtype=np.uint32))
+    chart = xatlas.ChartOptions()
+    chart.max_cost = max_cost
+    pack = xatlas.PackOptions()
+    pack.padding = padding_px
+    pack.resolution = resolucao
+    atlas.generate(chart, pack)
+    if atlas.atlas_count != 1:
+        raise ValueError(f"xatlas gerou {atlas.atlas_count} atlas; esperado 1")
+    vmapping, indices, uvs = atlas.get_mesh(0)
     return (np.asarray(vmapping), np.asarray(indices).reshape(-1, 3),
             np.asarray(uvs, dtype=np.float64))
 
@@ -72,11 +110,13 @@ def metricas(faces_uv: np.ndarray, areas_3d: np.ndarray) -> dict:
     return met
 
 
-def gerar_uv(caminho_glb: str | Path, caminho_npz: str | Path) -> dict:
+def gerar_uv(caminho_glb: str | Path, caminho_npz: str | Path,
+             padding_px: int = PADDING_PX_PADRAO, resolucao: int = RESOLUCAO_PADRAO,
+             max_cost: float = 2.0) -> dict:
     """Parametriza o GLB e grava o .npz; devolve metricas + contagens."""
     t0 = time.perf_counter()
     verts, faces = carregar_malha_glb(caminho_glb)
-    vmapping, indices, uvs = parametrizar(verts, faces)
+    vmapping, indices, uvs = parametrizar(verts, faces, padding_px, resolucao, max_cost)
     faces_uv = uvs[indices]
     a, b, c = verts[faces[:, 0]], verts[faces[:, 1]], verts[faces[:, 2]]
     areas = np.linalg.norm(np.cross(b - a, c - a), axis=1) * 0.5
@@ -84,6 +124,9 @@ def gerar_uv(caminho_glb: str | Path, caminho_npz: str | Path) -> dict:
     met["tempo_s"] = round(time.perf_counter() - t0, 2)
     met["vertices_originais"] = int(len(verts))
     met["vertices_com_costura"] = int(len(uvs))
+    met["padding_px"] = int(padding_px)
+    met["resolucao"] = int(resolucao)
+    met["max_cost"] = float(max_cost)
     Path(caminho_npz).parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(caminho_npz, vmapping=vmapping.astype(np.int64),
                         indices=indices.astype(np.int64), uvs=uvs.astype(np.float32))
