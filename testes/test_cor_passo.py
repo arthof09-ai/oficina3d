@@ -125,5 +125,64 @@ class TestCliCor(unittest.TestCase):
         self.assertFalse(b.cor)
 
 
+class TestGerarUvProgresso(unittest.TestCase):
+    """D-COR05-1: gerar_uv emite progresso e aborta antes de gravar o .npz."""
+
+    def _cubo_glb(self, tmp):
+        import trimesh
+        p = tmp / "cubo.glb"
+        trimesh.creation.box(extents=(1.0, 1.0, 1.0)).export(str(p))
+        return p
+
+    def test_progresso_chamado_nas_fronteiras_e_monotonico(self):
+        from oficina3d import uv_xatlas
+        tmp = TEMP_TESTES / "cor_uv_prog"
+        tmp.mkdir(exist_ok=True)
+        chamadas = []
+        met = uv_xatlas.gerar_uv(self._cubo_glb(tmp), tmp / "uv.npz",
+                                 progresso=lambda pct, msg: chamadas.append((pct, msg)))
+        self.assertEqual(met["triangulos"], 12)
+        pcts = [c[0] for c in chamadas]
+        self.assertEqual(pcts[0], 0)
+        self.assertEqual(pcts[-1], 100)
+        self.assertIn(30, pcts)
+        self.assertIn(80, pcts)
+        self.assertEqual(pcts, sorted(pcts))
+        self.assertTrue((tmp / "uv.npz").is_file())
+
+    def test_progresso_que_levanta_em_80_nao_grava_npz(self):
+        from oficina3d import uv_xatlas
+        tmp = TEMP_TESTES / "cor_uv_cancel"
+        tmp.mkdir(exist_ok=True)
+
+        def _cancela(pct, msg):
+            if pct >= 80:
+                raise RuntimeError("cancelado simulado")
+
+        with self.assertRaises(RuntimeError):
+            uv_xatlas.gerar_uv(self._cubo_glb(tmp), tmp / "uv.npz", progresso=_cancela)
+        self.assertFalse((tmp / "uv.npz").exists())
+
+    def test_sem_progresso_mantem_comportamento(self):
+        from oficina3d import uv_xatlas
+        tmp = TEMP_TESTES / "cor_uv_semprog"
+        tmp.mkdir(exist_ok=True)
+        met = uv_xatlas.gerar_uv(self._cubo_glb(tmp), tmp / "uv.npz")
+        self.assertEqual(met["triangulos"], 12)
+        self.assertTrue((tmp / "uv.npz").is_file())
+
+
+class TestSha256Worker(unittest.TestCase):
+    """D-COR05-3: o helper de SHA usado no campo glb_refinado_preservado."""
+
+    def test_sha256_de_conteudo_conhecido(self):
+        import hashlib
+        tmp = TEMP_TESTES / "cor_sha"
+        tmp.mkdir(exist_ok=True)
+        p = tmp / "a.bin"
+        p.write_bytes(b"oficina3d-dc05")
+        self.assertEqual(worker._sha256(p), hashlib.sha256(b"oficina3d-dc05").hexdigest())
+
+
 if __name__ == "__main__":
     unittest.main()

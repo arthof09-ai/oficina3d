@@ -115,15 +115,41 @@ def metricas(faces_uv: np.ndarray, areas_3d: np.ndarray) -> dict:
 
 def gerar_uv(caminho_glb: str | Path, caminho_npz: str | Path,
              padding_px: int = PADDING_PX_PADRAO, resolucao: int = RESOLUCAO_PADRAO,
-             max_cost: float = 2.0) -> dict:
-    """Parametriza o GLB e grava o .npz; devolve metricas + contagens."""
+             max_cost: float = 2.0, progresso=None) -> dict:
+    """Parametriza o GLB e grava o .npz; devolve metricas + contagens.
+
+    ``progresso`` (opcional) segue o contrato ``progresso(pct, msg)``
+    com pct 0-100 dentro deste passo; e chamado antes de carregar (0),
+    apos carregar (20), antes de parametrizar (30), logo apos a
+    parametrizacao retornar (80), apos as metricas (90) e apos gravar
+    o .npz (100). Se ele levantar (o worker levanta JobCancelado
+    quando o job foi cancelado no disco), a excecao propaga ANTES de
+    gravar o .npz: um cancelamento pedido durante a parametrizacao
+    aborta antes de qualquer saida, sem publicar nada parcial.
+
+    Limitacao honesta (D-COR05-1): a chamada nativa ``atlas.generate``
+    (~97 s no Orc Prata) e um unico bloqueio e nao pode ser
+    interrompida no meio; a janela residual de cancelamento e
+    exatamente essa chamada. Antes dela, o ultimo ponto de checagem
+    era o ``avisar(5)`` do passo; depois dela, o ponto 80 acima.
+    """
     t0 = time.perf_counter()
+
+    def avisar(pct, msg):
+        if progresso is not None:
+            progresso(pct, msg)
+
+    avisar(0, "uv: carregando GLB")
     verts, faces = carregar_malha_glb(caminho_glb)
+    avisar(20, "uv: GLB carregado")
+    avisar(30, "uv: parametrizando (xatlas)")
     vmapping, indices, uvs = parametrizar(verts, faces, padding_px, resolucao, max_cost)
+    avisar(80, "uv: parametrizacao pronta")
     faces_uv = uvs[indices]
     a, b, c = verts[faces[:, 0]], verts[faces[:, 1]], verts[faces[:, 2]]
     areas = np.linalg.norm(np.cross(b - a, c - a), axis=1) * 0.5
     met = metricas(faces_uv, areas)
+    avisar(90, "uv: metricas prontas")
     met["tempo_s"] = round(time.perf_counter() - t0, 2)
     met["vertices_originais"] = int(len(verts))
     met["vertices_com_costura"] = int(len(uvs))
@@ -133,6 +159,7 @@ def gerar_uv(caminho_glb: str | Path, caminho_npz: str | Path,
     Path(caminho_npz).parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(caminho_npz, vmapping=vmapping.astype(np.int64),
                         indices=indices.astype(np.int64), uvs=uvs.astype(np.float32))
+    avisar(100, "uv: .npz gravado")
     return met
 
 

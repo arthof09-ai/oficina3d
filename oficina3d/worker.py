@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import hashlib
 import importlib
 import json
 import os
@@ -189,6 +190,15 @@ class _Progresso:
             _salvar(self.job)
 
 
+def _sha256(caminho) -> str:
+    """SHA-256 hex de um arquivo, em blocos (sem carregar tudo em RAM)."""
+    h = hashlib.sha256()
+    with open(caminho, "rb") as f:
+        for bloco in iter(lambda: f.read(1 << 20), b""):
+            h.update(bloco)
+    return h.hexdigest()
+
+
 def _verificar_cancelado(jb: dict) -> None:
     if _cancelado_no_disco(jb["id"]):
         raise JobCancelado()
@@ -332,6 +342,10 @@ def processar_job(job_id: str) -> dict:
                 raise ErroEtapa("cor", str(e)) from e
             tempos["cor"] = round(time.time() - t, 1)
             etapas["cor"] = res_cor
+            # D-COR05-1 (2a parte): re-checar o cancelamento ANTES das
+            # copias finais para saida/ - o passo ja voltou, mas o
+            # pedido pode ter chegado durante o bake.
+            _verificar_cancelado(jb)
             jb["avisos"].extend(
                 f"cor: vista {v} ausente no job" for v in res_cor.get("vistas_ausentes") or [])
             if res_cor.get("vistas_ignoradas"):
@@ -341,6 +355,12 @@ def processar_job(job_id: str) -> dict:
             if modelo_final != sem_cor:
                 shutil.copy2(modelo_final, sem_cor)
             shutil.copy2(job_dir / res_cor["arquivos"]["modelo_cor"], job_dir / "saida" / "modelo.glb")
+            # D-COR05-3: o refinado preservado, com SHA, dentro da
+            # propria etapa cor do relatorio (antes so existia no
+            # manifesto do Drive e truncado no REGISTRO).
+            etapas["cor"]["glb_refinado_preservado"] = {
+                "arquivo": "saida/modelo_sem_cor.glb",
+                "sha256": _sha256(sem_cor)}
             modelo_final = job_dir / "saida" / "modelo.glb"
             jb["cor_previas"] = res_cor["arquivos"]["previas"]
             _registrar(jb, "cor", f"cor pronta: textura {res_cor['arquivos']['textura']}",

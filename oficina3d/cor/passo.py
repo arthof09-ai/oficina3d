@@ -121,7 +121,14 @@ def rodar_passo_cor(job_dir, glb_refinado, imagens, pasta_cor=None, progresso=No
             progresso(pct, msg)
 
     avisar(5, "cor: gerando UV xatlas")
-    met_uv = uv_xatlas.gerar_uv(glb_refinado, pasta_cor / "uv.npz")
+
+    def _progresso_uv(pct, msg):
+        # Mapeia o progresso interno da UV (0-100) para a janela 5-30
+        # da etapa cor; cada chamada passa pelo _Progresso do worker,
+        # que confere o cancelamento no disco (D-COR05-1).
+        avisar(5 + (int(pct) * 25) // 100, f"cor: UV xatlas {msg}")
+
+    met_uv = uv_xatlas.gerar_uv(glb_refinado, pasta_cor / "uv.npz", progresso=_progresso_uv)
     avisar(30, f"cor: UV xatlas pronta (ocupacao {met_uv.get('ocupacao')})")
 
     modelo_uv = pasta_cor / "modelo_uv.glb"
