@@ -735,3 +735,28 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
   (5) detectou colisão de numeração (L-30 já ocupado pelo cancelamento em chamada nativa da D-COR05 e L-33
   pela APR-02) e renumerou a lição nova para L-34 antes de subir.
 - **Próximo sujeito da fila REF-01:** diagonais do Orc; depois, a classificação das 5 bestas novas de 31/10.
+
+
+## 2026-11-01 - T2 cor de vertice (COR-07): execucao medida e provas (fechamento do executor; aguarda Critico)
+
+Codigo no commit 8ce9860 (push conferido: HEAD = origin/main, arvore limpa). Worker reiniciado para carregar o codigo novo (PID 33284 -> 31856, 12:47:35, fila vazia na troca; o supervisor levou ~4 min no backoff - registrado no log da tarefa).
+
+- **Suite:** 285 testes, 0 falhas, 0 erros, 1 skipped, 27,5 s (267 da D-COR05 + 18 novos do T2; reconciliacao exata).
+- **Sintetico no Blender** (esfera 64x32, 1.986 vertices): as 4 vistas com a cor esperada EXATA nos vertices de facing > 0,99 (9 amostras por vista); cobertura vista 99,9% + propagacao 0,1% (os polos), sem_cor 0; exportacao verificada por parse do GLB (COLOR_0 2.143 == POSITION 2.143, 0 imagens, 1 material); passo Blender 0,78 s.
+- **Autoauditoria, item 8 (pos-sintetico):** a primeira versao da verificacao interna do GLB exigia COLOR_0 == n. de vertices da MALHA do Blender e reprovou o sintetico (2.143 exportados x 1.986 da malha): o exportador duplica vertices nas costuras - o mesmo fenomeno medido na D-COR05 (65.274 -> 71.336). Verificacao corrigida para a invariante real do formato (COLOR_0 == POSITION no mesmo primitivo) ANTES de qualquer job real; sintetico aprovado na reexecucao. A verificacao continua sendo saida dura (exit 3) se o COLOR_0 vier incompleto ou ausente.
+
+Provas reais pela fila (worker novo; os 8 jobs concluidos):
+
+- **J1 `20261101-124814-t2-orc`** (hunyuan-mv, prata, seed 7, vertice): passo de cor no Blender 2,57 s (contra 175,6 s do passo de projecao na prova COR-05); cobertura vista 47,54% / propagacao 34,72% / sem_cor 17,74%; GLB final com COLOR_0 em 65.469 vertices exportados, 99,4% nao-brancos, media RGB (0,361; 0,243; 0,192); SHA da saida 949E3CF7...
+- **J2 determinismo:** job identico (`t2-orc-det`) -> saida BYTE-IDENTICA (mesmo SHA 949E3CF7...).
+- **J3 besta:** passo 2,05 s; vista 58,53% / propagacao 30,76% / sem_cor 10,71%; 97,0% nao-brancos; media (0,398; 0,142; 0,349) - o roxo dos cristais.
+- **J4 caprileio:** passo 1,93 s; vista 70,08% / propagacao 20,49% / sem_cor 9,42%; 99,9% nao-brancos.
+- **J5 orc triposr, so frente (a parte (i) do backlog):** transferencia da forma ACEITA com distancia mediana de 0,00018 da altura (limite 0,05); fontes: vista 27,51% / **FORMA 72,49%** / sem_cor 0 - a cor que o TripoSR gera e o refino descartava agora chega ao modelo final, com cobertura total.
+- **J6 sem cor:** saida SHA 5467F25E... == ancora da D-COR05 (caminho sem cor intocado pelo T2).
+- **J7 projecao:** textura EBD744A9... e modelo 0F838538... BYTE-IDENTICOS as ancoras da COR-05 (sem regressao no modo padrao sob o codigo novo).
+- **J8 so a vista frente (adversarial):** concluido com declaracao completa - os avisos do job nomeiam as 3 vistas ausentes; cobertura vista 25,80% / propagacao 43,13% / sem_cor 31,07% declarada em `cobertura`.
+- **Rotulo de rascunho:** aviso presente em todos os jobs de vertice; job de projecao (J7) sem avisos.
+- **sem_cor:** fracao de vertices sem fonte, exportada preta e DECLARADA por job; nas previas de superficie inspecionadas (frente e costas do J1) nao aparece mancha preta - consistente com geometria interna/oculta das malhas Hunyuan; a Critica pode medir por componentes.
+- **Previas** baixadas para a VM do executor (pasta da auditoria do T2): orc nos 4 angulos, besta frente, caprileio frente, triposr frente e costas - superficie visivel colorida por inteiro nas tres personagens e no triposr.
+
+Pendencias nomeadas apos a execucao: (1) exposicao web/MCP da opcao `cor_modo` (herdada da COR-05); (2) D1 (fidelidade da cor no modo projecao) segue ABERTA e ortogonal - o modo vertice e rascunho por desenho (COR-07); (3) veredito do Critico senior sob a carta CRITICO-PADRAO (duas baterias: padrao + personalizada do T2) - esta secao e o fechamento do EXECUTOR; "pronto" so com o veredito dele.
