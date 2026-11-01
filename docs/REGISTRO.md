@@ -221,3 +221,12 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - O Critico re-verificou com evidencia propria (relatorio em `docs/CRITICO-fase1-auditoria-2-adendo.md`): **N1 CONFERE** (suite rodada por ele: 204 testes OK; 29 no test_motores com as 5 classes; commit 49e89e4 = GitHub), **N2 CONFERE** (web ao vivo com a licenca final, CLI batendo), **N3 CONFERE COM RESSALVA MENOR** (ESTADO fiel; restavam 2 mencoes a "199 testes" na REVISAO e 1 frase superada no ESTADO — corrigidas neste ciclo) e **Prova C do Orc CONFERE integral** (hashes e parse dele: determinismo nos dois motores, 49.750 triangulos, VRAM max. 6.435 MB, forma max. 41,4 s).
 - **Veredito atualizado: NAO PRONTA por um unico item** — o item 3, que so fecha com as imagens do Caprileo e da Besta Cristalina (kit de 27/10, no notebook) rodando a mesma bateria. O item 8 depende dele. De engenharia, nada falta.
 
+
+## 01/11/2026, ~00:50-01:00 - Muse (CM-000009): Prova C COMPLETA, QUAL-01 no ar e novas diretivas
+
+- **Imagens douradas recuperadas do Drive** pelo indice da auditoria do Codex (relatorio de continuidade v002, enviado pelo Mestre): Besta Cristalina (768x512) e Caprileo (~700x700), 4 cardinais de cada, **sha256 conferindo com o indice em 8/8**, instaladas em app\testes\dourado\imagens.
+- **Prova C FECHADA:** Besta (mv forma <=37,7 s, VRAM <=6.415 MB; mini <=34,1 s; determinismo sha ba8d6cd5.../0dbf7062... repetidos) e Caprileo (mv <=38,8 s, <=6.411 MB; mini <=33,6 s; sha 1b92e3b8.../742df2bd... repetidos); GLB final 49.750 tris em todos os 12 jobs. Somados ao Orc, os 3 personagens passam na bateria inteira.
+- **QUAL-01 implementado e medido** (ver ESTADO): 5 perfis com os nomes das classificacoes do RPG; 14 testes novos (suite 218 OK); tabela de custo por nivel no ESTADO_ATUAL.
+- **Diretivas novas registradas em DECISOES:** QUAL-02, ANIM-01, MET-01, MET-02 (com trabalho programado de melhoria continua a cada 90 min), MET-03, ARMAZ-01, QUAL-03.
+- **Critico visual (primeira passada, Muse):** o Mestre achou e a analise das previas CONFIRMA: o machado do Orc Lenario tem laminas multiplas/fundidas; a referencia tem lamina unica larga. Rosto ainda suave. Silhueta e proporcoes fieis. Caso inaugural da frente de retrabalho local.
+- Bateria de variancia do Lenario disparada (varq): Orc sementes 42/1234/repeticao da 7, Besta e Caprileo na semente 7.
