@@ -135,6 +135,31 @@ Cada licao nasce de um caso real. Formato: caso -> o que aconteceu -> custo -> r
 
 ---
 
+### L-14 - Pack do Blender nao reescala ilhas; medir ocupacao antes de apostar numa estrategia de UV (01/11/2026)
+- **Caso:** no experimento T5, `pack_islands` sobre o Smart UV so dobrou a ocupacao (0,040 -> 0,078) e `average_islands_scale` + pack chegou a 0,074: o pack rearranja as ilhas preservando a escala delas, nao as estica para encher o quadrado. O unwrap (0,175) ocupou 4x mais ao custo de distorcao 0,48-0,58. So o xatlas resolveu (0,614 com distorcao 0,088).
+- **Custo:** uma rodada de experimento para descobrir o que o nome do operador nao deixa obvio.
+- **Regra:** estrategia de UV se escolhe por medicao (ocupacao + distorcao + texels/face) na mesma malha, nunca pelo nome do operador ("pack" nao significa "encher").
+
+### L-15 - Tarefa agendada: trigger Once + Start = duas execucoes (01/11/2026)
+- **Caso:** a tarefa do experimento T5 foi registrada com trigger Once e disparada tambem com Start-ScheduledTask: duas execucoes concorrentes sobrescreveram o mesmo resultado.json (o arquivo lido no meio era parcial de uma delas, com `ok: false`).
+- **Custo:** uma leitura de resultado confundida e um re-download para confirmar o arquivo final.
+- **Regra:** run unico agendado usa Start-ScheduledTask SEM trigger, ou trigger sem Start - nunca os dois. (Complementa a L-12.)
+
+### L-16 - np.load mantem o arquivo aberto; no Windows isso trava limpeza de diretorio temporario (01/11/2026)
+- **Caso:** o teste de `gerar_uv` falhava so na limpeza do TemporaryDirectory (PermissionError WinError 32 no .npz), nao na assercao: o NpzFile do `np.load` nao tinha sido fechado.
+- **Custo:** um falso-negativo de teste e uma rodada de diagnostico.
+- **Regra:** `np.load` sempre em `with` (ou `.close()` explicito) quando o arquivo vive num diretorio temporario - e, em geral, no Windows, arquivo aberto e arquivo travado.
+
+### L-17 - Controle que devolve o numero identico nao prova o mecanismo - e nao deve ser vendido como prova (01/11/2026)
+- **Caso:** o controle "unwrap sem costuras" devolveu metricas identicas ate a 5a casa ao unwrap com costuras, o que REFUTA a hipotese "o importador glTF marca as costuras" - mas nao explica por que as ilhas travam em 8.098 em todas as estrategias Blender. A hipotese foi abandonada, a anomalia ficou aberta e foi entregue ao Critico como tal; o Critico depois explicou o controle (importador cria 0 costuras; limpar 0->0 e vacuo) e manteve a coincidencia das 8.098 ilhas como nao-explicada.
+- **Custo:** nenhum, porque a anomalia nao foi maquiada de explicacao.
+- **Regra:** resultado de controle identico ao original e informacao (a variavel testada nao move o resultado), nao confirmacao da teoria favorita; anomalia sem explicacao se registra como anomalia, nao como "comportamento do Blender".
+
+### L-18 - Guarda prometida na docstring tem de existir no codigo que promete (01/11/2026)
+- **Caso:** o Critico T5 achou S2: a docstring do `_blender_uv_xatlas.py` prometia `ok=False` se a ocupacao divergisse >0,02, mas o script nao comparava nada - a guarda vivia so no runner. A prova do Orc passou corretamente sem disparar, mas a promessa era falsa.
+- **Custo:** correcao pos-veredito (guarda implementada no script + prova nos dois sentidos) em vez de um paragrafo de pendencia.
+- **Regra:** docstring que promete comportamento de falha e especificacao testavel: ou o codigo cumpre, ou a docstring nao promete. (Checklist pre-Critico, item 2: lastro apontavel - vale tambem para o proprio codigo.)
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:

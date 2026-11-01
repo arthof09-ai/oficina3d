@@ -3,14 +3,25 @@
 Uso:
     blender -b --factory-startup --python-exit-code 3 -P _blender_uv_xatlas.py -- pedido.json
 
-pedido.json: {glb, npz, saida_glb, resultado}
+pedido.json: {glb, npz, saida_glb, resultado,
+              ocupacao_esperada (opcional), tolerancia_ocupacao (opcional, padrao 0,02)}
 O .npz vem de oficina3d.uv_xatlas.gerar_uv (vmapping, indices, uvs).
 A UV e aplicada por loop: o poligono i do GLB importado corresponde a
 face i do .npz (ordem preservada pelo xatlas e pela importacao glTF) e
 o loop j do triangulo recebe uvs[indices[i, j]]. A metrica de UV medida
 aqui no Blender tem de bater com a medida no .venv_app (ocupacao ~0,61
-no Orc Prata); se nao bater, a correspondencia de ordem falhou e o
-resultado sai com ok=False em vez de um GLB silenciosamente errado.
+no Orc Prata).
+Guarda (D-T5-2, Critico T5): quando o pedido traz `ocupacao_esperada`,
+a ocupacao medida e comparada com ela; divergencia acima da tolerancia
+falha o run (ok=False, exit 3) em vez de exportar um GLB silenciosamente
+errado. Sem `ocupacao_esperada` no pedido, nao ha o que comparar e a
+guarda nao dispara - o chamador (runner) e responsavel por passa-la.
+Contrato de flip V (S3, Critico T5): o round-trip glTF inverte V
+(v_glb = 1 - v_blender, medido com erro maximo 2,98e-08); dentro do
+Blender o bake usa as loop UVs lidas do GLB importado, logo o flip nao
+afeta o bake. Fora do Blender, comparar UVs do GLB com o .npz exige
+aplicar o flip. A correspondencia e por face/loop, nunca por vertice
+(o Blender muda a contagem de vertices ao importar/exportar).
 """
 import json
 import math
@@ -120,6 +131,13 @@ def main():
                 uv_layer.data[li].uv = (float(u), float(v))
         progresso(70, "Blender T5: medindo a UV aplicada")
         res["metricas_uv"] = medir(obj)
+        if "ocupacao_esperada" in pedido:
+            esperado = float(pedido["ocupacao_esperada"])
+            tol = float(pedido.get("tolerancia_ocupacao", 0.02))
+            medida = float(res["metricas_uv"]["ocupacao"])
+            res["guarda_ocupacao"] = {"esperada": esperado, "medida": medida, "tolerancia": tol}
+            if abs(medida - esperado) > tol:
+                raise ValueError(f"ocupacao {medida} diverge da esperada {esperado} (tol {tol})")
         progresso(85, "Blender T5: exportando o GLB com a UV nova")
         obj.data.materials.clear()
         bpy.ops.object.select_all(action="DESELECT")

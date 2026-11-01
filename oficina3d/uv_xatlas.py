@@ -15,6 +15,12 @@ novo para o vertice original, indices (nfaces x 3) apontam para uvs, e
 uvs tem um par por vertice novo (costuras duplicam vertices, como deve
 ser). A ordem das faces e preservada pelo xatlas, e o script Blender
 verifica isso medindo as metricas de UV no GLB exportado.
+Nota de flip V (S3, Critico T5): o round-trip glTF inverte V
+(v_glb = 1 - v_npz, medido com erro maximo 2,98e-08); quem comparar UVs
+do GLB exportado com este .npz fora do Blender tem de aplicar o flip.
+Dentro do Blender o bake usa as loop UVs lidas do GLB importado, logo
+o flip nao afeta o bake; a correspondencia e por face/loop, nunca por
+vertice (o Blender muda a contagem de vertices ao importar/exportar).
 """
 from __future__ import annotations
 
