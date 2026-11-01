@@ -1,48 +1,55 @@
 # ESTADO ATUAL: Oficina 3D v2 (CUNHADO-PC)
-**Atualizado em:** 31/10/2026, ~20:20 (horário do PC)
-**Quem escreveu:** Muse (IA remota do Mestre), continuando a sessão do Claude Code local — que parou no limite de uso semanal (volta qui 05/11, 14:00). Auditoria completa da sessão em 31/10 ~15:10: tudo que o Claude relatou confere no PC, no GitHub e no Drive.
+**Atualizado em:** 31/10/2026, ~23:05 (horario do PC)
+**Quem escreveu:** Muse (CM-000009), apos a auditoria n. 2 do Critico e as correcoes N1/N2/N3.
 
-## Fase e passo
-- **Fase 0 CONCLUÍDA.** Os itens que dependiam de tela foram resolvidos pelo Muse em 31/10: Drive em streaming (item 0.2/5 do plano), Windows Update pausado por 5 semanas (item 0.4) e as decisões do item 0.6 tomadas pelo Mestre (ver DECISOES: ZIP-01, RF-03 final, NET-01 final, USO-01 final). Medidas que faltavam coletadas (CUDA, SSD, rede) e `SAUDE_FASE0.json` reescrito — aceite da fase cumprido.
-- **Fase 1, item 1 (código):** os 7 agentes (AG-02) terminaram de escrever; o Muse revisou e rodou a suíte em 31/10 ~15:27: **152 testes, todos passando** (1 skip legítimo: backend opcional que depende da instalação). Checkpoint commitado. Dívida registrada: os 5 arquivos de teste que faltam e a LISTA do agente B (ver PENDENTE).
-- **Fase 1, itens 1 e 2 (ambiente, motores e modelos) CONCLUÍDOS em 31/10 ~18:45:**
-- **Fase 1, item 4 (worker) CONCLUÍDO em 31/10 ~20:20:** tarefa `Oficina3D_Worker` registrada e rodando; arquivamento no Drive ativado (P5) e provado com job real; dois bugs de produção achados por prova viva e corrigidos (INFRA-01 e numpy 1.26 no venv TripoSR). **Fase 1, item 5 (web/MCP) CONCLUÍDO em 31/10 ~20:35:** web no ar pela tarefa `Oficina3D_Web`, MCP stdio provado com paridade total com a API (Prova B do Crítico aprovada), `.mcp.json` criado na BASE; achado e corrigido o GIT-01 (o pacote `oficina3d/motores` estava fora do git). **Fase 1, itens 1-5 CONCLUÍDOS + P6 paga + motores completos (31/10 ~20:44):** pesos full baixados (5/5 motores disponíveis), os 5 testes que faltam escritos (suite completa: **199 testes, OK**) e a LISTA_INSTALACAO_FASE1.md entregue. **Falta na Fase 1: só o item 6** (bateria dourada, Prova C do Crítico — depende de localizar as imagens douradas do Orc/Capríleo/Besta em tamanho adequado). GitHub sincronizado, remoto = local. instalação executada pelo instalador do projeto (Python 3.10, 3 venvs com torch 2.5.1+cu124, clones nos commits fixos + patch, 13 modelos com SHA-256 conferido). Único defeito: `.venv_app` sem `setuptools` (venv do uv não o semeia) — corrigido, incluído no `app.txt`, lock re-congelado e reteste **IMPORT OK** nos 3 venvs. **Próximos passos:** item 4 (worker como tarefa + gpu.lock + jobs_teste), item 5 (web/MCP no ar) e item 6 (bateria dourada: Orc 4 vistas mv-turbo em ≤ 3 min).
-- Observação menor: downloads do Hugging Face caem para HTTP comum (pacote opcional `hf_xet` ausente) — sem impacto agora que os modelos já estão baixados.
-- Janela de trabalho: PC livre até domingo 01/11 à noite (USO-01 final).
+## Onde a Oficina esta
+- **Fases 0 e 1 (itens 1 a 5) CONCLUIDAS e provadas ao vivo.** Suite oficial no
+  interpretador de producao (`.venv_app`): **204 testes, OK** (1 skip desenhado:
+  o registro do servidor MCP fora do `.venv_mcp`).
+- **Item 6 (bateria dourada, Prova C): FATIA DO ORC APROVADA** em 31/10 ~22:57
+  (imagens enviadas pelo Mestre: as 4 vistas cardinais do kit de 27/10, em
+  `testes\dourado\imagens\`, gitignored). mv-turbo, sementes 7 e 42: forma em
+  ~38 s (teto 180 s), VRAM de pico 6.411 MB (teto 8.188), GLB final com 49.750
+  triangulos (teto 50 mil), e a repeticao da semente 7 gerou GLB **byte-identico**
+  (determinismo provado). Falta a fatia do mini-turbo (em medicao) e os outros
+  dois personagens: **Caprileo e Besta Cristalina** (as imagens estao no kit do
+  notebook; o Mestre esta localizando/enviando).
+- **Rodadas de melhoria R2, R3 e R4 CONCLUIDAS** (motores todos com prova viva,
+  refino ponta a ponta, MCP por HTTP com token; resistencia do worker provada:
+  retomada de orfao, espera de GPU, fila 10/10; instalacao do zero so com o
+  GitHub, sem tocar em nenhuma referencia — e a DONO-02 provada).
+- **DONO-01/DONO-02 valendo:** o app e novo e do Mestre, funciona SEM precisar
+  das referencias; as referencias ficam PRESERVADAS para os Comestres
+  auditarem o trabalho. Nada foi excluido.
 
-## VERIFICADO
-- Repositório **público** `https://github.com/arthof09-ai/oficina3d` (GIT-02), clonado em `C:\Users\txcga\RPG_Local\Oficina3D\app`. HEAD: checkpoint do código `6762003` + commits de continuidade por cima (ver `git log`).
-- Pastas: `C:\Users\txcga\RPG_Local\Oficina3D\{app,motores,_cache,jobs,jobs_teste,locks}`.
-- Contrato v1 em `app\docs\`; código recuperado da v1 em `app\docs\v1_recuperado\`.
-- Drive em **streaming**: `G:\Meu Drive\RPG Assimilação\Oficina3D_v2\` com 7 subpastas; `REGISTRO\` com cópia dos docs. A pasta do Desktop segue como pasta de origem da sincronização (não mexida).
-- Windows Update pausado até 05/12/2026 (conferido no registro do Windows).
-- Medidas completas em `docs\SAUDE_FASE0.json`: RTX 4060 (CUDA UMD 13.3, ~7,0 GB VRAM livre), SSD NVMe 477 GB, C: com 70,1 GB livres, rede ~95 Mbps.
-- **ZIP-01 executado:** PartCrafter e DetailGen3D zipados em `modelos_guardados\` (teste de integridade OK; MD5 da nuvem = MD5 local) e os originais locais apagados. TripoSG intocado (12,57 GB em `oficina3d_ia\`).
+## Auditoria n. 2 do Critico (31/10 ~22:51) — veredito: NAO PRONTA
+Pela definicao de 8 itens: nucleo tecnico provado (1, 2, 4, 5, 6); item 3
+bloqueado (Prova C, insumo); itens 7 e 8 nao provados por documentacao velha.
+Defeitos achados pelo Critico e o destino de cada um:
+- **N1 (GRAVE):** o commit 8030d4b (ciclo R2 do Muse) sobrescreveu
+  `testes/test_motores.py` e apagou 19 dos 24 testes (TestPedido, TestGerarFalso
+  com cancelamento/tree-kill/JobObject, TestBase). **CORRIGIDO:** arquivo
+  restaurado do historico e fundido com os 5 testes novos (29 no arquivo);
+  a fusao expos 1 teste antigo desatualizado frente a exigencia do config.yaml
+  (31/10) — fixture corrigida. Suite final: **204 testes, OK**.
+- **N2 (MEDIO):** o processo web era anterior ao ajuste RF-03 e servia a
+  licenca antiga ("so rascunho"). **CORRIGIDO:** web reiniciada pela tarefa;
+  `/api/motores` conferido servindo o texto final.
+- **N3 (BAIXO):** este ESTADO estava parado nas ~20:20. **CORRIGIDO** por esta
+  reescrita.
+- Aguarda-se o **adendo do Critico** re-verificando N1/N2/N3 e a fatia do Orc.
 
-## EM ANDAMENTO: revisão do código dos 7 agentes (decisão AG-02 do Mestre)
-Nenhum agente commitou. Estado conferido arquivo por arquivo pelo Muse:
-| Agente | Arquivos | Estado |
-|---|---|---|
-| A | `oficina3d\config.py`, `job.py`; `testes\test_config.py`, `test_job.py` | completo |
-| B | `instalacao\*` (manifesto, baixar_modelos.py, instalar.ps1/.cmd, env, patches, compat, requisitos) | falta `LISTA_INSTALACAO_FASE1.md` |
-| C (núcleo) | `oficina3d\motores\*`, `worker.py`, `cli.py`; testes | faltam `test_worker.py` e `test_cli.py` |
-| D (entrada) | `oficina3d\entrada\*`; teste | falta `test_entrada.py` |
-| E (refino) | `oficina3d\refino\*`; `testes\test_refino.py` | completo |
-| F (web+MCP) | `oficina3d\web\*`, `oficina3d\mcp\*`; testes; `docs\mcp_exemplo.json` | faltam `test_web.py` e `test_mcp.py` |
-| G (robustez) | `oficina3d\travas.py`, `arquivar.py`, `saude.py`; `instalacao\tarefa_worker\*`; 3 testes | completo |
+## Pendente de verdade (so isto)
+1. Imagens douradas do **Caprileo** e da **Besta Cristalina** (kit de 27/10 no
+   notebook do Mestre; partes do download do Codex ou o kit inteiro servem).
+2. Adendo do Critico sobre a auditoria n. 2.
+3. **Fase 2** (textura/pintura e demais frentes do roteiro): decisao do Mestre.
+4. Opcional do Mestre: gerar as imagens do Orc corpo-base em T-pose (o brief
+   com prompts e checklist ja existe; a geracao e fora da Oficina).
 
-## PENDENTE
-- Fase 1 item 1 (instalação): `uv` ainda ausente — instalar, `uv python install 3.10`, criar os venvs e instalar pelo manifesto (`instalacao\instalar.ps1`).
-- Fase 1 item 2: clonar Hunyuan3D-2GP e TripoSR nos commits fixados, aplicar patches, baixar modelos com SHA.
-- Fase 1 itens 3 a 6, na ordem do plano.
-- Dívida de testes (não bloqueia a instalação): escrever `test_worker.py` e `test_cli.py` (C, apoiados no AmbienteNucleo do test_motores), `test_entrada.py` (D), `test_web.py` e `test_mcp.py` (F) e `instalacao\LISTA_INSTALACAO_FASE1.md` (B).
-
-## Próximo comando exato
-1. Instalar o `uv` e o Python 3.10 (`uv python install 3.10`); criar os venvs e rodar `instalacao\instalar.ps1` conforme o manifesto.
-2. Registrar cada etapa no REGISTRO e commitar ao fim de cada tarefa.
-
-## Processos rodando agora
-- Nenhum agente do Claude (a sessão caiu com o limite). Quem executa agora é o Muse, por SSH, até o Mestre dizer o contrário ou o Claude voltar (qui 05/11).
-
-## Bloqueios e perguntas ao Mestre
-- Nenhuma. As 4 perguntas da versão anterior foram respondidas em 31/10 (ver DECISOES).
+## Operacao
+- Tarefas `Oficina3D_Worker` e `Oficina3D_Web` sobem no logon; pagina em
+  http://127.0.0.1:8765; MCP stdio (9 ferramentas) e HTTP com token disponivel.
+- Repositorio publico: https://github.com/arthof09-ai/oficina3d (HEAD: ver
+  `git log`). Espelho do REGISTRO no Drive conferido por MD5 a cada ciclo.
+- Janela de trabalho pesado: PC livre ate domingo 01/11 a noite (USO-01).
