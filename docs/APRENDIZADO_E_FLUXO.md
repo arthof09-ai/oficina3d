@@ -61,6 +61,8 @@ Antes de convocar o Critico, o executor confere e resolve CADA item. A ideia (AP
 - [ ] Scripts e estado de trabalho vivos em pasta persistente (`~/workspace` ou no PC) - nunca so em `/tmp`. [licao /tmp]
 - [ ] Acesso ao PC: scripts dos helpers SEMPRE pelo STDIN; chamadas curtas; trabalho longo so via tarefa agendada com arquivo de status. [licao helpers-SSH]
 - [ ] Novidade da rodada registrada: qual verificacao NOVA esta bateria pede ao Critico (regra de escalada, secao 5).
+- [ ] Medicao de arestas em malha vinda de GLB solda vertices por posicao (tolerancia 1e-6) - sem solda, costura subcontada e bordas falsas. [licao L-24]
+- [ ] Direcao de vista em medicao fora do Blender esta no frame das normais (GLB: costas = -Z; converter Blender->glTF (x,y,z)->(x,z,-y)) - vetor Blender cru mede o eixo errado. [licao L-25]
 
 ---
 
@@ -205,6 +207,35 @@ nao. Custo: um falso alarme e uma re-medicao. Regra: antes de comparar
 UVs de um GLB com o .npz, contar os round-trips do arquivo - 1 aplica o
 flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
 
+
+### L-24 - GLB duplica vertices: classificar aresta por ID sem soldar inventa bordas (01/11/2026)
+- **Caso:** a medicao D7 da Besta achou 37.456 "bordas" e costura 4.017.
+  Causa: o GLB exportado duplica vertices (split por normal/UV) - a
+  mesma posicao 3D com IDs diferentes. A classificacao por ID nao via
+  a aresta compartilhada. O Critico soldou por posicao (1e-6) e achou
+  a malha fechada: costura 13.758, borda 0, 74.625 classificadas.
+- **Custo:** veredito D7 REPROVADO nesta tranche; republicacao sem
+  novo bake com os numeros corrigidos (iguais, a casa decimal, aos
+  do Critico).
+- **Regra:** toda classificacao de aresta em malha vinda de GLB solda
+  vertices por posicao antes de classificar (`costura.py`, parametro
+  `verts`); teste de vertice duplicado na suite - o caso que deixou
+  o bug passar. (Checklist pre-Critico, item novo.)
+
+### L-25 - Vetor Blender aplicado a normal glTF mede o eixo errado (01/11/2026)
+- **Caso:** o D2 sem-costas usou `direcao_camera("costas")` = (0,1,0)
+  (frame Blender, Z-up) crua sobre normais do GLB (frame glTF, Y-up)
+  e mediu topo/base - "separacao fraca" falsa. No frame certo (glTF,
+  costas = (0,0,-1) pela conversao (x,y,z)->(x,z,-y)), a separacao e
+  forte (alvo 28,23 vs controle 7,05).
+- **Custo:** veredito D2 REPROVADO nesta tranche; republicacao sem
+  novo bake. O bake nao foi afetado: dentro do Blender, vetor e
+  normais vivem no mesmo frame.
+- **Regra:** medicao fora do Blender converte a direcao para o frame
+  das normais antes de usar (docstring de `costura.py` documenta a
+  conversao); documentar o frame de toda tabela de direcoes usada
+  fora do seu contexto de origem. (Checklist pre-Critico, item novo.)
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:
@@ -220,6 +251,8 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Bateria REF-01 lote 1 (abaixo) | Consistencia cruzada ENTRE as vistas geradas (vista x vista, nao so vista x fonte) + checagem geometrica da T-pose (simetria medida na imagem) | Verificado na rodada 2: consistencia cruzada PASSA nas 3 vistas v2; simetria medida (IoU 0,809, extensoes 653 px/lado) |
 | 01/11/2026 | Rodada 2 REF-01 lote 1 v2 | Contagem de dedos por mao com zoom (numero contado, nao estimado) + simetria espelhada MEDIDA da silhueta (IoU mascara x espelho) + auditoria de ancoras de LADO, ancora por ancora, nas costas v2 E no 3/4 v2 (16/16) | D1/D2/D3/D10 fechados; D15 (palmas para a frente, S4) achado |
 | 01/11/2026 | Bateria T1-mecanismo (Etapa COR) | Auditoria de proveniencia por texel (percentual pintado direto x por dilatacao, com consequencia visual) + medida INDEPENDENTE da area UV (decode do GLB, fora do codigo sob teste) + teste anti-atravessamento com medicao (nao so olho) + determinismo por SHA em 2 runs | Pegou: D3 (trilha de determinismo sem artefato do 1o run), D4 (teste mal nomeado), D5 (IoU sintetico vacuo), D6 (lacunas de teste), D8 (iou vazia, verificacao GLB fraca) - e CONFIRMOU a UV 4,32% como causa da fragmentacao; veredito APROVA o mecanismo |
+| 01/11/2026 | Bateria D2/D7 (Etapa COR) | Reimplementacao independente da classificacao de costura (sem importar o codigo sob teste) + proxy (mediana 4 amostras) x media rasterizada + localizacao das piores costuras (juncao de vistas x aleatorio) + controle x alvo no sem-costas + cobertura UV rasterizada independente | S2-1 (solda: costura 4.017 vs 13.758 reais, 37.456 bordas falsas) e S2-2 (frame: D2 mediu topo/base, nao costas/frente) - medicao REPROVADA, fenomeno CONFIRMADO; D2-A (512) aprovado nos numeros |
+| 01/11/2026 | Verificacao D2/D7 (correcoes) | Reimplementacao com parse binario do GLB (sem trimesh, sem costura.py) + teste novo rodado contra o codigo ANTIGO (tem de falhar la) + conferencia da previa flat (Emission, sem luz) e do ponto da pior costura | D2 FECHADO e D7 FECHADO (numeros corrigidos reproduzidos a casa decimal); empate exato no top 3 explicado (duas costuras em 336,02); pendencias restantes S2-3, S3-2, S4-2 registradas |
 
 ---
 

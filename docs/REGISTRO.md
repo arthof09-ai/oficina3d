@@ -495,3 +495,100 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **Estado:** D-T5-1 FECHADA. Proximo: D2 (adversarial) + D7 (costura) com
   a UV nova, depois integracao a fila. Espelho no Drive apos este commit.
 - **Espelho no Drive (ARMAZ-01, apos o veredito):** REGISTRO.md, ESTADO_ATUAL.md e CRITICO-dt51-relatorio.md copiados para Oficina3D_v2/REGISTRO no Drive (G:) e conferidos por SHA-256 na volta (iguais aos 3 arquivos: REGISTRO 74B414E7, ESTADO 427966BC, CRITICO BE2B9AF5). O espelho desta etapa esta validado.
+
+## 01/11/2026, ~09:00 - D2 + D7 FECHADOS (Etapa COR, apos correcoes do Critico)
+
+- **Prova** (`jobs_teste/cor_d2d7/`, tarefa Oficina3D_D2D7,
+  `resultado_prova.json`, PROVA_OK): Besta Cristalina, GLB refinado do
+  job provac-besta-s7, UV nova D-T5-1 (padding 8 em 2048) - ocupacao
+  0,34946, distorcao 0,08918, 2.419 ilhas, margem 11 px em 2048,
+  7,37 texels/face em 1024. Tres bakes COR (dilatacao 256): base 1024
+  4 vistas (IoU frente 0,7231, costas 0,7758, esquerda 0,3631,
+  direita 0,4085; texels_uv 366.673, direto 140.964, cegos 61,56%,
+  sem_cor 0); adv512 (512 px, 4 vistas: IoUs IDENTICOS a base,
+  texels_uv 91.610 = 0,2498 da base, sem_cor 0); adv3v (1024 px, 3
+  vistas, SEM costas: por_vista com 3 chaves - a ausencia da vista
+  esta registrada no proprio resumo, nao e silenciosa; IoUs e faces
+  pintadas das 3 vistas restantes IDENTICOS a base; direto 120.658
+  (-14,4%), cegos 67,09%, sem_cor 0). SHAs: textura_base 842b461d...,
+  textura_adv512 0f0d520a..., textura_adv3v fd856d16....
+  Ressalva registrada: IoUs laterais baixos (0,36/0,41) contra
+  frente/costas (0,72/0,78) - padrao compativel com a suspeita antiga
+  de etiquetas esquerda/direita trocadas nas imagens da Besta (S2-3,
+  abaixo); nao contamina D2/D7.
+- **Olho do executor (antes do Critico):** previas base frente/costas
+  (Workbench, sombreadas - D10, nao provam cor): Besta reconhecivel,
+  superficie em mosaico, manchas cinza/magenta - fragmentacao visivel,
+  coerente com a metrica D7, sem isolar uma linha de costura. A metrica
+  e a prova primaria; a previa e indicio, nao veredito.
+- **Veredito do Critico senior (REPROVA o fechamento NESTA tranche,**
+  **docs/CRITICO-d2d7-relatorio.md, SHA-256 821BD6C9...):** a medicao
+  entregue tinha DOIS erros, e o fenomeno medido estava certo:
+  (S2-1) `classificar_arestas` nao soldava vertices por posicao - o
+  GLB duplica vertices (split por normal/UV): costura 4.017 de 13.758
+  reais, 37.456 "bordas" falsas numa malha fechada; (S2-2) o D2
+  sem-costas aplicou `direcao_camera("costas")` (frame Blender, +Y)
+  crua as normais glTF e mediu topo/base, nao costas/frente - a
+  "separacao fraca" era artefato do eixo errado. O Critico provou por
+  conta propria: com solda, costura 13.758 / interna 60.867 / borda 0;
+  no eixo correto, D2 sem-costas separa forte (ver republicacao).
+  D2-A (512) APROVADO nos numeros. Bake NAO afetado pelo bug de frame
+  (dentro do Blender, vetor e normais vivem no mesmo frame). S3-3
+  margem 2 vs 11 RESOLVIDA como definicional (512 vs 2048 px); faltavam
+  os hashes do GLB de entrada e do .npz. S2-3 (troca esq/dir) segue
+  ABERTA e ORTOGONAL: bloqueia a textura base, nao D2/D7. Escalada
+  APR-01 desta bateria: reimplementacao independente da costura,
+  proxy x media rasterizada, localizacao das piores costuras,
+  controle x alvo no sem-costas, cobertura rasterizada independente.
+- **Correcoes aplicadas (commit aa2758c, push conferido):**
+  `oficina3d/cor/costura.py` solda vertices por posicao (tolerancia
+  1e-6) em `classificar_arestas` (parametro `verts`, obrigatorio para
+  malha vinda de GLB), ganha `piores_costuras` e nota de frame na
+  docstring (licoes L-24/L-25); `testes/test_cor_costura.py` ganha o
+  teste de vertice duplicado (o caso que deixou o bug passar) e o
+  teste de piores costuras. Testes novos: 7/7 OK; suite completa apos
+  a correcao: 252 OK, skipped=1 (log em jobs_teste/cor_d2d7/suite.log).
+- **Republicacao SEM novo bake** (`resultado_republicacao.json`,
+  REPUBLICACAO_OK; tarefa Oficina3D_D2D7Rep): sobre os MESMOS
+  artefatos, com solda e frame corrigido - D7 soldada base: costura
+  n=13.758, media 93,49, mediana 77,22, p90 199,86, 78,08% > 30,
+  59,90% > 60; interna n=60.867, media 36,20, mediana 13,96, p90
+  107,19, 36,61% > 30; classificadas 74.625 (= 3F/2, malha fechada),
+  borda 0; adv3v: costura 96,42 / interna 33,65. Solda: 47.476 ->
+  24.805 vertices unicos. D2 sem-costas corrigido (glTF, costas =
+  (0,0,-1), conversao Blender->glTF (x,y,z)->(x,z,-y)): limiar 0,5,
+  alvo 28,23 / 24,01% > 30 vs controle 7,05 / 5,86%; limiar 0,9, alvo
+  18,96 / 18,03% vs controle 8,41 / 7,07% - separacao FORTE (o caso ja
+  era forte; era a regua que media o eixo errado). Hashes agora
+  registrados: glb_refinado_entrada ba8d6cd5..., uv_npz e8b76f32...
+  (S3-3 parte de hashes FECHADA). Piores 20 costuras: 325,68-337,17
+  (top 1: faces 10776/10979, ponto medio glTF
+  [-0.325465, 0.160957, -0.638934]).
+- **Previa flat/unlit (ressalva da D7, tarefa Oficina3D_D2D7Flat,**
+  **FLAT_OK):** `previas_flat/previa_flat_costura.png` (regiao da pior
+  costura) e `previa_flat_frente.png`, material Emission com a
+  textura, sem luzes (script `_blender_flat.py`; dois bugs do script
+  corrigidos na tranche: cena vazia sem World; motor EEVEE e
+  `BLENDER_EEVEE`, nao `_NEXT`). Olho do executor: frente flat mostra
+  a fragmentacao na propria textura (sem sombreamento); a regiao da
+  pior costura mostra saltos abruptos entre facetas - sem marcacao
+  individual, a costura isolada nao e isolavel a olho no meio das
+  demais descontinuidades do cristal (limitacao de leitura, registrada
+  pelo verificador, nao bloqueio).
+- **Verificacao independente (docs/CRITICO-d2d7-verificacao.md,**
+  **SHA-256 0AC21EF0...):** reimplementacao propria (parse binario do
+  GLB, sem trimesh, sem costura.py) reproduz TODOS os numeros
+  corrigidos a casa decimal (D7 soldada, D2 -Z nos dois limiares,
+  solda 24.805); o teste de vertice duplicado FALHA no codigo antigo
+  (17462aa, TypeError sem o parametro `verts`, e por assercao contra
+  stub sem solda) - o teste pega o bug, nao so a assinatura;
+  `suite.log` confere 252 OK. Divergencia explicada: top 3 tem empate
+  exato em 336,02 (duas costuras) - ordem ambigua, top 1 identico.
+  **Veredito final: D2 - FECHADO. D7 - FECHADO.**
+- **Estado:** D2 e D7 FECHADOS. Proximo: (c) integracao do `cor` como
+  etapa opcional da fila de jobs; depois (d) T2. Pendencias que ficam:
+  S2-3 (troca esq/dir, bloqueia a textura base), S3-2 (sem_cor 0 sem
+  mascara entregue), S4-2 (resultado_cor.json nativo do bake nao
+  entregue), D1 (fidelidade de detalhe do Orc, segue ABERTA). Tarefas
+  agendadas da tranche removidas apos o uso (Oficina3D_D2D7,
+  D2D7Suite, D2D7Rep, D2D7Flat). Espelho no Drive apos este commit.
