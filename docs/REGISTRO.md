@@ -613,3 +613,11 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - Divergencia registrada: VRAM do Paint — repo oficial 2.1 recomenda 21 GB; fork 2GP mira ~6 GB com relatos de OOM. O T3 mantem o Gate 0 e fica atras do T7.
 - Destinos secundarios: Eyek = leitura comparativa do T1; Yedp = candidato da frente de retrabalho local; SUPRA-Tex e StableGen = observacao.
 - Verificacao factual das afirmacoes da pesquisa: em curso por agente dedicado no momento deste registro; o spike so executa depois dela.
+
+
+## 2026-11-01 — Verificacao da pesquisa de textura protocolada; Yedp retirada do plano
+
+- Relatorio de verificacao (fontes primarias, trechos literais) em `docs/VERIFICACAO_PESQUISA_TEXTURA.md`; resolucao item a item lancada como adendo em `docs/ESTUDO_T7_PESQUISA_TEXTURA.md` e correcao no backlog de `docs/ESTUDO_MELHORIAS.md`.
+- Confirmados: UltraTex (GPL-3.0; 15-18 min em 8 GB literais no README; referencias proprias guiam a cor — geracao condicionada, nao projecao literal), Paint 2.1 oficial = 21 GB de VRAM para textura (literal), SUPRA-Tex (48 GB/Linux, release 19/10/2026), InstaMAT Pioneer (< US$ 100 mil, atribuicao obrigatoria), Open Painter (Blender 5.2+, GPL-3.0).
+- **Correcao:** Yedp UV Painter NAO foi localizada em fonte primaria alguma — retirada como candidata; fica so o registro da mencao nao verificada. Eyek e Comfy BlenderTools: funcoes reais, licenca nao declarada — vedados como dependencia ate registro de licenca.
+- Spike T7 segue liberado para quando o laco o alcancar, com o Gate 0 de disco medindo o que o README nao declara, e com a ressalva BFL (modelo-base FLUX.2 nao comercial) pesando em qualquer decisao futura de adocao.

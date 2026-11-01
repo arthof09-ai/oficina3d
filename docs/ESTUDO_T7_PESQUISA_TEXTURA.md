@@ -32,3 +32,18 @@ A pesquisa afirma que o Hunyuan3D-Paint **2.1 oficial** recomenda **21 GB** de V
 ## Estado
 
 Pesquisa protocolada em 2026-11-01. Verificação factual em curso. Spike T7 aguarda (1) o relatório de verificação e (2) a janela do laço de melhoria (a GPU é uma só; a fila da Etapa COR anda um item por vez: integração da cor à fila de jobs e, na sequência de spikes, T7 antes de T3).
+
+
+## Resultado da verificacao factual (2026-11-01) — resolve os PENDENTE-VERIFICACAO
+
+Relatorio completo com fontes primarias e trechos literais: `docs/VERIFICACAO_PESQUISA_TEXTURA.md`. Resumo decisorio:
+
+- **UltraTex: CONFIRMADA integralmente.** GPL-3.0; referencias opcionais back/left/right/top/bottom; 10 vistas (6 canonicas + 4 a 45 graus); atlas ate 8192x8192; passada metallic/roughness; o numero 15-18 min em RTX 5050 Laptop de 8 GB e LITERAL no README. Pilha: ComfyUI + ComfyUI-GGUF + FLUX.2 Klein 9B Q4_0 GGUF + Qwen3-8B Q6_K GGUF. **Duas ressalvas que entram na regua do spike:** (1) o README NAO declara o tamanho dos downloads — o Gate 0 de disco segue obrigatorio e e ele quem mede; (2) as nossas fotos "guiam a cor" — o FLUX GERA a vista a partir delas, nao e projecao direta pixel a pixel (a projecao T1 continua sendo o unico caminho de fidelidade literal; o T7 e geracao condicionada por referencia, e e assim que o Critico deve julga-lo). **Licenca do modelo-base:** FLUX.2 e nao comercial (termos BFL; saidas comerciais restritas) — o spike de teste e legitimo; qualquer ADOCAO do UltraTex como etapa padrao exige decisao registrada sobre esse termo.
+- **Hunyuan Paint 2.1: numero oficial confirmado, literal:** "21GB for texture generation" (README oficial, Models Zoo; forma = 10 GB; forma+textura = 29 GB). A divergencia registrada esta resolvida: oficial 21 GB x fork 2GP alvo ~6 GB com OOM relatado.
+- **SUPRA-Tex: CONFIRMADA** (release de inferencia em 2026-10-19; Linux + CUDA 12.4; "pelo menos 48 GB; ate 24 GiB ligam offload para CPU"). Codigo MIT, mas o material adapter e Qwen Research License (nao comercial). Segue em observacao.
+- **StableGen: CONFIRMADA** (GPL-3.0; addon de Blender sobre servidor ComfyUI; PBR via Marigold). Nuance de VRAM declarada: ~8 GB so no modo SDXL; Qwen Image pede 16 GB+. Segue em observacao.
+- **Eyek: funcoes CONFIRMADAS; LICENCA NAO LOCALIZADA** (sem LICENSE no repo). Nao vira dependencia sem registro de licenca; leitura comparativa do T1 continua permitida como estudo.
+- **Comfy BlenderTools: funcoes CONFIRMADAS; LICENCA NAO LOCALIZADA;** repo pequeno (7 stars, sem releases). Idem: estudo sim, dependencia nao.
+- **InstaMAT Studio: CONFIRMADA** — Pioneer gratuita com uso comercial MEDIANTE ATRIBUICAO e elegibilidade de receita/financiamento anual < US$ 100 mil (os US$ 250 mil da mesma pagina sao o teto das faixas Indie pagas).
+- **Open Painter: CONFIRMADA** — Blender 5.2+, GPL-3.0-or-later, acabamento PBR em camadas.
+- **Yedp UV Painter: NAO LOCALIZADA — RETIRADA do plano.** Apos tres buscas distintas, nao existe repositorio nem pagina oficial localizavel; o unico rastro e o titulo de um post de Reddit reproduzido por sites-espelho. Sem fonte primaria, a prioridade "Alta" da pesquisa nao tem lastro: o Yedp deixa de ser candidato da frente de retrabalho local e fica registrado apenas como mencao nao verificada. A frente de retrabalho segue com as rotas ja registradas (troca local no Blender; acessorio como objeto separado).
