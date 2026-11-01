@@ -253,3 +253,9 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 ## 01/11/2026, ~01:20 - Muse (CM-000009): variancia do Lenario FECHADA
 
 - Caprileo Lenario s7 concluido: forma 1.096.124 tris em 156,1 s, VRAM 6.410 MB, GLB 17.006 KB, final 497.500 tris. A bateria de variancia (QUAL-03) esta completa: Orc (s7 identica na repeticao; s42 e s1234 com custo estavel ~157 s e arquivos ~17,2-17,4 MB), Besta (155,7 s; 17.032 KB) e Caprileo (156,1 s; 17.006 KB) - o nivel Lenario e consistente em custo nos 3 personagens.
+
+## [2026-10-31 23:50 -03] Claude (sessão do CUNHADO-PC) volta do limite de uso
+- Os 7 agentes A–G abertos às ~12:30 morreram todos no limite de uso (HTTP 429, "session limit", ~13:00). O trabalho parcial deles já foi integrado pelo Muse no commit `6762003` e evoluído depois. **Decisão: NÃO retomar esses agentes**: eles voltariam com o contexto das 13:00 e sobrescreveriam o código mais novo (o mesmo tipo de erro do N1).
+- Conferido ao vivo: `git status` limpo e igual a `origin/main` (`d83335d`); worker e web rodando (tarefas `Oficina3D_Worker`/`Oficina3D_Web`); GPU parada (1105 MiB, 2%); C: 70+ GB livres; `PartCrafter.zip` (7.491.118.361 B) e `DetailGen3D.zip` (3.429.846.267 B) presentes em `G:\Meu Drive\RPG Assimilação\Oficina3D_v2\modelos_guardados\`.
+- Procura no Drive (`G:\Meu Drive`, recursiva, nomes `*capr*`, `*besta*`, `*KIT_TESTE*`, 129 s): **o kit dourado do Capríleo e da Besta Cristalina NÃO está no Drive.** Achadas só 5 referências novas em `05 — Imagens e referências\Referências visuais\2026-10-31_RPG_besta-*.jp*g` (enviadas às 23:45; "besta lendária"/"besta do vazio"). **Não usadas** como insumo da Prova C: não são o kit de 27/10 com as vistas nomeadas, e trocar o insumo mudaria a bateria.
+- Item 3 continua **PENDENTE**: esperando o Mestre enviar o kit do Capríleo e da Besta Cristalina.
