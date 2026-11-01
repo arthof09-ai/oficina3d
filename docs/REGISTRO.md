@@ -494,3 +494,4 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
   no tamanho certo.
 - **Estado:** D-T5-1 FECHADA. Proximo: D2 (adversarial) + D7 (costura) com
   a UV nova, depois integracao a fila. Espelho no Drive apos este commit.
+- **Espelho no Drive (ARMAZ-01, apos o veredito):** REGISTRO.md, ESTADO_ATUAL.md e CRITICO-dt51-relatorio.md copiados para Oficina3D_v2/REGISTRO no Drive (G:) e conferidos por SHA-256 na volta (iguais aos 3 arquivos: REGISTRO 74B414E7, ESTADO 427966BC, CRITICO BE2B9AF5). O espelho desta etapa esta validado.
