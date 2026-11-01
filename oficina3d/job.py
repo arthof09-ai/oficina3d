@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import Callable
 
 from . import config
+from . import qualidades
 
 FUSO = timezone(timedelta(hours=-3))
 SUBPASTAS = ("entrada", "preproc", "forma", "refino", "saida")
@@ -503,6 +504,10 @@ def _validar_opcao(k: str, v):
         if not isinstance(v, bool):
             raise ValueError(f"opção {k} precisa ser true/false, recebi {v!r}")
         return v
+    if k == "qualidade":
+        if v not in qualidades.PERFIS:
+            raise ValueError(f"qualidade desconhecida: {v!r} (use {', '.join(qualidades.PERFIS)})")
+        return v
     if k == "remover_fundo":
         if isinstance(v, bool):
             return "sim" if v else "nao"
@@ -542,6 +547,8 @@ def validar_opcoes(opcoes: dict | None = None, modo: str = "livre", vistas=()) -
     if desconhecidas:
         raise ValueError(f"opção desconhecida: {', '.join(map(str, desconhecidas))} "
                          f"(válidas: {', '.join(config.OPCOES_PADRAO)})")
+    if opcoes.get("qualidade") is not None:
+        opcoes = qualidades.aplicar(opcoes, modo, vistas)
     op = dict(config.OPCOES_PADRAO)
     for k, v in opcoes.items():
         if v is not None:

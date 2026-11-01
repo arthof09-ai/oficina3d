@@ -20,7 +20,7 @@ import sys
 import time
 from pathlib import Path
 
-from . import config, job, motores
+from . import config, job, motores, qualidades
 
 ESTADOS_FINAIS = ("concluido", "erro", "cancelado")
 
@@ -76,6 +76,7 @@ def cmd_enviar(a) -> int:
         arquivos.append((caminho, vista))
     opcoes = {
         "motor": a.motor, "passos": a.passos, "octree": a.octree, "seed": a.seed,
+        "qualidade": a.qualidade,
         "alvo_triangulos": a.alvo_triangulos, "altura_m": a.altura_m,
     }
     if a.sem_flashvdm:
@@ -244,6 +245,8 @@ def montar_parser() -> argparse.ArgumentParser:
     e.add_argument("--altura-m", type=float, dest="altura_m")
     e.add_argument("--sem-flashvdm", action="store_true", dest="sem_flashvdm")
     e.add_argument("--simetrizar", action="store_true")
+    e.add_argument("--qualidade", default=None, choices=qualidades.NOMES,
+                   help="perfil de qualidade QUAL-01 (bronze, prata, ouro, ouro-negro, lendario)")
     e.add_argument("--nome")
     e.add_argument("--esperar", action="store_true", help="acompanha o progresso até terminar")
     e.set_defaults(func=cmd_enviar)

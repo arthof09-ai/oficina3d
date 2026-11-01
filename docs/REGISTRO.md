@@ -230,3 +230,10 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **Diretivas novas registradas em DECISOES:** QUAL-02, ANIM-01, MET-01, MET-02 (com trabalho programado de melhoria continua a cada 90 min), MET-03, ARMAZ-01, QUAL-03.
 - **Critico visual (primeira passada, Muse):** o Mestre achou e a analise das previas CONFIRMA: o machado do Orc Lenario tem laminas multiplas/fundidas; a referencia tem lamina unica larga. Rosto ainda suave. Silhueta e proporcoes fieis. Caso inaugural da frente de retrabalho local.
 - Bateria de variancia do Lenario disparada (varq): Orc sementes 42/1234/repeticao da 7, Besta e Caprileo na semente 7.
+
+## 01/11/2026, ~01:12 - Muse (CM-000009): correcoes da auditoria no 3 do Critico (C3-1 a C3-3)
+
+- **C3-1 (GRAVE, meu erro):** o codigo do QUAL-01 (qualidades.py, test_qualidades.py e os trechos de cli/config/job) tinha ficado FORA do git - funcionalidade no ar e testada, mas nao commitada. Corrigido nesta entrada: add + commit + push dos 5 arquivos, arvore conferida limpa e local == remoto. Reincidencia da classe GIT-01: a licao registrada e commitar o codigo ANTES de anunciar a funcionalidade.
+- **C3-2 (MEDIO, meu erro):** faltava a linha QUAL-01 em DECISOES.md (o ESTADO a citava como registrada). Linha incluida com a data real da ordem e a nota da formalizacao tardia. A lista de diretivas da entrada anterior fica corrigida por esta: QUAL-01..03, ANIM-01, MET-01..03, ARMAZ-01.
+- **C3-3 (BAIXO):** com o commit feito e a linha registrada, a afirmacao do item 6 no ESTADO volta a ter lastro; a conferencia curta e dirigida do Critico decide o carimbo.
+- Espelho do REGISTRO no Drive (G:) segue pendente: nesta noite a pasta G: nao esta lendo (0 bytes/ausente nas leituras); GitHub e a copia local sao o lastro ate o Drive voltar.

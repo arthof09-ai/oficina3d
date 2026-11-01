@@ -233,6 +233,7 @@ REMOVER_FUNDO = ("auto", "sim", "nao")
 
 OPCOES_PADRAO = {
     "motor": None,           # None = automático: hunyuan-mv-turbo com 2+ vistas, hunyuan-mini-turbo com 1
+    "qualidade": None,        # None = sem perfil; slugs em oficina3d/qualidades.py (QUAL-01)
     "passos": None,          # None = padrão do motor
     "octree": 256,
     "seed": 1234,
