@@ -1,7 +1,7 @@
 # ESTADO ATUAL - Oficina 3D
 
-**Atualizado:** 01/11/2026, ~01:00 (Muse, CM-000009, apos a Prova C completa e o QUAL-01)
-**Fase:** 1 - reconstrucao endurecida. **TODOS os itens executados; aguardando a auditoria final do Critico (a 3a) para o carimbo de PRONTA da Fase 1.** A Fase 2 (textura/cor) NAO comecou: depende do estudo das cartas (QUAL-02) e da decisao de desenho.
+**Atualizado:** 01/11/2026, ~02:05 (Muse, CM-000009, diretrizes REF-01/APR-01/CORPO-01/REG-01 registradas; REF-01 em andamento)
+**Fase 1 PRONTA** (veredito do Critico senior, auditoria no 3 + adendo, 01/11 ~01:10). O app hoje e o ESQUELETO (CORPO-01): a prioridade agora e CONSTRUIR o corpo que falta - Etapa COR (cor/textura) primeiro, depois retrabalho local e as demais frentes do backlog; testes validam cada parte nova quando ela nasce.
 
 ## O que esta provado (com evidencia)
 
@@ -15,16 +15,17 @@
 
 ## Definicao de pronta da Fase 1 (docs/REVISAO_E_ROTEIRO.md)
 
-Itens 1, 2, 4, 5 e 6 provados; item 3 (Prova C) COMPLETO nos 3 personagens; itens 7 (documentacao honesta e atual) e 8 (veredito do Critico) dependem da auditoria final em andamento.
+Todos os 8 itens conferidos com evidencia pelo Critico (auditoria no 3 + adendo): **FASE 1 PRONTA**. O portao MET-03 (tres Criticos senior, baterias diferentes) acontece so no fim de TODAS as frentes, nao agora.
 
 ## Decisoes recentes do Mestre (DECISOES.md)
 
-QUAL-01 (niveis de qualidade), QUAL-02 (forma nao e o app pronto: textura/pintura e a proxima frente; estudar as cartas antes), ANIM-01 (animacao como funcao futura/opcional do app), MET-01 (Critico rigoroso personalizado em toda melhoria), MET-02 (trabalho continuo em segundo plano, agentes para qualidade), MET-03 (portao final: TRES Criticos senior independentes, baterias diferentes), ARMAZ-01 (o que nao esta em uso vai para o Drive; PC do cunhado enxuto), QUAL-03 (bateria de variancia + Critico visual caçando defeitos contra a referencia + retrabalho local como frente do backlog).
+QUAL-01 (niveis de qualidade), QUAL-02 (forma nao e o app pronto: textura/pintura e a proxima frente; estudar as cartas antes), ANIM-01 (animacao como funcao futura/opcional do app), MET-01 (Critico rigoroso personalizado em toda melhoria), MET-02 (trabalho continuo em segundo plano, agentes para qualidade), MET-03 (portao final: TRES Criticos senior independentes, baterias diferentes), ARMAZ-01 (o que nao esta em uso vai para o Drive; PC do cunhado enxuto), QUAL-03 (bateria de variancia + Critico visual cacando defeitos contra a referencia + retrabalho local como frente do backlog). Diretrizes de 01/11 ~01:54-01:57: REF-01 (arsenal de referencias vivas para testes reais), APR-01 (autoaperfeicoamento: fluxograma + diario de licoes + antecipacao, com o Critico cada vez mais rigoroso), CORPO-01 (testes servem ao corpo: construir as partes que faltam, cor primeiro) e REG-01 (nunca confiar na memoria: o plano valido e o escrito nos documentos).
 
-## Pendencias conhecidas
+## Proximos passos (atualizado em 01/11/2026, por REG-01)
 
-1. Auditoria final do Critico sobre a Fase 1 (em convocacao).
-2. Bateria de variancia do Lenario (Orc sementes 42/1234/repeticao + Besta e Caprileo) rodando: mede diferenca de qualidade e custo entre execucoes.
-3. Defeito visual achado pelo Mestre no Orc Lenario: o machado saiu com laminas multiplas/fundidas (a referencia tem lamina unica). Registrado como primeiro caso da frente de retrabalho local/Critico visual (QUAL-03).
-4. Estudo das cartas + backlog de melhorias (QUAL-02) em andamento por agente pesquisador; desenho da Etapa COR sai dele.
+1. **Etapa COR (prioridade 1, CORPO-01):** construir a cor/textura - T1 projecao das vistas canonicas com bake no Blender (caminho padrao do estudo), T2 cor de vertice, T5 UV. Cada parte nova nasce com a sua bateria de validacao.
+2. **REF-01 (em andamento):** arsenal de referencias - lote 1 = Orc (T-pose + folha de angulos a partir da arte dourada), aguardando o Critico Visual (bateria em docs/APRENDIZADO_E_FLUXO.md). Fila: Besta Cristalina, Caprileo e o acervo do indice do Drive.
+3. **Retrabalho local (QUAL-03):** caso inaugural = machado do Orc Lenario (laminas multiplas/fundidas; a referencia tem lamina unica) - rotas R1/R4 do estudo (secao 8).
+4. **APR-01 (criado):** docs/APRENDIZADO_E_FLUXO.md - fluxograma geral, protocolo de antecipacao, diario de licoes e regra de escalada do Critico; atualizar a cada tranche (REG-01).
 5. Guardian do notebook: adiado pelo Mestre (sem o notebook agora).
+6. Portao final MET-03: so depois de TODAS as frentes concluidas.
