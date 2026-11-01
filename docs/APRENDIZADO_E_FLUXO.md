@@ -356,3 +356,9 @@ O executor conferiu as imagens ANTES do Critico (protocolo de antecipacao) e ja 
 2. **Caprileo (monstro)** - arte dourada instalada: `testes/dourado/imagens/caprileo_{frente,costas,esquerda,direita}.png`; 8 vistas no mesmo indice do Drive. Pose adequada de quadrupede.
 3. **Orc - vistas diagonais** - o kit original tem 8 angulos; alem dos 4 cardeais instalados, as diagonais sao recuperaveis do Drive pelo mesmo indice (completar o conjunto de entrada multivista).
 4. **Bestas novas de 31/10 (Drive)** - 5 referencias em `05 - Imagens e referencias/Referencias visuais/2026-10-31_RPG_besta-*.jpg` ("besta lendaria" / "besta do vazio"), localizadas pela sessao do Claude no PC e registradas no REGISTRO; nao foram usadas na Prova C (nao sao o kit nomeado). Classificar: se forem seres vivos com arte aproveitavel, entram na fila REF-01.
+
+
+### APR-02 - Dinamica adversarial (01/11/2026)
+
+- Regra permanente (ver DECISOES, APR-02): o Critico atua como inimigo profissional do trabalho - a missao dele e tentar reprovar; o executor se autoaudita antes de submeter para nao dar motivo.
+- **L-33:** reportar aprovacao do Critico sem dizer O QUE foi aprovado (mecanismo x visual) induz o Mestre a erro - separar sempre os dois escopos. Origem: COR-05, 01/11/2026 (o Mestre viu as previas da prova e julgou a pintura horrivel; o veredito do Critico era so de integracao/mecanismo, com a D1 aberta).
