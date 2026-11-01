@@ -192,3 +192,9 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **Fila longa sem intervencao:** 8 jobs enfileirados de uma vez (6 triposr + 2 mini-turbo, atras dos dois exercicios acima): **10/10 concluidos** na sequencia, sem nenhum toque humano.
 - Com a R3, a definicao de "pronta" da REVISAO fica faltando: Prova C (bloqueada nas imagens douradas), a instalacao do zero (R4) e a auditoria final do Critico.
 
+## [2026-10-31 21:20-21:31 -03] R4 acha um defeito de verdade: o lock do TripoSR nao instalava do zero
+
+- **A rodada R4 (instalacao do zero a partir do GitHub) FALHOU na etapa (d)** — e era para falhar mesmo, se houvesse defeito: o `requirements_venv_triposr.lock` pedia `opencv-python-headless==5.0.0.93` (que exige numpy>=2 nos metadados) junto com `numpy==1.26.4` (o fix de 31/10): **resolucao impossivel**. A combinacao RODAVA na maquina (o freeze foi feito depois do ajuste manual), mas nao INSTALA do zero. Sem a R4, ninguem saberia.
+- **Correcao:** `opencv-python-headless==4.10.0.84` fixado em `requisitos/triposr.txt` (com o motivo), instalado no venv vivo (cv2 4.10.0 + numpy 1.26.4) e lock re-congelado. **Prova:** job triposr `20261031-212903-prova-opencv410` concluido e arquivado com a combinacao nova.
+- O clone da R4 foi atualizado com este commit e a instalacao retomada.
+
