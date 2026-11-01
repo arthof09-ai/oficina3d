@@ -59,3 +59,4 @@
 - O executor se autoaudita ANTES de submeter (pre-Critico reforcado): registra os defeitos que encontrou e corrigiu e os que restam; submissao sem autoauditoria registrada esta incompleta.
 - O criterio do Critico sobe de forma permanente: cada bateria nova e mais rigorosa que a anterior (APR-01) e incorpora como verificacao obrigatoria qualquer defeito que o Mestre apontar pessoalmente.
 - Em tranches visuais (cor/textura), a fidelidade visual e julgada em separado do mecanismo, com o padrao do olho do Mestre: mosaico/confete generalizado, rosto ilegivel ou cor que nao se sustenta = reprovacao visual, mesmo com o mecanismo aprovado.
+| 01/11/2026 | VAL-01 | Etapa `validar` ligada por padrão em todo job, perfil `oficina`; reprovação vira aviso, nunca erro; perfil `jogo` = aceite EXP-01 | Claude | Plano Fase 2 item 1 ("ligada desde o primeiro dia") sem quebrar nenhum job existente | Validar só sob pedido; reprovação como erro do job |
