@@ -57,3 +57,15 @@ QUAL-01 (niveis de qualidade), QUAL-02 (forma nao e o app pronto: textura/pintur
 4. **APR-01 (criado):** docs/APRENDIZADO_E_FLUXO.md - fluxograma geral, protocolo de antecipacao, diario de licoes e regra de escalada do Critico; atualizar a cada tranche (REG-01).
 5. Guardian do notebook: adiado pelo Mestre (sem o notebook agora).
 6. Portao final MET-03: so depois de TODAS as frentes concluidas.
+
+
+## Observacao do Mestre (01/11/2026 18:59) - hipotese de RAIZ da D1 (prioridade de investigacao)
+
+Olhando as previas do bake COR-08, o Mestre avaliou: "bem melhor, mas longe do ideal; parece que tem varios orcs um em cima do outro - talvez o problema esteja na raiz, nao na execucao". Leitura do Muse nas mesmas previas: nas costas, motivos da referencia se repetem pela superficie (blocos de pelo, craneos do cinturao, pano vermelho) como carimbos sobrepostos - compativel com a ressalva do Critico da COR-08 (gap de pose/geometria) e com o teto de IoU 0,8177 mesmo apos a otimizacao A1.
+
+ANTES de novas tranches de execucao de cor (alem do S2-COR08-1, que e correcao de save), rodar o DIAGNOSTICO DE RAIZ da D1, medindo as tres hipoteses:
+- H1 (geometria x referencia): renderizar a forma SEM cor nas 4 vistas canonicas e sobrepor a silhueta da referencia por vista; medir onde a forma diverge (pose/proporcao) - se a forma nao casa com a pintura, nenhuma projecao fecha a fidelidade.
+- H2 (duplicacao na forma): auditar o GLB da forma (componentes conexos, cascas sobrepostas/duplicadas, normais) - a hipotese literal do Mestre: "varios orcs um em cima do outro" dentro da malha.
+- H3 (proveniencia da tinta): medir quanto da tinta das costas veio da vista da FRENTE (sangramento atraves do corpo ou copia do preenchimento 3D entre regioes distantes).
+
+O resultado do diagnostico reordena o ataque a D1: corrige-se a causa medida, nao a proxima alavanca da fila.
