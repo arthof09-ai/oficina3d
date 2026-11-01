@@ -760,3 +760,21 @@ Provas reais pela fila (worker novo; os 8 jobs concluidos):
 - **Previas** baixadas para a VM do executor (pasta da auditoria do T2): orc nos 4 angulos, besta frente, caprileio frente, triposr frente e costas - superficie visivel colorida por inteiro nas tres personagens e no triposr.
 
 Pendencias nomeadas apos a execucao: (1) exposicao web/MCP da opcao `cor_modo` (herdada da COR-05); (2) D1 (fidelidade da cor no modo projecao) segue ABERTA e ortogonal - o modo vertice e rascunho por desenho (COR-07); (3) veredito do Critico senior sob a carta CRITICO-PADRAO (duas baterias: padrao + personalizada do T2) - esta secao e o fechamento do EXECUTOR; "pronto" so com o veredito dele.
+
+
+## 2026-11-01 - T2 (COR-07): veredito do Critico senior - MECANISMO APROVADO (9,0/10); rascunho aprovado como rascunho
+
+Relatorio integral: docs/CRITICO-t2-relatorio.md (SHA-256 3DF49D3BDA2F86D329014D0F17270547994FAC3054B85CD535DAB019162AAA2B; commit 20e75bd + emenda 0a40c8d com o veredito visual do Mestre). O Critico re-mediu tudo a partir das fontes (parser GLB proprio em todos os primitivos; suite reexecutada por ele: 285 testes, 0 falhas, skipped=1, 26,2 s; o passo do J1 reproduzido por ele com o MESMO SHA-256; alinhamento refeito por KDTree; 3 jobs vivos proprios pela fila real) e rodou as duas baterias da carta CRITICO-PADRAO: a padrao (a-j) e uma personalizada com 5 verificacoes novas em relacao as tranches anteriores (sabotagem da autochecagem de alinhamento; rede de seguranca com ZERO vistas; reproducao do passo por terceiro; composicao geometrica do sem_cor; cancelamento vivo durante a cor de vertice).
+
+- **MECANISMO: APROVADO, nota 9,0/10.** Nenhum defeito S1/S2. Todas as medicoes do fechamento do executor conferiram na tabela de conferencia dele (suite, sintetico, J1-J8, ancoras da COR-05 byte-exatas, tempos: job de vertice 92,5 s x 233,0 s da projecao).
+- **QUALIDADE VISUAL: APROVADO COMO RASCUNHO - e so como rascunho.** Veredito do Mestre (01/11, ~13:29, ao ver a previa da frente do Orc em cor de vertice): "Melhorou um pouco, mas ta longe do ideal" - cor final NAO aprovada em nenhum modo; D1 segue ABERTA e ortogonal.
+- **Rede de seguranca provada pelo Critico com zero vistas:** job so-forma TripoSR concluiu com a forma pintando 100% (27.421 vertices); job Hunyuan sem vistas errou na etapa cor com a mensagem desenhada. **Cancelamento vivo** durante a cor de vertice: honrado antes de publicar (fecha, para o modo vertice, a ressalva herdada da D-COR05).
+- **sem_cor do J1 medido por ele:** faces 100% pretas = 7,68% da area; pixels quase-pretos nas previas = 0,03-0,07% - a leitura "majoritariamente interno/oculto" se sustenta; no J8 (1 vista) o preto aparece nas costas (21,02% da area) e esta declarado, como desenhado.
+
+Pendencias nomeadas (nenhuma bloqueia o fechamento; entram na fila da Etapa COR):
+
+- **D-T2-1 (S3):** a autochecagem de alinhamento ACEITOU uma forma sabotada com o eixo X esticado 2x (mediana 0,02101 < 0,05 - a mediana e insensivel a deformacao anisotropica). No fluxo real a forma transferida e sempre a do proprio job, por isso S3 e nao S2. Correcao exigida ANTES de a transferencia ser tratada como guarda para formas de origem externa ao job: acrescentar razao por eixo das caixas e/ou percentil p90 a autochecagem, registrando a nova regua na COR-07. Ate la, proibido citar a transferencia como guarda contra "forma errada" sem esta ressalva.
+- **D-T2-2 (S4):** o relatorio da etapa `cor` no modo projecao nao declara `modo_cor`/`rotulo` (o modo so aparece nas opcoes do job) - assimetria de coerencia; no vertice a declaracao e completa.
+- **D-T2-3 (S4):** aviso do worker menciona "bake v1" tambem no modo vertice (texto velho; no vertice nao ha bake).
+- **D-T2-4 (S4, latente):** `verificar_glb_vertice` inspeciona so o primeiro primitivo do primeiro mesh - inalcancavel hoje (a importacao unifica os objetos; a prova multi-objeto do Critico saiu com 1 primitivo); defesa em profundidade futura: iterar todos os primitivos de todos os meshes.
+- **Herdadas e inalteradas:** D1 ABERTA; exposicao web/MCP de `cor`/`cor_modo` pendente desde a COR-05; S2-3 (troca esquerda/direita nas imagens da Besta) aberta.
