@@ -198,3 +198,10 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **Correcao:** `opencv-python-headless==4.10.0.84` fixado em `requisitos/triposr.txt` (com o motivo), instalado no venv vivo (cv2 4.10.0 + numpy 1.26.4) e lock re-congelado. **Prova:** job triposr `20261031-212903-prova-opencv410` concluido e arquivado com a combinacao nova.
 - O clone da R4 foi atualizado com este commit e a instalacao retomada.
 
+## [2026-10-31 21:19-21:47 -03] R4 CONCLUIDA: a Oficina se instala do zero so com o repositorio
+
+- Clone novo do GitHub (HEAD 6274089 na clonagem; 106 arquivos, pacote `oficina3d/motores` presente — o GIT-01 provado de fora para dentro) numa BASE limpa `Oficina3D_R4`, e o instalador oficial rodou as etapas (a)-(g): guarda e espaco ok, uv/Python 3.10, os 3 venvs (com o lock do TripoSR ja corrigido), clones nos commits fixos + patch, os 13 modelos com SHA-256 em 7,5 min e **IMPORT OK nos 3 venvs**.
+- **Job de prova na base limpa:** `20261031-214423-r4-prova` (triposr) **concluido**, GLB de 1.099 KB gerado pela instalacao nova, sem tocar na instalacao principal.
+- **Ligacao com a DONO-02:** esta instalacao nunca leu `modelos_guardados`, codigo v1 nem material de estudo — e a prova viva de que **o app funciona sem precisar das referencias**, que ficam preservadas para a auditoria dos Comestres, como o Mestre corrigiu.
+- A BASE de teste `Oficina3D_R4` (26,8 GB) foi apagada ao final da prova para devolver o espaco ao disco (a evidencia fica neste registro e nos logs citados).
+
