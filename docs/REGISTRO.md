@@ -493,7 +493,7 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
   provado - desproporcional. O gutter de 8 px em 2048 e a correcao certa,
   no tamanho certo.
 - **Estado:** D-T5-1 FECHADA. Proximo: D2 (adversarial) + D7 (costura) com
-  a UV nova, depois integracao a fila. Espelho no Drive apos este commit.
+  a UV nova, depois integracao a fila. Espelho no Drive validado: REGISTRO 96FFD62D, ESTADO F8E3A2CD, CRITICO 821BD6C9, VERIFICACAO 0AC21EF0 (SHA-256 conferidos na volta, G:).
 - **Espelho no Drive (ARMAZ-01, apos o veredito):** REGISTRO.md, ESTADO_ATUAL.md e CRITICO-dt51-relatorio.md copiados para Oficina3D_v2/REGISTRO no Drive (G:) e conferidos por SHA-256 na volta (iguais aos 3 arquivos: REGISTRO 74B414E7, ESTADO 427966BC, CRITICO BE2B9AF5). O espelho desta etapa esta validado.
 
 ## 01/11/2026, ~09:00 - D2 + D7 FECHADOS (Etapa COR, apos correcoes do Critico)
@@ -591,4 +591,4 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
   mascara entregue), S4-2 (resultado_cor.json nativo do bake nao
   entregue), D1 (fidelidade de detalhe do Orc, segue ABERTA). Tarefas
   agendadas da tranche removidas apos o uso (Oficina3D_D2D7,
-  D2D7Suite, D2D7Rep, D2D7Flat). Espelho no Drive apos este commit.
+  D2D7Suite, D2D7Rep, D2D7Flat). Espelho no Drive validado: REGISTRO 96FFD62D, ESTADO F8E3A2CD, CRITICO 821BD6C9, VERIFICACAO 0AC21EF0 (SHA-256 conferidos na volta, G:).
