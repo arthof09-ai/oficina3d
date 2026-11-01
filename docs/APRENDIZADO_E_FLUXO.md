@@ -64,6 +64,8 @@ Antes de convocar o Critico, o executor confere e resolve CADA item. A ideia (AP
 - [ ] Medicao de arestas em malha vinda de GLB solda vertices por posicao (tolerancia 1e-6) - sem solda, costura subcontada e bordas falsas. [licao L-24]
 - [ ] Direcao de vista em medicao fora do Blender esta no frame das normais (GLB: costas = -Z; converter Blender->glTF (x,y,z)->(x,z,-y)) - vetor Blender cru mede o eixo errado. [licao L-25]
 - [ ] Vistas geradas entregues com autotestes geometricos MEDIDOS pelo executor: lateralizacao das diagonais contra a familia canonica (ancora lateralizada nao cruza a linha media) e pureza da planta (elemento frontal nao le de frente; se le inteiro, NAO e topo e nao se entrega com esse rotulo). Desvio estrutural nunca descrito com diminutivo ("levemente", "quase") sem medida que o sustente. [licao L-26]
+- [ ] Deploy de worker em loop: matar o processo com a fila vazia e deixar o supervisor relancar (o processo vivo NAO herda codigo novo sozinho); confirmar o PID novo + o lock antes de criar o job de prova. [licao L-28]
+- [ ] Numero da suite nunca carregado entre tranches: re-medir por discovery e reconciliar commit a commit (o log antigo pode ser de arvore anterior ao ultimo commit de testes). [licao L-29]
 
 ---
 
@@ -268,6 +270,16 @@ flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
 - **Caso:** no retrabalho do lote 2 da REF-01 (Besta Cristalina v2), TODOS os autotestes geometricos do executor se confirmaram por medicao independente (cauda x~24-27, centroide 0,483 contra 0,475 declarado, cobertura no piso canonico nas 3 escalas do Critico, planta com a boca reduzida a fenda) e os defeitos estruturais B1/B2 fecharam. O que escapou da antecipacao nao foi geometria: foi a FORMA de um elemento-assinatura (as maos da vista de topo sairam em roseta radial, contradizendo o feixe irregular das fontes e das diagonais - achado da verificacao nova de coerencia interna do conjunto, B10) e o TOM (cristal delta 32 mais saturado e pele delta 28 mais clara no topo, contra a frente canonica, B11). Ambos S3: sem bloqueio, mas o conjunto fecharia com uma contradicao interna silenciosa entre vistas sem a verificacao nova.
 - **Regra:** junto do autoteste geometrico (L-26), a entrega de vista passa a incluir (a) autoteste de FORMA dos elementos-assinatura (maos, placa, roseta, franja) em zoom lado a lado contra a fonte E contra as vistas irmas do conjunto, e (b) autoteste de TOM (mediana por classe de cor contra a vista canonica de autoridade). Geometria medida e o piso; forma e tom medidos sao o novo teto da antecipacao. (Checklist pre-Critico, item novo.)
 
+### L-28 - Worker em loop nao herda codigo novo: deploy exige reinicio com fila vazia (01/11/2026)
+- **Caso:** na COR-05, o worker em loop desde 31/10 21:05 (PID 25544) tinha o codigo antigo carregado; criar o job de prova antes de reinicia-lo teria rodado SEM a etapa `cor` (a opcao nova seria ignorada em silencio pelo worker velho). Procedimento executado: fila vazia conferida (pendentes = []), kill do PID 25544, supervisor (`iniciar_worker.py`) relancou o worker (PID 31976, 01/11 10:14:18) com o codigo novo - confirmado por `worker_ativo()` + FAIXAS com `cor` e pelo `job.json` do job de prova (worker PID 31976).
+- **Custo:** sem o reinicio, a prova teria "passado" sem testar nada do novo codigo.
+- **Regra:** todo deploy que toca o worker termina com: (1) fila vazia conferida, (2) kill do processo em loop, (3) supervisor relanca, (4) PID novo + lock conferidos, (5) so entao criar o job de prova. (Checklist pre-Critico, item novo.)
+
+### L-29 - Numero da suite nao se carrega: baseline se re-mede commit a commit (01/11/2026)
+- **Caso:** a COR-05 anunciou "252 -> 263, +2 nao atribuidos". O Critico explicou: o `suite.log` da D2/D7 (252) era da arvore 17462aa (08:31:30), onde `test_cor_costura` tinha 5 testes; o commit aa2758c (08:45:57, posterior ao log) acrescentou 2 testes (5 -> 7); baseline correto pre-tranche = 254; 254 + 9 = 263. A ressalva do executor inverteu a direcao (os +2 vieram DO aa2758c, nao depois dele).
+- **Custo:** uma pendencia fantasma registrada no REGISTRO e uma linha de ESTADO defasada (247) que sobreviveu a duas tranches.
+- **Regra:** o numero da suite de uma tranche so vale com o log da PROPRIA tranche; comparar com o log anterior exige conferir o commit da arvore do log, nao o HEAD da epoca. (Checklist pre-Critico, item novo.)
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:
@@ -287,6 +299,7 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Verificacao D2/D7 (correcoes) | Reimplementacao com parse binario do GLB (sem trimesh, sem costura.py) + teste novo rodado contra o codigo ANTIGO (tem de falhar la) + conferencia da previa flat (Emission, sem luz) e do ponto da pior costura | D2 FECHADO e D7 FECHADO (numeros corrigidos reproduzidos a casa decimal); empate exato no top 3 explicado (duas costuras em 336,02); pendencias restantes S2-3, S3-2, S4-2 registradas |
 | 01/11/2026 | Rodada 2 REF-01 lote 2 (Besta) | Teste de atribuicao das diagonais (lateralizacao medida) + teste de pureza da planta (boca frontal = nao e topo) | B1 SYM S2 (diag_esq espelhada) e B2 DEF/MIS S2 (topo obliquo) achados; diag_dir aprovada |
 | 01/11/2026 | Rodada 2 do retrabalho REF-01 lote 2 (Besta v2) | Coerencia interna do conjunto (ancora x ancora ENTRE as vistas candidatas) + diversidade angular medida do par de diagonais (correlacao + impressao lateral) | B1/B2/B3/B4/B5/B6 fechados por medida; achados novos B10 DEF S3 (maos do topo em roseta) e B11 TXT S3 (tom do topo); B7 estendido ao par; lote 2 FECHADO |
+| 01/11/2026 | Bateria COR-05 (integracao) | Parse binario proprio do GLB final (sem trimesh, sem costura.py) + reconciliacao commit a commit do delta da suite + prova de nao-regressao por diff + job pre-integracao + julgamento explicito da D1 aberta como nao-bloqueio | FECHADO (integracao); D-COR05-1 (S3, janela de cancelamento na gerar_uv), D-COR05-2 (S3, sem job sem-cor sob worker novo), D-COR05-3 (S4, campo glb_refinado_preservado), D-COR05-4 (S4, divergencias documentais); delta +2 EXPLICADO (252 de 17462aa + 2 de aa2758c + 9 = 263); proxima bateria exigida: reexecucao deterministica da cor (SHAs devem reproduzir) |
 
 ---
 
