@@ -216,3 +216,8 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 
 - **Adendo (23:06) — fatia mini-turbo do Orc tambem APROVADA:** jobs `20261031-230121-provac-orc-mini-s7`, `...-230214-provac-orc-mini-s42` e `...-230306-provac-orc-mini-s7b` concluidos: forma em 31,2/29,3/29,1 s, VRAM de pico 5.358/5.356/5.358 MB, GLB final de 49.750 triangulos, e s7b com SHA-256 identico ao s7. **A fatia do Orc da Prova C esta completa nos dois motores; a bateria so aguarda Caprileo e Besta.**
 
+## [2026-10-31 23:08 -03] Adendo do Critico: correcoes CONFEREM; falta so o item 3
+
+- O Critico re-verificou com evidencia propria (relatorio em `docs/CRITICO-fase1-auditoria-2-adendo.md`): **N1 CONFERE** (suite rodada por ele: 204 testes OK; 29 no test_motores com as 5 classes; commit 49e89e4 = GitHub), **N2 CONFERE** (web ao vivo com a licenca final, CLI batendo), **N3 CONFERE COM RESSALVA MENOR** (ESTADO fiel; restavam 2 mencoes a "199 testes" na REVISAO e 1 frase superada no ESTADO — corrigidas neste ciclo) e **Prova C do Orc CONFERE integral** (hashes e parse dele: determinismo nos dois motores, 49.750 triangulos, VRAM max. 6.435 MB, forma max. 41,4 s).
+- **Veredito atualizado: NAO PRONTA por um unico item** — o item 3, que so fecha com as imagens do Caprileo e da Besta Cristalina (kit de 27/10, no notebook) rodando a mesma bateria. O item 8 depende dele. De engenharia, nada falta.
+

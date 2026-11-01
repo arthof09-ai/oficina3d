@@ -4,7 +4,7 @@ Escrito pelo Muse em 31/10/2026 (pedido do Mestre, 19:52: revisar tudo o que
 falta, definir o que é "pronta" de verdade e rodar rodadas de melhoria sem
 economizar — o que importa é a qualidade). Estado medido na escrita:
 Fase 1 com itens 1–5 concluídos, dívida P6 paga, 5/5 motores disponíveis,
-suite com 199 testes verde no interpretador de produção, Prova B (web × MCP)
+suite com 204 testes verde no interpretador de produção, Prova B (web × MCP)
 aprovada pelo desenho do Crítico. Auditoria independente nº 1 do Crítico:
 "aprovado com ressalvas graves" — status das ressalvas no fim deste documento.
 
@@ -89,7 +89,7 @@ verdade ao mesmo tempo, cada um com prova registrada (não com impressão):
 | item | o que era | status em 31/10 ~21:00 |
 |---|---|---|
 | P1 (grave) | suite vermelha no venv de produção (PID do trampoline do uv) | **corrigido** (o processo filho grava o próprio PID; suite verde na régua certa) |
-| P2 | "152 OK" medido no interpretador errado | **corrigido** (régua oficial = `.venv_app`; 199 testes) |
+| P2 | "152 OK" medido no interpretador errado | **corrigido** (régua oficial = `.venv_app`; 204 testes apos a restauracao do N1) |
 | P3 | internet do PC quebrada (push impossível) | **resolvido** (era o túnel da VPN Windscribe em blackhole; desligada com autorização do Mestre; push sincronizado) |
 | P4 | restart do worker sem explicação no log | **explicado e registrado** (era a troca do INFRA-01; causa no REGISTRO) |
 | P5 | arquivamento no Drive desligado (env sem OFICINA3D_ARQUIVO) | **corrigido e provado** (job real arquivado com manifesto) |
