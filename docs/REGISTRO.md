@@ -185,3 +185,10 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **MCP por HTTP provado:** criado o token em `BASE\locks\oficina3d_token.txt` (gerado no PC; o valor nunca saiu de la; a pasta locks e ignorada pelo git). Servidor de prova na 8766: sem token = **401**; com `Authorization: Bearer` = initialize 200 com sessao, `tools/list` com as **9 ferramentas** e `tools/call listar_motores` respondendo. Servidor da prova encerrado no fim (o modo de uso segue sendo o stdio; o HTTP fica disponivel quando alguem precisar, com o token ja criado).
 - Lacunas correspondentes da REVISAO marcadas como resolvidas no proprio documento.
 
+## [2026-10-31 21:04-21:22 -03] R3 CONCLUIDA: queda, GPU ocupada e fila longa — tudo provado ao vivo
+
+- **Queda do worker no meio do job:** job `r3-orfao` (hunyuan-mv, 4 vistas) teve o worker morto a força durante o processamento. Cadeia completa observada: (1) o runner morreu junto (JobObject com tree-kill — nenhum processo fantasma segurando a GPU); (2) o lancador registrou a queda e religou o worker em ~30 s; (3) o worker novo retomou o orfao (`retomadas=1`) e o job **terminou 100%**. Observacao honesta: a retomada reprocessa a forma do zero (nao reaproveita a etapa parcial) — correto, so nao e economico; fica como otimizacao futura anotada.
+- **GPU ocupada por outro programa (USO-01 ao vivo):** com um processo segurando 6 GB de VRAM, o job `r3-gpu-ocupada` ficou **pendente** esperando (o worker nao forcou a entrada); quando o processo soltou a GPU, o job processou e concluiu sozinho.
+- **Fila longa sem intervencao:** 8 jobs enfileirados de uma vez (6 triposr + 2 mini-turbo, atras dos dois exercicios acima): **10/10 concluidos** na sequencia, sem nenhum toque humano.
+- Com a R3, a definicao de "pronta" da REVISAO fica faltando: Prova C (bloqueada nas imagens douradas), a instalacao do zero (R4) e a auditoria final do Critico.
+
