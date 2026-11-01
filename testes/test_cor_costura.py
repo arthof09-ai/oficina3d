@@ -106,6 +106,43 @@ class TestCostura(unittest.TestCase):
         self.assertEqual(res["controle"]["n"], 1)
         self.assertAlmostEqual(res["controle"]["media"], 0.0)
 
+    def test_vertice_duplicado_sem_solda_vira_borda_e_com_solda_classifica(self):
+        # Quadrado com o vertice 0 duplicado como 4 (mesma posicao, ID
+        # diferente) - o caso do GLB exportado que o Critico D2/D7 achou:
+        # sem solda, a aresta compartilhada some (tudo vira borda);
+        # com solda por posicao, ela e classificada (costura, UV partida).
+        verts = np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0],
+                          [1.0, 1.0, 0.0], [0.0, 1.0, 0.0],
+                          [0.0, 0.0, 0.0]])
+        faces = np.array([[0, 1, 2], [4, 2, 3]])
+        faces_uv = np.array([
+            [[0.0, 0.0], [0.4, 0.0], [0.4, 1.0]],
+            [[0.6, 0.0], [1.0, 0.0], [0.6, 1.0]],
+        ])
+        pares, n_borda, n_nm = costura.classificar_arestas(faces, faces_uv)
+        self.assertEqual(len(pares), 0)
+        self.assertEqual(n_borda, 6)
+        pares2, n_borda2, n_nm2 = costura.classificar_arestas(
+            faces, faces_uv, verts=verts)
+        self.assertEqual(len(pares2), 1)
+        self.assertTrue(pares2[0][2])
+        self.assertEqual(n_borda2, 4)
+        self.assertEqual(n_nm2, 0)
+
+    def test_piores_costuras_ordena_e_da_ponto_medio(self):
+        tex = np.zeros((10, 10, 3), dtype=np.uint8)
+        tex[:, :5] = [255, 0, 0]
+        tex[:, 5:] = [0, 0, 255]
+        faces, fuv = quadrado_costura()
+        cores = costura.cores_por_face(fuv, tex)
+        verts = np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0],
+                          [1.0, 1.0, 0.0], [0.0, 1.0, 0.0]])
+        piores = costura.piores_costuras(faces, fuv, cores, verts=verts, n=5)
+        self.assertEqual(len(piores), 1)
+        self.assertGreater(piores[0]["distancia"], 300)
+        # Aresta compartilhada 0-2: ponto medio (0.5, 0.5, 0).
+        self.assertTrue(np.allclose(piores[0]["ponto_medio"], [0.5, 0.5, 0.0]))
+
     def test_textura_rgba_usa_so_rgb(self):
         tex = np.zeros((4, 4, 4), dtype=np.uint8)
         tex[:, :, :3] = [7, 8, 9]

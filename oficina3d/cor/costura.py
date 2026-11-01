@@ -23,6 +23,25 @@ costura x interna dentro de uma textura, nao dependem de o mapeamento
 estar "certo" no sentido glTF: o mesmo texel e amostrado nos dois lados
 da comparacao. Nao se afirma aqui qual flip o glTF espera.
 
+Sobre solda de vertices (licao L-24, achado do Critico D2/D7): o GLB
+exportado DUPLICA vertices (split por normal/UV): a mesma posicao 3D
+aparece com IDs diferentes. Classificar arestas por ID, sem soldar,
+subconta as costuras (4.017 de 13.758 reais na Besta) e inventa
+"bordas" numa malha fechada (37.456 falsas). Por isso
+``classificar_arestas`` aceita ``verts``: com ele, vertices de mesma
+posicao (tolerancia 1e-6) sao soldados antes de classificar. Sem
+``verts``, a funcao classifica por ID e o resultado NAO vale para
+malha vinda de GLB.
+
+Sobre frames (licao L-25, achado do Critico D2/D7): as normais lidas
+de um GLB vivem em frame glTF (Y-up, frente +Z, costas -Z); a tabela
+``projecao.direcao_camera`` vive em frame Blender (Z-up, frente -Y,
+costas +Y). Medicao fora do Blender DEVE converter a direcao
+Blender->glTF (x,y,z) -> (x,z,-y) antes de usa-la com normais glTF.
+Aplicar o vetor Blender cru as normais glTF mediu topo/base (+Y) no
+lugar de costas/frente e falseou o D2 sem-costas. O bake nao e
+afetado: dentro do Blender, vetor e normais vivem no mesmo frame.
+
 Sobre a cor por face: e um PROXY (4 amostras por face), nao a media
 exata dos texels do triangulo. Faces pequenas (poucos texels) tornam o
 proxy ruidoso; por isso a leitura e sempre em distribuicao (mediana,
@@ -77,15 +96,40 @@ def _pares_adjacentes(faces: np.ndarray):
     return arestas
 
 
-def classificar_arestas(faces: np.ndarray, faces_uv: np.ndarray, tol: float = TOL_UV):
+def _faces_soldadas(faces: np.ndarray, verts: np.ndarray | None) -> np.ndarray:
+    """Faces com IDs soldados por posicao (ou as proprias, sem verts).
+
+    Solda: vertices cuja posicao arredondada a 6 casas coincide viram
+    um unico ID (o primeiro). Sem verts, nao ha o que soldar.
+    """
+    faces = np.asarray(faces, dtype=int)
+    if verts is None:
+        return faces
+    verts = np.asarray(verts, dtype=np.float64)
+    mapa: dict = {}
+    canon = np.empty(len(verts), dtype=int)
+    for i in range(len(verts)):
+        chave = tuple(np.round(verts[i], 6))
+        if chave not in mapa:
+            mapa[chave] = i
+        canon[i] = mapa[chave]
+    return canon[faces]
+
+
+def classificar_arestas(faces: np.ndarray, faces_uv: np.ndarray,
+                        verts: np.ndarray | None = None,
+                        tol: float = TOL_UV):
     """Classifica cada aresta compartilhada por exatamente 2 faces.
 
     Retorna (pares, n_borda, n_nao_manifold): pares = lista de
     (f1, f2, e_costura). Aresta de borda (1 face) nao e defeito nem
     nao-manifold: e contada a parte. So aresta com > 2 faces e
     nao-manifold. Nenhuma das duas entra nas estatisticas de salto.
+
+    Com ``verts``, as faces sao soldadas por posicao antes de
+    classificar (obrigatorio para malha vinda de GLB; ver docstring).
     """
-    faces = np.asarray(faces, dtype=int)
+    faces = _faces_soldadas(faces, verts)
     faces_uv = np.asarray(faces_uv, dtype=np.float64)
     arestas = _pares_adjacentes(faces)
     pares = []
@@ -127,10 +171,45 @@ def _estatisticas(distancias: np.ndarray) -> dict:
             "max": round(float(d.max()), 2)}
 
 
+def piores_costuras(faces: np.ndarray, faces_uv: np.ndarray,
+                    cores: np.ndarray, verts: np.ndarray | None = None,
+                    n: int = 20) -> list:
+    """As n costuras de maior salto de cor, com o ponto medio 3D.
+
+    Cada item: {f1, f2, distancia, ponto_medio}. O ponto medio e a
+    media das posicoes dos dois vertices da aresta (frame dos verts
+    entregues). Sem verts, ponto_medio e None (ainda ordena por salto).
+    Uso: escolher a regiao da previa flat/unlit da D7.
+    """
+    faces_w = _faces_soldadas(faces, verts)
+    pares, _, _ = classificar_arestas(faces, faces_uv, verts=verts)
+    cores = np.asarray(cores, dtype=np.float64)
+    saida = []
+    for f1, f2, e_costura in pares:
+        if not e_costura:
+            continue
+        dist = float(np.linalg.norm(cores[f1] - cores[f2]))
+        ponto = None
+        if verts is not None:
+            compartilhados = sorted(set(faces_w[f1].tolist())
+                                    & set(faces_w[f2].tolist()))
+            if len(compartilhados) == 2:
+                ponto = [round(float(x), 6) for x in
+                         np.asarray(verts, dtype=np.float64)[compartilhados].mean(axis=0)]
+        saida.append({"f1": int(f1), "f2": int(f2),
+                      "distancia": round(dist, 2), "ponto_medio": ponto})
+    saida.sort(key=lambda d: d["distancia"], reverse=True)
+    return saida[:n]
+
+
 def descontinuidade(faces: np.ndarray, faces_uv: np.ndarray,
-                    cores: np.ndarray) -> dict:
-    """Estatisticas de salto de cor: costura x interna as ilhas."""
-    pares, n_borda, n_nao_manifold = classificar_arestas(faces, faces_uv)
+                    cores: np.ndarray, verts: np.ndarray | None = None) -> dict:
+    """Estatisticas de salto de cor: costura x interna as ilhas.
+
+    Com ``verts``, solda por posicao antes de classificar (obrigatorio
+    para malha vinda de GLB; ver docstring do modulo).
+    """
+    pares, n_borda, n_nao_manifold = classificar_arestas(faces, faces_uv, verts=verts)
     cores = np.asarray(cores, dtype=np.float64)
     dist_costura = []
     dist_interna = []
@@ -153,6 +232,11 @@ def distancia_cor_por_direcao(normais: np.ndarray, cores_a: np.ndarray,
     olham para aquela direcao); grupo "controle": dot < -limiar.
     Serve a D2: no bake sem a vista das costas, as faces das costas
     (alvo) devem mudar e as da frente (controle) devem ficar paradas.
+
+    ATENCAO AO FRAME: ``direcao`` tem de viver no MESMO frame das
+    normais. Normais de GLB -> direcao glTF (costas = (0,0,-1)).
+    Direcao de ``projecao.direcao_camera`` (frame Blender) convertida
+    por (x,y,z) -> (x,z,-y) antes de usar aqui.
     """
     normais = np.asarray(normais, dtype=np.float64)
     direcao = np.asarray(direcao, dtype=np.float64)
