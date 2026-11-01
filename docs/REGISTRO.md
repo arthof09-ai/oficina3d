@@ -177,3 +177,11 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **Prova:** job `20261031-205245-prova-mini-full-2` **concluido 100%** — GLB de 1.134 KB + 5 previas + relatorio, arquivado. O `hunyuan-mini` completo esta vivo de verdade (nao so "disponivel").
 - Na fila a seguir: a prova do `hunyuan-mv` completo (4 vistas) e um job de refino ponta a ponta usando esse GLB.
 
+## [2026-10-31 20:59-21:02 -03] R2 CONCLUIDA: os 5 motores tem prova viva + refino + MCP HTTP
+
+- **hunyuan-mv completo:** job `20261031-205559-prova-mv-full` concluido 100% (4 vistas, 30 passos, GLB de 1.096 KB, com o refino do proprio pipeline).
+- **Refino ponta a ponta:** job `20261031-205600-prova-refino` (modo so-refinar sobre o GLB do mini completo) concluido 100% (GLB de 1.134 KB).
+- **hunyuan-mini-turbo:** job `20261031-210013-prova-mini-turbo` concluido 100% (GLB de 1.108 KB). **Com isso, os 5 motores tem pelo menos 1 GLB real gerado nesta maquina** — o item 2 da definicao de "pronta" (REVISAO_E_ROTEIRO) virou verdade.
+- **MCP por HTTP provado:** criado o token em `BASE\locks\oficina3d_token.txt` (gerado no PC; o valor nunca saiu de la; a pasta locks e ignorada pelo git). Servidor de prova na 8766: sem token = **401**; com `Authorization: Bearer` = initialize 200 com sessao, `tools/list` com as **9 ferramentas** e `tools/call listar_motores` respondendo. Servidor da prova encerrado no fim (o modo de uso segue sendo o stdio; o HTTP fica disponivel quando alguem precisar, com o token ja criado).
+- Lacunas correspondentes da REVISAO marcadas como resolvidas no proprio documento.
+
