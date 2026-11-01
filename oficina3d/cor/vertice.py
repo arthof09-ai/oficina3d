@@ -38,12 +38,25 @@ FONTE_FORMA = 2
 FONTE_PROPAGACAO = 3
 
 
+def srgb_para_linear(rgb):
+    """Decodifica RGB sRGB 0..1 para luz linear (nao recebe alfa).
+
+    As imagens PNG canonicas lidas por bpy entregam bytes sRGB como
+    floats; FLOAT_COLOR.color e COLOR_0 do glTF exigem luz linear.
+    Converter so a fonte imagem: a cor da forma ja chega linear pelo
+    importador glTF. Mascara/facing/alinhamento nao dependem desta curva.
+    """
+    rgb = np.asarray(rgb, dtype=np.float64)
+    return np.where(rgb <= 0.04045, rgb / 12.92,
+                    ((rgb + 0.055) / 1.055) ** 2.4)
+
+
 def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict],
                       centro: np.ndarray, ortho_scale: float):
     """Pinta vertices por projecao das vistas. Retorna (cores, fonte, melhor, info).
 
     ``vistas``: lista de dicts com ``vista`` (nome), ``imagem`` (HxWx3 float
-    0..1, linha 0 = topo), ``mascara`` (HxW bool) e ``visivel`` (N,) bool
+    0..1 LINEAR, linha 0 = topo), ``mascara`` (HxW bool) e ``visivel`` (N,) bool
     (oclusao pre-calculada por quem chama - no Blender, via BVH). A ordem
     da lista e a ordem de desempate (a primeira vista vence facing igual),
     como em ``projecao.rasterizar_textura``.

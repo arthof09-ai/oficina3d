@@ -59,3 +59,7 @@
 - O executor se autoaudita ANTES de submeter (pre-Critico reforcado): registra os defeitos que encontrou e corrigiu e os que restam; submissao sem autoauditoria registrada esta incompleta.
 - O criterio do Critico sobe de forma permanente: cada bateria nova e mais rigorosa que a anterior (APR-01) e incorpora como verificacao obrigatoria qualquer defeito que o Mestre apontar pessoalmente.
 - Em tranches visuais (cor/textura), a fidelidade visual e julgada em separado do mecanismo, com o padrao do olho do Mestre: mosaico/confete generalizado, rosto ilegivel ou cor que nao se sustenta = reprovacao visual, mesmo com o mecanismo aprovado.
+
+## Linha Codex — C-COR01 (2026-11-01)
+
+Cor de vertice passa a decodificar imagens byte sRGB para luz linear antes da mistura/propagacao e gravacao de COLOR_0. Forma GLB ja linear preservada; mascara e geometria intactas. Defeito confirmado por sonda no Blender e contraprova no exportador anterior. Mecanismo validado; qualidade final continua rascunho/D1 aberta. Numeros e evidencia em REGISTRO-CODEX; esta decisao pertence a branch paralela ate integracao pelo orquestrador.

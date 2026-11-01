@@ -155,7 +155,12 @@ def extrair_malha(obj):
 
 
 def ler_imagem(caminho, limiar_alfa=10.0):
-    """(rgb HxWx3 float 0..1 linha 0 = topo, mascara HxW bool, origem)."""
+    """(RGB linear HxWx3, mascara HxW bool, origem), linha 0 = topo.
+
+    PNG/JPEG canonicos: bpy retorna os canais sRGB sem decodificar.
+    Imagens float (ex.: EXR) ja fornecem luz linear. A mascara continua
+    calculada nos pixels originais para preservar o contrato de fundo.
+    """
     img = bpy.data.images.load(caminho, check_existing=False)
     try:
         w, h = img.size
@@ -174,7 +179,10 @@ def ler_imagem(caminho, limiar_alfa=10.0):
             fundo = np.median(borda, axis=0)
             masc = np.abs(rgb - fundo).max(axis=2) * 255.0 > 40
             origem = "fundo"
-        return px[..., :3].astype(np.float64), masc, origem
+        rgb = px[..., :3].astype(np.float64)
+        if not img.is_float:
+            rgb = V.srgb_para_linear(rgb)
+        return rgb, masc, origem
     finally:
         bpy.data.images.remove(img)
 
@@ -485,6 +493,8 @@ def main():
             por_vista[vista]["vertices_pintados"] = int(
                 info_amostra["vertices_por_vista"].get(vista, 0))
         res["por_vista"] = por_vista
+        res["espaco_cor"] = {"atributo": "linear", "imagens_byte": "sRGB decodificado",
+                             "imagens_float": "linear", "forma": "linear preservado"}
 
         # Fonte 2: cor da forma (TripoSR etc.), se o passo a declarou.
         info_forma = {"presente": False, "aceita": False}
@@ -585,4 +595,5 @@ def main():
         sys.exit(3)
 
 
-main()
+if __name__ == "__main__":
+    main()

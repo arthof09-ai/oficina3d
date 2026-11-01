@@ -42,3 +42,44 @@ Ordem: (0) atualizar e medir a suite; (1) Gate 0 Paint 2.0/2GP em venv proprio, 
 - Suite apos Gate 0: **296 executados, 0 falhas, 0 erros, 1 skip**, **25,168 s** (log `../evidencias/gate0/suite.log`). Nenhum codigo do app alterado nesta entrega.
 - Gate 0 SHA-256 resultado.json: 8674F7A0B982CD61A103FA541FF8E9AB56ADAF6F869DFEB837794CD6C17F6482
 - Gate 0 SHA-256 suite.log: 6F48D581474C14B0FE9DE9E84FE34561BFC2D574AFB95710622A9E4192AFC112
+
+## Entrega 2 — auditoria independente T2/D-T2 e correcao C-COR01
+
+### Reproducao e achados
+
+- Mesmas entradas do J1 `20261101-124814-t2-orc`: refinado PRESERVADO `modelo_sem_cor.glb` e quatro `preproc/*.png`, copiados com hash conferido para `../evidencias/t2/entrada_orc`. O pedido historico aponta `saida/modelo.glb`, que depois foi sobrescrito pelo colorido; reproduzir por esse caminho seria entrada errada. Usado o refinado preservado, como manda L-11.
+- Duas reproducoes do passo (CPU, sem nova geracao da forma e sem worker da principal): SHA **949e3cf7009b8e23e63474fc395d45226acb2ec63342e2a419b3996b7c9c2f3a**, identico a prova original. Parede do runner **3,5117 / 3,4919 s**; Blender do primeiro run **2,63 s** (original 2,57 s). Cobertura exata: 31.033 vista / 22.661 propagacao / 11.580 sem cor, total 65.274.
+- D-T2 real, par `20261101-131410-crit-t2-soforma`: legitimo aceita (mediana 0,00056, p90 0,0013, caixas 1,00098/1,00184/1; 27.421 vertices da forma). Sabotagens proprias via trimesh: X2 recusa (0,02022/0,08138, caixa 2,00197); X0,5 recusa pelo p90 0,12702; Y2 recusa (caixa 2,00368); Z2 recusa (mediana 0,07758/p90 0,14608). Numeros reproduzem os do Critico, incluindo o X0,5 que ele tinha apenas relido.
+- Misto X2 + vistas conclui, forma 0%, recusa registrada: 20.054 vista / 5.433 propagacao / 1.934 sem cor. Diferenca contra 20.034/5.450/1.937 do Critico NAO atribuida a regressao: usei as vistas PREPROCESSADAS do J1; a prova dele usou as canonicas cruas. O caso prova a recusa da forma e continuidade pelas vistas; nao alego identidade numerica com entradas diferentes. Evidencia persistida caso a caso em `../evidencias/dt2/resultado.json`.
+- D-T2-2/3: campos modo/rotulo e aviso por modo confirmados no codigo atualizado e na suite; nao reexecutei um bake T1 completo nesta frente. D-T2-4: iteracao de todos os primitivos existe, mas a checagem de contagens ainda compara SOMAS; auditoria adicional de contagens cruzadas fica na Frente 3. A guarda de alinhamento tambem aceitou distancias NaN/negativas em probe independente: defesa numerica a corrigir na Frente 3, sem afirmar ocorrencia no job real.
+
+### Defeito colorimetrico demonstrado e correcao
+
+- Sonda no Blender **5.2.3 LTS**: PNG sRGB `(137,103,58)` chega em `img.pixels` como `(0,53725493;0,40392160;0,22745100)`. Escrever esses numeros em `FLOAT_COLOR.color` declara luz LINEAR; `color_srgb` devolve `(0,75935453;0,66815293;0,51421463)`, ou **(194,170,131)** em bytes. O bug e independente de silhueta/UV e nao e mera mudanca de iluminacao.
+- Correcao C-COR01: decodificar sRGB das imagens byte antes de amostragem/propagacao; formas glTF e imagens float continuam lineares. Mascara e selecao de vistas permanecem calculadas sobre os mesmos pixels/normal/oclusao. Relatorio agora declara o espaco de cor. Nenhum ajuste de cor especifico ao Orc, nenhuma cor oliva forcada.
+- Fontes primarias do contrato: [Blender FLOAT_COLOR / scene linear](https://docs.blender.org/api/3.2/bpy.types.FloatColorAttributeValue.html), [glTF 2.0, COLOR_0 linear](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.pdf). O comportamento exato da versao instalada foi MEDIDO; nao inferido dessas paginas.
+- Testes novos: curva com tons intermediarios e segmento escuro; oliva conhecido; PNG real -> GLB real com COLOR_0 linear esperado; fonte GLB ja linear sem segunda conversao. A contraprova executa o teste PNG contra o exportador do HEAD antigo: **1 falha numerica esperada, 0 erros de infraestrutura**, erro maximo 0,28709664. Com a correcao: todos passam. O teste de forma tolera um passo de 8 bits: o importador Blender quantiza a cor em BYTE_COLOR (erro observado 0,00082202), nao se confunde isso com segunda conversao (~0,20).
+
+### Antes/depois medido — Orc Prata
+
+Render de prova: **Cycles CPU, Emission/unlit, Standard, exposicao 0, gamma 1**, 640x800, oito angulos antes e depois; 40,22 s totais do runner. Referencia ajustada pela mesma caixa envolvente, sem otimizacao de IoU; regioes aproximadas FIXAS (coordenadas em `metricas_cor.json`), pixels comuns com erosao de 3 px. Regioes incluem cabelo/equipamento: mediana da caixa NAO e mediana de pele; o teste isolado de oliva e a prova de preservacao do tom. As metricas abaixo comparam a MESMA correspondencia antes/depois; nao sao aprovacao semantica ou artistica.
+
+| Regiao | SSIM antes | SSIM depois | DeltaE2000 medio antes | Depois |
+|---|---:|---:|---:|---:|
+| Rosto | 0,10359 | 0,13746 | 28,3777 | 17,1007 |
+| Peito | 0,17095 | 0,22778 | 27,8305 | 14,8642 |
+| Pernas | 0,14731 | 0,20239 | 26,7890 | 13,1707 |
+
+- **Determinismo corrigido:** dois runs com SHA **eed4cdf74205a692f4659622ebdcf3b38bc53477345a3526e71b2149c1534111**. Parede **3,7892 / 3,6921 s**; primeiro tempo Blender **2,94 s**. Custo adicional observado ~0,2-0,3 s por Orc, nao ganho de desempenho.
+- **Geometria/normais/UV/indices antes = depois**, hash independente dos acessores **c4bfc17342c982bd24c6a7b4a29da1f705373c8f9156aeab614135793cb553c7**. Alpha do render frontal identico. GLB **3.180.412 bytes** antes e depois. Cobertura identica, inclusive vertices pretos/sem fonte: a correcao nao esconde os buracos.
+- Regressao adicional: Besta, geometria hash **e5e994b174f721708382ca604dbd21ab027e9b727050b2ce94508728937dc7e7** igual antes/depois; cobertura 28.195/14.820/5.157 intacta; tempo Blender 2,32 -> 2,93 s. Caprileo, geometria hash **37cfd1756c53a2a819cae6b94cbd2b80a099fd4dde2ed90cfb1a44fefaa0c114** igual; cobertura 30.967/9.056/4.164 intacta; 2,27 -> 2,83 s. Apenas nao-regressao de geometria/cobertura nesses dois: nao submetidos aqui a novo aceite artistico.
+- **Suite completa: 300 executados, 0 falhas, 0 erros, 1 skip, 36,132 s** (`../evidencias/t2/suite.log`). O skip continua sendo pacote MCP ausente no interpretador, como na baseline. 4 testes novos, nenhum teste antigo removido.
+
+### Autoauditoria adversarial e veredito separado
+
+- Tentei refutar a correcao: o bug reproduz em cor uniforme sem silhueta complicada; primarias 0/1 do teste antigo nao o detectam; o teste novo reprova o codigo antigo; fonte GLB nao sofre dupla conversao; posicoes/normais/UV/indices e cobertura permanecem identicos; duas saidas novas sao byte-identicas; melhoria nas tres ROIs, com metodo e limites declarados.
+- **Mecanismo C-COR01: corrigido e testado.** **Qualidade final: REPROVADA na autoauditoria visual**, ainda rascunho. Vi os renders antes/depois e a referencia: o clareamento indevido cai e cores recuperam contraste, mas rosto permanece ilegivel, pelo/armadura seguem fragmentados e a geometria nao coincide com a arte. Nao removi o rotulo rascunho. D1 permanece aberta. A melhora e mensuravel, mas nao tira o modelo do nivel rascunho.
+- Previews locais (arte privada, fora do git): `../evidencias/t2/comparacao_frente.png`, `comparacao_regioes.png`, `comparacao_8_angulos.png`, e os 16 frames em `flat_antes/flat_depois/`. Scripts reproduziveis em `testes/codex/`; insumos/hash em `entradas.json`; metricas em `metricas_cor.json`; contraprova em `contraprova/`; todos os GLBs antes/depois preservados.
+- COR-08: `git ls-remote origin refs/heads/main` ainda retornou **0e8746e355a6e55ed6ba9263e7574ab2bad00296** nesta checagem. Nao ha fechamento novo publicado para auditar. Nao toquei no codigo local em voo da principal.
+
+- Manifesto de evidencia Entrega 2: `../evidencias/manifesto_entrega2.json`, 162 arquivos, SHA-256 **5efb8257f40a8ba9fda210821415cc10eea64d95e1ec02b95b4019c84f6fa2be**. PNG/GLB confirmados como ignorados; nenhuma arte ou log adicionado ao repo publico.

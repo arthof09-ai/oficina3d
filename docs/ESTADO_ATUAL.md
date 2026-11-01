@@ -53,3 +53,7 @@ QUAL-01 (niveis de qualidade), QUAL-02 (forma nao e o app pronto: textura/pintur
 4. **APR-01 (criado):** docs/APRENDIZADO_E_FLUXO.md - fluxograma geral, protocolo de antecipacao, diario de licoes e regra de escalada do Critico; atualizar a cada tranche (REG-01).
 5. Guardian do notebook: adiado pelo Mestre (sem o notebook agora).
 6. Portao final MET-03: so depois de TODAS as frentes concluidas.
+
+## Linha paralela Codex (2026-11-01)
+
+Estado proprio, sem substituir o veredito da principal: Gate 0 T3 reprovado por toolchain CUDA/MSVC indisponivel; tentativa arquivada. T2 reproduzido byte a byte e correcao C-COR01 (sRGB -> linear) implementada com antes/depois, geometria intacta, SSIM/DeltaE melhores nas tres regioes do Orc. Suite 300, 0 falhas/erros, 1 skip. **Cor final continua reprovada na autoauditoria visual; rascunho mantido.** Proximos: guardas numericas/GLB da Frente 3; auditar COR-08 quando o fechamento for publicado. Evidencias e limites em REGISTRO-CODEX.md.

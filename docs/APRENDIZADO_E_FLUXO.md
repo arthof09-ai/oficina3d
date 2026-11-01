@@ -396,3 +396,7 @@ O executor conferiu as imagens ANTES do Critico (protocolo de antecipacao) e ja 
 
 - Regra permanente (ver DECISOES, APR-02): o Critico atua como inimigo profissional do trabalho - a missao dele e tentar reprovar; o executor se autoaudita antes de submeter para nao dar motivo.
 - **L-33:** reportar aprovacao do Critico sem dizer O QUE foi aprovado (mecanismo x visual) induz o Mestre a erro - separar sempre os dois escopos. Origem: COR-05, 01/11/2026 (o Mestre viu as previas da prova e julgou a pintura horrivel; o veredito do Critico era so de integracao/mecanismo, com a D1 aberta).
+
+### L-CODEX-01 — Primarias nao testam gamma (2026-11-01, linha paralela)
+
+O teste sintetico com RGB em 0/1 passava enquanto sRGB era gravado em FLOAT_COLOR linear. Tons intermediarios revelaram o erro: oliva (137,103,58) virava (194,170,131) na exibicao. Regra: prova colorimetrica usa tons medios/escuros, PNG real -> GLB real, e controle de fonte ja linear contra dupla conversao. Ver REGISTRO-CODEX, C-COR01. Correcao de gamma nao aprova alinhamento nem qualidade visual; medir e julgar separadamente.
