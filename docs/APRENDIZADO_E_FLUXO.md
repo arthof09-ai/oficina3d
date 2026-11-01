@@ -263,6 +263,11 @@ flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
   descreve com diminutivo ("levemente", "quase") sem a medida que o
   sustente. (Checklist pre-Critico, item novo.)
 
+
+### L-27 - Autoteste geometrico virou piso: o desvio migra para a forma fina e o tom (01/11/2026)
+- **Caso:** no retrabalho do lote 2 da REF-01 (Besta Cristalina v2), TODOS os autotestes geometricos do executor se confirmaram por medicao independente (cauda x~24-27, centroide 0,483 contra 0,475 declarado, cobertura no piso canonico nas 3 escalas do Critico, planta com a boca reduzida a fenda) e os defeitos estruturais B1/B2 fecharam. O que escapou da antecipacao nao foi geometria: foi a FORMA de um elemento-assinatura (as maos da vista de topo sairam em roseta radial, contradizendo o feixe irregular das fontes e das diagonais - achado da verificacao nova de coerencia interna do conjunto, B10) e o TOM (cristal delta 32 mais saturado e pele delta 28 mais clara no topo, contra a frente canonica, B11). Ambos S3: sem bloqueio, mas o conjunto fecharia com uma contradicao interna silenciosa entre vistas sem a verificacao nova.
+- **Regra:** junto do autoteste geometrico (L-26), a entrega de vista passa a incluir (a) autoteste de FORMA dos elementos-assinatura (maos, placa, roseta, franja) em zoom lado a lado contra a fonte E contra as vistas irmas do conjunto, e (b) autoteste de TOM (mediana por classe de cor contra a vista canonica de autoridade). Geometria medida e o piso; forma e tom medidos sao o novo teto da antecipacao. (Checklist pre-Critico, item novo.)
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:
@@ -281,6 +286,7 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Bateria D2/D7 (Etapa COR) | Reimplementacao independente da classificacao de costura (sem importar o codigo sob teste) + proxy (mediana 4 amostras) x media rasterizada + localizacao das piores costuras (juncao de vistas x aleatorio) + controle x alvo no sem-costas + cobertura UV rasterizada independente | S2-1 (solda: costura 4.017 vs 13.758 reais, 37.456 bordas falsas) e S2-2 (frame: D2 mediu topo/base, nao costas/frente) - medicao REPROVADA, fenomeno CONFIRMADO; D2-A (512) aprovado nos numeros |
 | 01/11/2026 | Verificacao D2/D7 (correcoes) | Reimplementacao com parse binario do GLB (sem trimesh, sem costura.py) + teste novo rodado contra o codigo ANTIGO (tem de falhar la) + conferencia da previa flat (Emission, sem luz) e do ponto da pior costura | D2 FECHADO e D7 FECHADO (numeros corrigidos reproduzidos a casa decimal); empate exato no top 3 explicado (duas costuras em 336,02); pendencias restantes S2-3, S3-2, S4-2 registradas |
 | 01/11/2026 | Rodada 2 REF-01 lote 2 (Besta) | Teste de atribuicao das diagonais (lateralizacao medida) + teste de pureza da planta (boca frontal = nao e topo) | B1 SYM S2 (diag_esq espelhada) e B2 DEF/MIS S2 (topo obliquo) achados; diag_dir aprovada |
+| 01/11/2026 | Rodada 2 do retrabalho REF-01 lote 2 (Besta v2) | Coerencia interna do conjunto (ancora x ancora ENTRE as vistas candidatas) + diversidade angular medida do par de diagonais (correlacao + impressao lateral) | B1/B2/B3/B4/B5/B6 fechados por medida; achados novos B10 DEF S3 (maos do topo em roseta) e B11 TXT S3 (tom do topo); B7 estendido ao par; lote 2 FECHADO |
 
 ---
 
