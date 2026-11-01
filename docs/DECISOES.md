@@ -63,3 +63,7 @@
 ## Linha Codex — C-COR01 (2026-11-01)
 
 Cor de vertice passa a decodificar imagens byte sRGB para luz linear antes da mistura/propagacao e gravacao de COLOR_0. Forma GLB ja linear preservada; mascara e geometria intactas. Defeito confirmado por sonda no Blender e contraprova no exportador anterior. Mecanismo validado; qualidade final continua rascunho/D1 aberta. Numeros e evidencia em REGISTRO-CODEX; esta decisao pertence a branch paralela ate integracao pelo orquestrador.
+
+## Linha Codex — C-GUARD01 (2026-11-01)
+
+Defesa de COLOR_0 verifica contagem por primitivo, indices glTF validos e material referenciado; nao permite que excesso numa parte compense falta noutra. Guarda D-T2 rejeita distancias invalidas/NaN antes de calcular os percentis. Verificacao de estrutura JSON continua distinta de validador glTF completo e alinhamento continua sem atestar identidade. Provas de antes/depois e nao-regressao no REGISTRO-CODEX; sem mudanca da cor ou geometria legitima.

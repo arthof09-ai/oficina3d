@@ -63,3 +63,5 @@ report['gate0_aprovado'] = all(x['exit_code'] == 0 for x in report['tentativas']
 report['decisao'] = 'prosseguir spike' if report['gate0_aprovado'] else 'arquivar tentativa T3 neste ambiente; seguir Entrega 2'
 save()
 print(report['decisao'])
+
+sys.exit(0 if report["gate0_aprovado"] else 1)

@@ -17,6 +17,10 @@ from oficina3d.cor.passo import rodar_passo_vertice
 from oficina3d.refino.previa import rodar_blender
 from PIL import Image
 
+parser=argparse.ArgumentParser()
+parser.add_argument('--fase',choices=['antes','depois'],required=True)
+fase=parser.parse_args().fase
+
 SOURCE = BASE.parent/'Oficina3D/jobs/20261101-124814-t2-orc'
 OUT = BASE/'evidencias/t2'
 INPUT = OUT/'entrada_orc'
@@ -24,14 +28,13 @@ INPUT.mkdir(parents=True, exist_ok=True)
 manifest=[]
 for src, dest in [(SOURCE/'saida/modelo_sem_cor.glb',INPUT/'modelo_sem_cor.glb'),
                   *[(SOURCE/f'preproc/{v}.png',INPUT/f'{v}.png') for v in ['frente','costas','esquerda','direita']]]:
-    shutil.copyfile(src,dest)
-    a=hashlib.sha256(src.read_bytes()).hexdigest(); b=hashlib.sha256(dest.read_bytes()).hexdigest()
-    assert a==b
+    a=hashlib.sha256(src.read_bytes()).hexdigest()
+    if not dest.exists():
+        shutil.copyfile(src,dest)
+    b=hashlib.sha256(dest.read_bytes()).hexdigest()
+    assert a==b, 'Insumo mudou; preservar evidencia existente e usar nova pasta'
     manifest.append(dict(nome=dest.name,bytes=dest.stat().st_size,sha256=b))
 (OUT/'entradas.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
-parser=argparse.ArgumentParser()
-parser.add_argument('--fase',choices=['antes','depois'],required=True)
-fase=parser.parse_args().fase
 report={}
 for label in [fase+'_A',fase+'_B']:
     folder=OUT/label

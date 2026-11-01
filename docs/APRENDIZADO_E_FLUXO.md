@@ -400,3 +400,7 @@ O executor conferiu as imagens ANTES do Critico (protocolo de antecipacao) e ja 
 ### L-CODEX-01 — Primarias nao testam gamma (2026-11-01, linha paralela)
 
 O teste sintetico com RGB em 0/1 passava enquanto sRGB era gravado em FLOAT_COLOR linear. Tons intermediarios revelaram o erro: oliva (137,103,58) virava (194,170,131) na exibicao. Regra: prova colorimetrica usa tons medios/escuros, PNG real -> GLB real, e controle de fonte ja linear contra dupla conversao. Ver REGISTRO-CODEX, C-COR01. Correcao de gamma nao aprova alinhamento nem qualidade visual; medir e julgar separadamente.
+
+### L-CODEX-02 — Totais iguais nao provam integridade de cada parte (2026-11-01)
+
+COLOR_0 2/4 e POSITION 3/3 somam 6, mas os dois primitivos estao errados. A defesa exige igualdade local antes do agregado. Indices de Python nao equivalem ao formato: -1 e True acessam listas, mas nao sao indices glTF validos. NaN tambem pode escapar de comparacoes `>`: validar dominio antes de comparar limiares. Novos casos adversariais em test_cor_guardas.py, provas em REGISTRO-CODEX.

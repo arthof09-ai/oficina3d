@@ -252,15 +252,25 @@ def avaliar_alinhamento_forma(distancias_frac_altura, razoes_caixa):
     aceita; metricas traz mediana, p90 e razoes (arredondados) para o
     relatorio do job. A decisao usa os valores sem arredondar.
     """
-    dists = np.asarray(list(distancias_frac_altura or []), dtype=np.float64)
-    razoes = dict(razoes_caixa or {})
+    metricas = {"dist_mediana_frac_altura": None, "dist_p90_frac_altura": None,
+                "razao_caixa": {}}
+    try:
+        dists = np.asarray(list(distancias_frac_altura) if distancias_frac_altura is not None else [],
+                           dtype=np.float64)
+        razoes = {k: float(v) for k, v in dict(razoes_caixa or {}).items()}
+    except (TypeError, ValueError, OverflowError):
+        return False, "alinhamento forma x refinado com dados nao numericos", metricas
+    if dists.ndim != 1 or not np.isfinite(dists).all() or (dists < 0).any():
+        return False, "alinhamento forma x refinado com distancias invalidas", metricas
+    if not all(math.isfinite(v) for v in razoes.values()):
+        return False, "alinhamento forma x refinado com razoes de caixa invalidas", metricas
     med = float(np.median(dists)) if len(dists) else None
     p90 = float(np.percentile(dists, 90)) if len(dists) else None
-    metricas = {
+    metricas.update({
         "dist_mediana_frac_altura": round(med, 5) if med is not None else None,
         "dist_p90_frac_altura": round(p90, 5) if p90 is not None else None,
-        "razao_caixa": {k: round(float(v), 5) for k, v in razoes.items()},
-    }
+        "razao_caixa": {k: round(v, 5) for k, v in razoes.items()},
+    })
     if not len(dists):
         return False, "alinhamento forma x refinado sem amostra de distancia", metricas
     faltam = [e for e in ("x", "y", "z") if e not in razoes]
