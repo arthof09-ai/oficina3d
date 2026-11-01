@@ -56,7 +56,7 @@ FAIXAS_INT = {
     "alvo_triangulos": (1_000, 1_000_000),
 }
 FAIXAS_REAL = {"altura_m": (0.01, 100.0)}
-OPCOES_BOOL = ("flashvdm", "simetrizar", "dividir_pranchas")
+OPCOES_BOOL = ("flashvdm", "simetrizar", "dividir_pranchas", "cor")
 
 # Trava por job
 NOME_TRAVA = "job.lock"

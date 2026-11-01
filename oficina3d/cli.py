@@ -83,6 +83,8 @@ def cmd_enviar(a) -> int:
         opcoes["flashvdm"] = False
     if a.simetrizar:
         opcoes["simetrizar"] = True
+    if a.cor:
+        opcoes["cor"] = True
     if a.motor and a.motor not in motores.MOTORES:
         print(f"erro: motor desconhecido: {a.motor} (use: {', '.join(motores.MOTORES)})", file=sys.stderr)
         return 1
@@ -245,6 +247,8 @@ def montar_parser() -> argparse.ArgumentParser:
     e.add_argument("--altura-m", type=float, dest="altura_m")
     e.add_argument("--sem-flashvdm", action="store_true", dest="sem_flashvdm")
     e.add_argument("--simetrizar", action="store_true")
+    e.add_argument("--cor", action="store_true",
+                   help="pinta a malha apos o refino (UV xatlas + bake T1; etapa opcional COR-05)")
     e.add_argument("--qualidade", default=None, choices=qualidades.NOMES,
                    help="perfil de qualidade QUAL-01 (bronze, prata, ouro, ouro-negro, lendario)")
     e.add_argument("--nome")

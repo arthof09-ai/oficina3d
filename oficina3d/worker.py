@@ -7,7 +7,8 @@
 Etapas (docs/ARQUITETURA.md + plano v2 6.2):
     1. entrada  (0–10%)   oficina3d.entrada.preparar        (pulada no modo so-refinar)
     2. forma    (10–80%)  oficina3d.motores.gerar -> forma\\forma.glb   (gpu.lock dentro do gerar)
-    3. refino   (80–98%)  oficina3d.refino.refinar -> saida\\
+    3. refino   (80–95%)  oficina3d.refino.refinar -> saida\\
+    3b. cor     (95–98%)  oficina3d.cor.passo.rodar_passo_cor (so se opcoes["cor"])
     4. exportar (98–100%) saida\\relatorio.json = job + métricas de todas as etapas
     11. arquivar (gancho) oficina3d.arquivar.arquivar_job(job_dir, apagar_local=False): cópia conferida
         no Drive; quem apaga a cópia local depois é arquivar_pendentes() (política de 3 dias / nota).
@@ -38,7 +39,7 @@ from pathlib import Path
 from . import config, job, motores
 from .motores import base
 
-FAIXAS = {"entrada": (0, 10), "forma": (10, 80), "refino": (80, 98), "exportar": (98, 100), "arquivar": (100, 100)}
+FAIXAS = {"entrada": (0, 10), "forma": (10, 80), "refino": (80, 95), "cor": (95, 98), "exportar": (98, 100), "arquivar": (100, 100)}
 INTERVALO_CANCEL_S = 3.0
 INTERVALO_SALVAR_S = 2.0
 INTERVALO_HISTORICO_S = 30.0
@@ -215,6 +216,21 @@ def _motor_do_job(jb: dict, op: dict) -> str:
     return job.motor_padrao(jb.get("modo", "livre"), vistas)
 
 
+def _etapa_cor(job_dir: Path, glb_refinado: Path, imagens: list[dict], progresso=None) -> dict:
+    """Etapa `cor` (COR-05): UV xatlas + bake, via oficina3d.cor.passo.
+
+    O import e tardio para o worker nao pagar o custo do passo nos jobs
+    sem cor (e para um passo ausente virar erro legivel da etapa, nao
+    falha de importacao do worker inteiro).
+    """
+    try:
+        from oficina3d.cor import passo as passo_cor
+    except ModuleNotFoundError as e:
+        raise ErroEtapa("cor", f"modulo cor.passo ainda nao disponivel ({e})") from e
+    return passo_cor.rodar_passo_cor(job_dir, glb_refinado, imagens,
+                                     pasta_cor=job_dir / "cor", progresso=progresso)
+
+
 # --------------------------------------------------------------------------- processamento
 
 def processar_job(job_id: str) -> dict:
@@ -301,18 +317,50 @@ def processar_job(job_id: str) -> dict:
         jb["avisos"].extend(res.get("avisos") or [])
         _verificar_cancelado(jb)
 
+        # 3b. cor (opcional, COR-05) ---------------------------------------
+        modelo_final = Path(res.get("glb") or job_dir / "saida" / "modelo.glb")
+        if op.get("cor"):
+            etapa_atual = "cor"
+            _verificar_cancelado(jb)
+            _registrar(jb, "cor", "pintando a malha (UV xatlas + bake)",
+                       progresso=FAIXAS["cor"][0])
+            t = time.time()
+            try:
+                res_cor = _etapa_cor(job_dir, modelo_final, imagens_motor,
+                                     progresso=_Progresso(jb, job_dir, "cor"))
+            except ValueError as e:
+                raise ErroEtapa("cor", str(e)) from e
+            tempos["cor"] = round(time.time() - t, 1)
+            etapas["cor"] = res_cor
+            jb["avisos"].extend(
+                f"cor: vista {v} ausente no job" for v in res_cor.get("vistas_ausentes") or [])
+            if res_cor.get("vistas_ignoradas"):
+                jb["avisos"].append(
+                    "cor: vistas ignoradas pelo bake v1: " + ", ".join(res_cor["vistas_ignoradas"]))
+            sem_cor = job_dir / "saida" / "modelo_sem_cor.glb"
+            if modelo_final != sem_cor:
+                shutil.copy2(modelo_final, sem_cor)
+            shutil.copy2(job_dir / res_cor["arquivos"]["modelo_cor"], job_dir / "saida" / "modelo.glb")
+            modelo_final = job_dir / "saida" / "modelo.glb"
+            jb["cor_previas"] = res_cor["arquivos"]["previas"]
+            _registrar(jb, "cor", f"cor pronta: textura {res_cor['arquivos']['textura']}",
+                       progresso=FAIXAS["cor"][1])
+
         # 4. exportar --------------------------------------------------------
         etapa_atual = "exportar"
         t = time.time()
-        modelo = Path(res.get("glb") or job_dir / "saida" / "modelo.glb")
+        modelo = modelo_final
         if not base.glb_valido(modelo):
             raise ErroEtapa("exportar", f"o refino não entregou um GLB válido: {_rel(job_dir, modelo)}")
         jb["resultado"] = {
             "glb": _rel(job_dir, modelo),
             "glb_cru": _rel(job_dir, glb_cru),
-            "previas": [_rel(job_dir, p) for p in res.get("previas") or []],
+            "previas": ([_rel(job_dir, p) for p in res.get("previas") or []]
+                         + list(jb.get("cor_previas") or [])),
             "relatorio": "saida/relatorio.json",
         }
+        if op.get("cor"):
+            jb["resultado"]["glb_sem_cor"] = "saida/modelo_sem_cor.glb"
         jb["progresso"] = 100
         jb["estado"] = "concluido"
         jb["concluido_em"] = job.agora()
