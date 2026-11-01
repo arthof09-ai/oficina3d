@@ -267,3 +267,18 @@ Regra: nunca apagar entradas; só acrescentar. Cada entrada: data/hora, o que fe
 - **CORPO-01 (01:56):** prioridade reordenada - construir o CORPO (Etapa COR primeiro); testes validam cada parte nova ao nascer, sem multiplicar testes sobre o esqueleto aprovado.
 - **REG-01 (01:57):** plano valido = o escrito nos documentos. Esta tranche ja nasce sob o protocolo: comecou relendo ESTADO/DECISOES/ESTUDO dos arquivos e termina com o plano atualizado por escrito.
 - **ESTADO_ATUAL atualizado nesta tranche:** cabecalho (Fase 1 PRONTA), secao da definicao de pronta corrigida (os 8 itens conferidos na auditoria 3 + adendo) e "Pendencias conhecidas" substituida por "Proximos passos" com o estado real (COR primeiro; REF-01 em andamento; APR-01 criado; machado como caso inaugural do retrabalho local; guardiao do notebook adiado; portao MET-03 so no fim de tudo).
+
+## 01/11/2026, ~02:15 - Muse (CM-000009): REF-01 lote 1 (Orc) gerado e instalado - aguarda o Critico Visual
+
+- **Fonte:** testes/dourado/imagens/orc_frente.png (1280x1820, RGBA, sha256 30c0f83d3ede10fd...) - a arte dourada do Orc. Geracao pelo gerador de imagem do proprio Muse (a rota mais economica em tokens: sem orquestrar outra IA), 3 geracoes neste lote.
+- **Divergencia consciente:** o BRIEF de 27/10 pedia corpo-base SEM armadura; a ordem REF-01 do Mestre manda NAO mudar as caracteristicas. Vale a ordem nova: Orc como ele e, so muda a pose; o machado fica fora da pose.
+- **Entregues** (em app/testes/referencias/, FORA do git - .gitignore linha 22, *.png; git check-ignore conferido nos 3; copias locais em ~/workspace/oficina-audit/referencias/):
+  - orc_tpose.png - 1328x1904, 1.614.418 B, sha256 1a82f46a2b9d911f... - Orc em T-pose, fundo cinza-claro uniforme, corpo inteiro com margem.
+  - orc_angulos.png - 2544x960, 2.654.580 B, sha256 2f1103055d63fb71... - folha de angulos (frente, 3/4 e perfis).
+  - orc_costas_ref.png - 1328x1904, 2.095.521 B, sha256 7b523cad0e669072... - vista de costas avulsa, gerada porque a folha nao trouxe as costas.
+- **Leitura honesta do executor (antecipacao, APR-01; quem julga e o Critico):** (detalhe na secao 6 do APRENDIZADO_E_FLUXO)
+  - T-pose: identidade e equipamento fieis; bracos ~20-25 graus abaixo da horizontal ("T" relaxada), dedos macios/parcialmente fundidos, tecido vermelho da cintura tocando as coxas por dentro.
+  - Folha: FALTOU a vista de costas pedida e um perfil saiu quase duplicado (MIS - o desvio mais grave do lote); a consistencia cruzada das vistas presentes e boa.
+  - Costas avulsa: coerente no conjunto, mas a peca de lobo saiu no ombro ESPELHADO em relacao a fonte (SYM); bolsinhas no cinto sao completacao nao pedida (EXT leve).
+  - Estilo gerado mais liso que a textura da arte-fonte; cores e desenho fieis. NENHUMA imagem foi aprovada pelo executor: sao insumo de teste aguardando o Critico Visual e a palavra do Mestre.
+- **Proximo passo (plano escrito):** Critico Visual do lote 1 (bateria na secao 6 do APRENDIZADO_E_FLUXO); em paralelo de prioridade, a Etapa COR (CORPO-01); lote 2 da REF-01 = Besta Cristalina.
