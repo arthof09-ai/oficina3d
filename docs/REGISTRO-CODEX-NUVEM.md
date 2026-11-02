@@ -132,15 +132,20 @@ GPU não usada; VRAM, energia, métricas visuais e desempenho do PC: não medido
 
 ### Integração mecânica na volta do PC
 
-1. Em cópia/branch de integração, conferir base e os hashes do manifesto.
-   Trazer o commit desta Frente 2 por cherry-pick, ou seu diff seletivo;
-   não reaplicar os commits antigos inteiros, que carregam documentação caduca.
+1. Receber esta branch na cópia do PC e conferir base/hashes do manifesto.
+   Validar nela: o runner desta rodada recusa outro nome de branch. Para a
+   integração pelo orquestrador, transportar os commits fechados na ordem,
+   com esta Frente 2 fornecendo o código; não reaplicar os commits antigos
+   inteiros, que carregam documentação caduca.
 2. Ordem lógica já resolvida no pacote: C-COR01 → C-GUARD01 (inclui módulo
    novo e import do verificador) → C-COR02 → testes da Frente C/sabotagens.
    Os três estão num único commit coerente para não deixar import quebrado.
 3. Rodar as 52 verificações acima e a suíte completa no ambiente do PC.
-   Fora desta rodada, liberar os dois testes de exportação real e validar
-   oliva, ausência de dupla conversão, todos os primitivos e controle `seco`.
+   Para testes reais fora desta rodada, usar unittest diretamente, com
+   `OFICINA3D_AUDITORIA_SEM_PC` ausente e temporários apontados a jobs_teste:
+   `python -B -m unittest discover -s testes -v`. O runner `auditoria_nuvem.py`
+   sempre desabilita Blender por desenho, mesmo no PC. Validar exportação
+   de oliva, ausência de dupla conversão, todos os primitivos e controle `seco`.
 4. Reexecutar bakes/cores duas vezes sobre entradas preservadas com hash,
    comparar geometria/normais/UV/índices, máscaras, cobertura e determinismo.
    Medir renders flat por região e submeter qualidade ao Mestre/Crítico.
@@ -169,7 +174,8 @@ identidade semântica de modelos ou conformidade glTF completa.
   requisitos do app nem o ambiente do PC.
 - O runner passou a definir `OFICINA3D_JOBS_TESTE`, redireciona apenas a raiz
   `JOBS_TESTE` de módulos legados e desabilita a descoberta de Blender.
-  As asserções e os testes originais permanecem intactos.
+  Nessa etapa, as asserções originais não foram alteradas; os ajustes
+  posteriores de duas fixtures de processo estão registrados no item 4.
 - Duas tentativas amplas encerraram ao entrar no primeiro teste nativo de UV,
   sem resumo unittest/JSON final. `integracao-completa.txt` é log **incompleto**,
   não uma suíte aprovada. A repetição `frente2` foi interrompida pela troca do
@@ -238,3 +244,198 @@ descrição da trava (N04). Isso é diagnóstico/proposta, não novo job comanda
 
 Frente 2 fechada no commit `c2828ab`; este registro não declara aprovação
 visual nem aprovação independente de qualquer uma das frentes.
+
+## Frente 4 — autoauditoria APR-02 sobre COR-08/S2
+
+Fontes das entregas antigas: **código público**, sem voltar a consultar o
+registro antigo proibido, no commit `31c2d883e9351b11dcbac6896c5b1f266e619f7e`:
+`testes/codex/frente_a.py`, `auditar_projecao_blender.py`, `frente_b.py`,
+`variantes_vertice_blender.py`, `validar_frente_b.py` e testes de cor/guardas.
+Confronto com `5cd092d`, com as funções de produção integradas e com os
+documentos publicados desta base. Não se inferiu existência ou conteúdo de
+evidências privadas apontadas por esses scripts.
+
+| Entrega/alegação anterior | Situação nesta base | Fonte e contraprova atual |
+|---|---|---|
+| A: deslocamento do centro no bake | **Caducou como defeito presente.** COR-08/A0 corrigiu explicitamente. Não reaplicar patch | Frente 1: teste por 1.024 texels + translação + mutante pre-A0; diff `27704b1` |
+| A: PNG salvo com AgX diverge do GLB | **Caducou como diagnóstico do caminho atual de salvamento.** S2 usa Standard. Identidade real PNG×GLB nesta rodada não medida | `_blender_cor.py:546–547`, dois testes estáticos publicados de ordem/unicidade do `save_render`; não substituem sonda Blender |
+| A: reutilização do mapa de vista/pixel para auditar a textura nova | **Limitada às fontes diretas.** Instrumentação antiga salva dentro de `rasterizar_textura`; A3 depois cria cores em faces cegas, mais halo | Teste novo com 2 texels: 1 direto → 2 coloridos, sendo 1 por A3; mapa direto ainda tem só 1 fonte. Exigir mapa face/semente/anel para a auditoria completa |
+| A: âncora COR-05 e números de cobertura/UV usados como baseline corrente | **Caducaram.** A0/A1/A2/A3 mudam projeção, resolução e preenchimento; o script A ainda aponta o job antigo | `frente_a.py` público aponta `20261101-101528-corint-orc-s7`; docstring `projecao.py:30–36` declara a âncora superada. Não se reaproveitam SHAs/percentuais antigos como medição da COR-08 |
+| B: C-COR01 continua necessário no modo vértice | **Confirmado em CPU.** A base publicada ainda lê byte sRGB como linear | Leitor isolado por AST antes/depois: 0,5 → 0,21404114; float 0,5 preservado. Exportação real segue pendente |
+| B: C-COR02 bilinear e controle seco continuam aplicáveis | **Confirmado em CPU.** Fontes/facing preservados no contracaso; cor interpolada muda conforme esperado | 4 testes de amostragem + contraprova tabuleiro integrada; modos bilinear/seco e máscara testados |
+| B: diagnóstico anterior de placebo no expoente de facing | **Confirmado para a operação antiga.** Potência positiva é monótona; o experimento aplica o expoente só à comparação/armazenamento após o cutoff e não à mescla | `variantes_vertice_blender.py:30–34`; teste com expoentes 0,5/1/1,5/2 preserva vencedor e empate. Não generalizar para expoente≤0 nem mistura ponderada; não existe knob `expoente` em produção |
+| B: métricas regionais/Prata–Ouro–Lendário, identidade geométrica e SHAs dos runs antigos | **Não revalidados.** Dependem de malhas, imagens, renders e ambiente do PC | Scripts públicos apontam jobs/evidências externas e precisam de Blender. Nenhum novo DeltaE/SSIM, ranking de qualidade, SHA de GLB ou custo por personagem foi medido aqui |
+| C: NaN pode passar e somas COLOR_0 podem esconder primitivo inválido na principal | **Confirmado na base nova e corrigido no pacote.** COR-08/S2 não tocaram os arquivos de vértice | NaN aceito→recusado; POSITION 3/3 × COLOR_0 2/4 aceito→recusado; índices, tipos, normalização, materiais e arquivos truncados nos 12 testes de guardas |
+| C: alcance da guarda estrutural | **Continua limitado.** O pacote valida JSON/contagens/tipos por primitivo, sem atestar payload binário ou identidade | Contrato explícito de `validacao_vertice.py`; fixtures de estrutura não são exportações reais. Mesmas contagens entre partes não provam que as cores pertencem semanticamente àquelas partes |
+| Escopo dos patches perante a fidelidade de cor do bake | **Restrito ao modo vértice.** O modo vértice e o bake têm contratos diferentes; S2-linear permanece aberto | Teste novo de médias e ausência de decode no bake; quatro arquivos do bake devem continuar idênticos a `5cd092d` |
+
+`testes/test_cor_autoauditoria_nuvem.py` acrescenta quatro verificações:
+expoente e ausência de knob de produção; diferença entre médias lineares do
+vértice e médias sRGB do bake; limitação do mapa direto diante da A3;
+identidade integral dos arquivos `projecao.py`, `_blender_cor.py`,
+`preenchimento.py` e `passo.py` contra a base pública.
+
+### Autoauditoria da própria rodada e encerramento do bloqueio xatlas
+
+- Desvio de leitura do registro antigo já declarado na abertura; não foi
+  escondido nem convertido em fonte de números novos.
+- A baseline inicial teve **293 métodos aprovados**, contados das linhas
+  `... ok` do log, e não os 292 calculados pelo primeiro runner. O total
+  unittest continua **337 métodos executados**, 6 skips e 39 registros de
+  erro, incluindo **1 erro de setUpClass**, que não incrementa `testsRun`.
+  Portanto 293 + 6 + 38 erros de método = 337; o erro da classe é adicional.
+  O JSON original foi preservado. O runner final conta aprovações em
+  `addSuccess`, sem subtrair erros de classe/subtestes do total de métodos.
+- Não houve resumo nas tentativas mortas no xatlas: não receberam contagem
+  inventada de testes aprovados. O log parcial e o arquivo vazio da tentativa
+  interrompida permanecem identificados como tal.
+- A sonda nativa repetiu **o mesmo access violation em `Atlas.add_mesh`**
+  com NumPy **2.2.6** (13,069337 s) e **1.26.4** (16,413513 s), além do
+  primeiro teste com 2.3.5. Todos com CPython 3.12.14 e xatlas 0.0.11.
+  Evidências: `xatlas-numpy226.json`, `xatlas-numpy126.json`,
+  `xatlas-isolado.json`. **Trocar NumPy não resolveu; causa raiz não
+  identificada.** Não há prova de que seja defeito de ABI, instrução de CPU,
+  sandbox ou código da Oficina3D; tampouco de que ocorra no Python 3.10 do PC.
+- NumPy 1.26.4 tornou o SciPy 1.18.1 local incompatível pelos requisitos
+  declarados pelo pip. Foi instalado **SciPy 1.15.3**, versão fixada pelo app
+  e compatível, somente no venv da rodada. O ambiente final usa NumPy 1.26.4;
+  **não é réplica do PC** (que declara NumPy 2.2.6/Python 3.10). Nenhum arquivo
+  de dependências do projeto foi alterado.
+- Bloqueio contornado de forma explícita no runner com
+  `OFICINA3D_NUVEM_SEM_XATLAS=1`: pulam só os **9 testes nativos** (3 de
+  progresso UV, 4 de `TestUvXatlas`, 2 de margem/parametrização). O teste
+  de gap entre quadrados puramente NumPy continua rodando. Blender é
+  excluído da descoberta e de suas classes mesmo se instalado localmente.
+  Nada foi removido da suíte, e as asserções originais não foram afrouxadas.
+
+O resultado final da suíte, o painel completo e as pendências de retorno do PC
+estão registrados no fechamento abaixo.
+
+### Falha da fixture de timeout encontrada na suíte ampla
+
+A primeira execução ampla que conseguiu terminar (agora preservada como
+`suite-com-timeout.json/.txt`) teve **388 executados, 363 aprovações,
+24 skips, 1 erro, 0 falhas**; parede **194,037273 s**, CPU **33,578125 s**,
+pico **171.937.792 bytes**. O erro foi em
+`test_motores.TestGerarFalso.test_tempo_maximo`: o motor já havia levantado o
+erro de tempo máximo esperado, mas o teste tentou ler um arquivo de PID que
+o filho poderia ainda não ter escrito antes do timeout de 1,5 s.
+
+Corrigida somente essa fixture em `testes/test_motores.py:391`: o teste
+envolve o `Popen` real para capturar PID/horário de criação no **pai**, exige
+processo iniciado, `poll()` finalizado e PID não vivo após o timeout. Assim
+verifica a morte do processo mesmo quando o filho não chegou a inicializar.
+O timeout continua 1,5 s; nenhuma função do motor foi modificada e não se
+eliminou a asserção de encerramento. Não foi uma falha de produção comprovada.
+
+Contraprova isolada: **1 executado, 1 aprovado, 0 falhas/erros/skips**;
+`timeout-corrigido.json/.txt`, unittest **2,126 s**, parede **8,309081 s**,
+CPU **0,750000 s**, pico **35.446.784 bytes**. Uma nova corrida completa foi
+necessária para verificar essa correção; a tentativa com erro foi preservada.
+
+Na repetição seguinte surgiu uma falha distinta, preservada em
+`suite-com-trava.json/.txt`: **388 executados, 363 aprovações, 24 skips,
+1 falha, 0 erros**; parede **203,819797 s**, CPU **30,812500 s**, pico
+**172.560.384 bytes**. `test_trava_orfa_de_processo_morto` chamava `p.kill()`
+no PID do lançador do venv, embora o próprio arquivo já alertasse que esse PID
+pode diferir do intérprete que segura a trava. Matar o lançador não prova a
+morte do dono da trava; o teste podia encontrar a trava legitimamente ocupada.
+
+Corrigida somente a fixture em `testes/test_travas.py`: matar por SIGTERM o
+PID registrado pelo próprio filho (TerminateProcess no Windows), esperar o
+lançador e manter as verificações de órfã, dono morto e recuperação da trava.
+No teste de timeout, preservou-se também a verificação do PID real do runner
+quando o arquivo chegou a ser escrito integralmente; se o timeout impede o
+registro, verifica-se o processo capturado no pai. Os demais testes existentes
+de encerramento de filho/neto continuam cobrindo a árvore de processos.
+Nenhum código de produção de motores/travas foi alterado.
+
+Contraprova conjunta das duas fixtures finais: **2 executados, 2 aprovados,
+0 falhas/erros/skips**; `fixtures-processos.json/.txt`, parede
+**13,091503 s**, CPU **1,140625 s**, pico **35.098.624 bytes**.
+Nova corrida ampla iniciada para conferir o conjunto com ambas as correções.
+
+### Fechamento da Frente 4 e da missão — CPU
+
+**Frente 4 FECHADA no escopo autorizado, com pendências de PC declaradas.**
+Quatro testes específicos de autoauditoria passaram, sem falhas/erros/skips:
+`frente4.json/.txt`; parede **8,346381 s**, CPU **1,203125 s**, pico
+**43.601.920 bytes**. A corrida ampla final terminou com **388 métodos
+executados: 364 aprovados, 24 skips, 0 falhas, 0 erros**.
+Nomes de todos os testes: `suite-final.txt`; motivos individuais dos skips,
+versões e recursos: `suite-final.json`. Nenhum resultado das tentativas
+anteriores foi substituído por uma declaração de sucesso.
+
+| Painel final do Mestre | Medição |
+|---|---:|
+| Tempo unittest da suíte | 144,228 s |
+| Tempo de parede do runner | 182,000646 s |
+| CPU do processo runner | 36,046875 s |
+| Pico working set do processo desde início | 172.077.056 bytes |
+| GPU / Blender | não usados |
+| VRAM / energia / recursos dos filhos | não medido |
+| Inferência, bake real, SSIM/DeltaE, qualidade visual | não medido |
+
+Os **24 skips** se decompõem em **10 de Blender**, **9 de xatlas nativo**,
+**3 de Godot ausente**, **1 de MCP ausente** e **1 de consulta nvidia-smi
+ausente**. Não se deduziu inexistência de GPU a partir da ausência do comando.
+O teste sintético puro de margem UV passou. Motores executados pela suíte são
+scripts falsos de CPU, não inferências nem jobs reais da fila.
+
+Reprodução da corrida restrita, nesta branch e no ambiente documentado:
+
+```powershell
+$env:OFICINA3D_NUVEM_SEM_XATLAS = '1'
+.\.venv_auditoria\Scripts\python.exe -X utf8 -B testes/auditoria_nuvem.py reproducao-final
+.\.venv_auditoria\Scripts\python.exe -X utf8 -B testes/fechar_auditoria_nuvem.py
+```
+
+O segundo comando verifica a evidência original `suite-final.json`, além dos
+hashes e da árvore atual; não é um substituto da execução de testes.
+`ambiente-final.txt` é o freeze **local** do venv com herança de pacotes,
+não um lock autossuficiente: os JSONs também registram pacotes herdados,
+como Pillow 12.3.0. Não houve alteração do requirements do projeto.
+
+**Verificação final mecânica:** `testes/fechar_auditoria_nuvem.py` concluiu;
+**88 fontes Python compiladas sem executá-las**, manifesto da integração
+conferido, quatro arquivos do bake idênticos à base, `main` ainda em
+`5cd092d37bddf36a2d888404936d4c9f394528c4`, mudanças só textuais e `MISSAO.md`
+preservado fora do índice. Evidência: `fechamento.json`. `git diff --check`
+sem erro. A compilação emite um SyntaxWarning preexistente de escape no
+docstring de `test_travas.py`; isso não foi contado como teste nem ocultado.
+Checagem de processos dos testes de trava após as contraprovas: nenhum
+filho remanescente encontrado (lista vazia).
+
+**Entrega por frente:** 1 = `d11449a` (centro já corrigido, prova negativa);
+2 = `c2828ab` (pacote integrado C-COR01/C-COR02/C-GUARD01 + testes);
+3 = `2995ad0` (quatro contracasos/limites publicados + S2 conhecido medido);
+4 = commit desta seção (autoauditoria, fixture de processos e fechamento).
+Um commit por frente, sem commits na main e sem force-push.
+
+**Pendências para a volta do PC, sem execução nesta rodada:**
+
+1. Rodar os testes nativos de xatlas no Python/venv do PC e investigar a
+   combinação local CPython 3.12/xatlas que aborta; causa raiz continua aberta.
+2. Executar os dois testes de exportação real de vértice e a suíte com Blender,
+   Godot/MCP quando disponíveis. Só o PC pode confirmar o contrato real de
+   leitura/exportação da versão dele e a não regressão dos GLBs.
+3. Recuperar a âncora correta COR-08/S2 com hashes, repetir o bake, medir
+   cobertura/proveniência por região, PNG×GLB, geometria, determinismo e
+   custo real. Não usar job antigo 1024 nem números antigos como medidas novas.
+4. Tratar N01/N02 de telemetria, decidir o ajuste de fora-do-quadro N03 e
+   corrigir a leitura documental N04 em tranche separada. Quantificar/decidir
+   o S2-pipeline-linear do bake, que permanece aberto.
+5. Reavaliar fidelidade com renders flat e julgamento independente/Mestre.
+   A missão de CPU não fecha D1 nem substitui aprovação visual.
+
+Nenhuma dessas pendências foi simulada como concluída. Nenhuma pesquisa,
+rota paga, modelo baixado, alteração de serviço/worker ou job GPU foi iniciado.
+
+**Disponibilização remota:** o pré-teste não interativo
+`git -c credential.interactive=false push --dry-run origin
+HEAD:refs/heads/codex/auditoria-sem-pc` falhou por credenciais ausentes
+(`Cannot prompt because user interactivity has been disabled` / `unable to
+get password from user`). Era dry-run; nenhum estado remoto foi alterado.
+Os quatro commits ficam completos na branch local; a publicação por Git CLI
+fica pendente de autenticação do proprietário, sem pedir nem registrar senha.
+O bloqueio não impediu os quatro itens da missão, os testes e os commits locais.

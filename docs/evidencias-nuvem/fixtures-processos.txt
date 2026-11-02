@@ -1,0 +1,10 @@
+C:\Users\Antônio Tiburtino\oficina3d-codex\testes\test_travas.py:3: SyntaxWarning: invalid escape sequence '\.'
+  Rodar (cwd = app, no Python de producao):  ..\.venv_app\Scripts\python.exe -m unittest discover -s testes -p "test_travas.py" -v
+test_tempo_maximo (testes.test_motores.TestGerarFalso.test_tempo_maximo) ... ok
+test_trava_orfa_de_processo_morto (testes.test_travas.TestTravaEntreProcessos.test_trava_orfa_de_processo_morto) ... trava 'gpu' órfã (PID 6768 morreu sem soltar); assumida pelo PID 2892
+ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 4.535s
+
+OK

@@ -21,6 +21,16 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 
+class ResultadoContado(unittest.TextTestResult):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aprovados = 0
+
+    def addSuccess(self, test):
+        super().addSuccess(test)
+        self.aprovados += 1
+
+
 def pico_memoria_bytes():
     if sys.platform != "win32":
         return None
@@ -79,7 +89,22 @@ def main():
                     if file and Path(file).resolve().parent == ROOT / "testes":
                         if hasattr(module, "JOBS_TESTE"):
                             module.JOBS_TESTE = jobs_teste
-                result = unittest.TextTestRunner(stream=log, verbosity=2).run(suite)
+                        # A instalacao local nao autoriza Blender nesta rodada.
+                        for name in ("TestRefinarBlender", "TestRefinarSimetriaSemUV", "TestRefinarPymeshlab"):
+                            cls = getattr(module, name, None)
+                            if cls is not None:
+                                unittest.skip("Blender excluido pela missao sem PC")(cls)
+                        if os.environ.get("OFICINA3D_NUVEM_SEM_XATLAS") == "1":
+                            reason = "xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json"
+                            for name in ("TestGerarUvProgresso", "TestUvXatlas"):
+                                cls = getattr(module, name, None)
+                                if cls is not None:
+                                    unittest.skip(reason)(cls)
+                            cls = getattr(module, "TestUvMargemD_T5_1", None)
+                            if cls is not None:
+                                for name in ("test_margem_padrao_cubo_em_2048_cumpre_regua", "test_gerar_uv_registra_parametros_do_empacotamento"):
+                                    setattr(cls, name, unittest.skip(reason)(getattr(cls, name)))
+                result = unittest.TextTestRunner(stream=log, verbosity=2, resultclass=ResultadoContado).run(suite)
     versions = {}
     for name in ("numpy", "Pillow", "trimesh", "fastapi", "httpx", "mcp", "scipy", "xatlas", "psutil"):
         try:
@@ -91,7 +116,7 @@ def main():
             "comando": ["python", "-B", "testes/auditoria_nuvem.py", *sys.argv[1:]],
             "python": platform.python_version(), "plataforma": platform.platform(), "versoes": versions,
             "testes_executados": result.testsRun,
-            "passaram": result.testsRun - len(result.skipped) - len(result.failures) - len(result.errors),
+            "passaram": result.aprovados,
             "falhas": len(result.failures), "erros": len(result.errors),
             "skips": [{"teste": str(t), "motivo": reason} for t, reason in result.skipped],
             "falhas_ids": [str(t) for t, _ in result.failures], "erros_ids": [str(t) for t, _ in result.errors],
@@ -99,6 +124,7 @@ def main():
             "cpu_processo_s": round(time.process_time() - cpu, 6),
             "pico_working_set_processo_bytes": pico_memoria_bytes(),
             "gpu": "nao usada", "vram": "nao medido", "blender": "nao executado",
+            "xatlas_nativo_excluido": os.environ.get("OFICINA3D_NUVEM_SEM_XATLAS") == "1",
             "jobs_reais_e_qualidade_visual": "nao medido",
             "nota_recursos": "CPU e memoria do processo runner; nao incluem processos filhos; pico desde inicio do processo"}
     (out / f"{label}.json").write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

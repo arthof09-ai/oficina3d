@@ -1,0 +1,404 @@
+C:\Users\Antônio Tiburtino\oficina3d-codex\testes\test_travas.py:3: SyntaxWarning: invalid escape sequence '\.'
+  Rodar (cwd = app, no Python de producao):  ..\.venv_app\Scripts\python.exe -m unittest discover -s testes -p "test_travas.py" -v
+C:\Users\Antônio Tiburtino\oficina3d-codex\.venv_auditoria\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_arquiva_confere_e_apaga (test_arquivar.TestArquivarJob.test_arquiva_confere_e_apaga) ... ok
+test_conferencia_extra_recusa (test_arquivar.TestArquivarJob.test_conferencia_extra_recusa) ... ok
+test_destino_inacessivel_fica_na_fila (test_arquivar.TestArquivarJob.test_destino_inacessivel_fica_na_fila) ... 20261031-120000-orc: destino inacessível (C:\Users\ANTNIO~1\AppData\Local\Temp\oficina-nuvem-thhb6sf2\jobs_teste\g_arquivar_d59new2a\G_sem_internet\Oficina3D_v2); fica na fila
+ok
+test_destino_pela_variavel (test_arquivar.TestArquivarJob.test_destino_pela_variavel) ... ok
+test_erro_de_es_fica_na_fila (test_arquivar.TestArquivarJob.test_erro_de_es_fica_na_fila) ... 20261031-120000-orc: erro de E/S ao copiar (rede caiu); fica na fila, nada apagado
+ok
+test_falha_de_hash_nao_apaga (test_arquivar.TestArquivarJob.test_falha_de_hash_nao_apaga) ... 20261031-120000-orc: SHA256 não bateu em saida/modelo.glb (origem 435f1ea8db1a…, destino 84dbcbdf1562…); nada apagado
+ok
+test_id_invalido (test_arquivar.TestArquivarJob.test_id_invalido) ... ok
+test_saida_mudou_durante_copia_nao_apaga (test_arquivar.TestArquivarJob.test_saida_mudou_durante_copia_nao_apaga) ... 20261031-120000-orc: saida\ mudou durante o arquivamento; arquivado, mas cópia local mantida
+ok
+test_sem_destino_nao_arquiva (test_arquivar.TestArquivarJob.test_sem_destino_nao_arquiva) ... ok
+test_data_pelo_arquivo_quando_falta_no_job (test_arquivar.TestArquivarPendentes.test_data_pelo_arquivo_quando_falta_no_job) ... ok
+test_politica (test_arquivar.TestArquivarPendentes.test_politica) ... ok
+test_sem_destino_so_avisa (test_arquivar.TestArquivarPendentes.test_sem_destino_so_avisa) ... ok
+test_sem_internet_fica_tudo (test_arquivar.TestArquivarPendentes.test_sem_internet_fica_tudo) ... 20261031-120000-orc: destino inacessível (C:\Users\ANTNIO~1\AppData\Local\Temp\oficina-nuvem-thhb6sf2\jobs_teste\g_arquivar_l_6kyqbq\nao_existe); fica na fila
+ok
+test_urgente_ignora_espera (test_arquivar.TestArquivarPendentes.test_urgente_ignora_espera) ... ok
+test_main_motores (test_cli.TestComandos.test_main_motores) ... ok
+test_motores_retorna_zero (test_cli.TestComandos.test_motores_retorna_zero) ... ok
+test_status_de_job_real_e_inexistente (test_cli.TestComandos.test_status_de_job_real_e_inexistente) ... ok
+test_status_lista_sem_id (test_cli.TestComandos.test_status_lista_sem_id) ... ok
+test_comandos_ligados (test_cli.TestParser.test_comandos_ligados) ... ok
+test_enviar_opcoes (test_cli.TestParser.test_enviar_opcoes) ... ok
+test_sem_comando_da_erro (test_cli.TestParser.test_sem_comando_da_erro) ... ok
+test_com_vista (test_cli.TestSepararVista.test_com_vista) ... ok
+test_dois_pontos_do_windows_nao_e_vista (test_cli.TestSepararVista.test_dois_pontos_do_windows_nao_e_vista) ... ok
+test_sem_vista (test_cli.TestSepararVista.test_sem_vista) ... ok
+test_sufixo_desconhecido_nao_e_vista (test_cli.TestSepararVista.test_sufixo_desconhecido_nao_e_vista) ... ok
+test_extra_no_drive_recusado (test_config.TestEnvSubprocesso.test_extra_no_drive_recusado) ... ok
+test_opcoes (test_config.TestEnvSubprocesso.test_opcoes) ... ok
+test_sem_efeito_colateral (test_config.TestEnvSubprocesso.test_sem_efeito_colateral) ... ok
+test_variaveis (test_config.TestEnvSubprocesso.test_variaveis) ... ok
+test_verificar_fora_do_drive (test_config.TestEnvSubprocesso.test_verificar_fora_do_drive) ... ok
+test_base_e_jobs_por_variavel (test_config.TestMontar.test_base_e_jobs_por_variavel) ... ok
+test_caminho_relativo_recusado (test_config.TestMontar.test_caminho_relativo_recusado) ... ok
+test_caminhos_parecidos_permitidos (test_config.TestMontar.test_caminhos_parecidos_permitidos) ... ok
+test_drive_g_proibido (test_config.TestMontar.test_drive_g_proibido) ... ok
+test_executaveis_por_variavel (test_config.TestMontar.test_executaveis_por_variavel) ... ok
+test_importacao_falha_com_jobs_no_drive (test_config.TestMontar.test_importacao_falha_com_jobs_no_drive) ... ok
+test_padrao (test_config.TestMontar.test_padrao) ... ok
+test_pasta_espelhada_do_drive_proibida (test_config.TestMontar.test_pasta_espelhada_do_drive_proibida) ... ok
+test_sem_disco_e_fixo (test_config.TestMontar.test_sem_disco_e_fixo) ... ok
+test_motores_e_padroes (test_config.TestVocabulario.test_motores_e_padroes) ... ok
+test_alinhamento_aspectos_distintos (test_cor.TestAlinhamento.test_alinhamento_aspectos_distintos) ... ok
+test_caixa_degenerada_erro_em_vez_de_lixo (test_cor.TestAlinhamento.test_caixa_degenerada_erro_em_vez_de_lixo) ... ok
+test_caixas_iguais_da_identidade (test_cor.TestAlinhamento.test_caixas_iguais_da_identidade) ... ok
+test_iou (test_cor.TestAlinhamento.test_iou) ... ok
+test_iou_vazias_zero_e_nao_um (test_cor.TestAlinhamento.test_iou_vazias_zero_e_nao_um) ... ok
+test_aplicar_alinhamento_desloca (test_cor.TestAlinhamentoOtimizado.test_aplicar_alinhamento_desloca) ... ok
+test_bbox_robusta_percentil_zero_igual_bbox (test_cor.TestAlinhamentoOtimizado.test_bbox_robusta_percentil_zero_igual_bbox) ... ok
+test_determinismo (test_cor.TestAlinhamentoOtimizado.test_determinismo) ... ok
+test_entradas_malformadas_recusadas (test_cor.TestAlinhamentoOtimizado.test_entradas_malformadas_recusadas) ... ok
+test_identico_nao_busca (test_cor.TestAlinhamentoOtimizado.test_identico_nao_busca) ... ok
+test_ponta_fina_recupera_iou (test_cor.TestAlinhamentoOtimizado.test_ponta_fina_recupera_iou) ... ok
+test_trava_de_aspecto_respeitada (test_cor.TestAlinhamentoOtimizado.test_trava_de_aspecto_respeitada) ... ok
+test_amostragem_usa_centro_faixas (test_cor.TestBake.test_amostragem_usa_centro_faixas) ... ok
+test_dilatacao_nao_atravessa_borda (test_cor.TestBake.test_dilatacao_nao_atravessa_borda) ... ok
+test_dilatacao_preenche_e_para (test_cor.TestBake.test_dilatacao_preenche_e_para) ... ok
+test_empate_mantem_primeira_fonte (test_cor.TestBake.test_empate_mantem_primeira_fonte) ... ok
+test_face_oculta_nao_pinta (test_cor.TestBake.test_face_oculta_nao_pinta) ... ok
+test_facing_de_raspao_nao_pinta (test_cor.TestBake.test_facing_de_raspao_nao_pinta) ... ok
+test_maior_facing_vence_entre_vistas (test_cor.TestBake.test_maior_facing_vence_entre_vistas) ... ok
+test_mascara_rejeita_amostra (test_cor.TestBake.test_mascara_rejeita_amostra) ... ok
+test_override_de_alinhamento_e_usado (test_cor.TestBake.test_override_de_alinhamento_e_usado) ... ok
+test_triangulo_vermelho (test_cor.TestBake.test_triangulo_vermelho) ... ok
+test_uv_degenerada_pula_sem_quebrar (test_cor.TestBake.test_uv_degenerada_pula_sem_quebrar) ... ok
+test_centro_vai_para_o_centro_da_imagem (test_cor.TestCameras.test_centro_vai_para_o_centro_da_imagem) ... ok
+test_direcao_igual_a_previa (test_cor.TestCameras.test_direcao_igual_a_previa) ... ok
+test_facing (test_cor.TestCameras.test_facing) ... ok
+test_frente_ve_o_lado_esquerdo_a_direita (test_cor.TestCameras.test_frente_ve_o_lado_esquerdo_a_direita) ... ok
+test_vista_invalida_erro (test_cor.TestCameras.test_vista_invalida_erro) ... ok
+test_distorcao_diferente_de_zero (test_cor.TestMetricasUV.test_distorcao_diferente_de_zero) ... ok
+test_quadrado_sem_distorcao_uma_ilha (test_cor.TestMetricasUV.test_quadrado_sem_distorcao_uma_ilha) ... ok
+test_quadrados_separados_duas_ilhas (test_cor.TestMetricasUV.test_quadrados_separados_duas_ilhas) ... ok
+test_standard_antes_do_save_render_em_main (test_cor.TestSaveRenderStandard.test_standard_antes_do_save_render_em_main) ... ok
+test_um_unico_save_render_no_app (test_cor.TestSaveRenderStandard.test_um_unico_save_render_no_app) ... ok
+test_n01_faces_contadas_sem_um_texel_aceito (test_cor_adversarial_nuvem.TestPipelinePublicado.test_n01_faces_contadas_sem_um_texel_aceito) ... ok
+test_n02_contagens_de_vistas_nao_sao_proveniencia_final (test_cor_adversarial_nuvem.TestPipelinePublicado.test_n02_contagens_de_vistas_nao_sao_proveniencia_final) ... ok
+test_n03_fora_do_quadro_vira_fonte_direta_por_clip (test_cor_adversarial_nuvem.TestPipelinePublicado.test_n03_fora_do_quadro_vira_fonte_direta_por_clip) ... ok
+test_n04_trava_de_aspecto_e_relativa_ao_inicial (test_cor_adversarial_nuvem.TestPipelinePublicado.test_n04_trava_de_aspecto_e_relativa_ao_inicial) ... ok
+test_s2_linear_ja_conhecido_media_srgb_quantificada (test_cor_adversarial_nuvem.TestPipelinePublicado.test_s2_linear_ja_conhecido_media_srgb_quantificada) ... ok
+test_deterministico (test_cor_alinhamento.TestAlinhamentoOtimizado.test_deterministico) ... ok
+test_formatos_diferentes_levantam (test_cor_alinhamento.TestAlinhamentoOtimizado.test_formatos_diferentes_levantam) ... ok
+test_mascara_vazia_retorna_none (test_cor_alinhamento.TestAlinhamentoOtimizado.test_mascara_vazia_retorna_none) ... ok
+test_nunca_piora (test_cor_alinhamento.TestAlinhamentoOtimizado.test_nunca_piora) ... ok
+test_recupera_protrusao (test_cor_alinhamento.TestAlinhamentoOtimizado.test_recupera_protrusao) ... ok
+test_trava_escala_anti_zoom (test_cor_alinhamento.TestAlinhamentoOtimizado.test_trava_escala_anti_zoom) ... ok
+test_identidade (test_cor_alinhamento.TestDeformarMascara.test_identidade) ... ok
+test_translacao (test_cor_alinhamento.TestDeformarMascara.test_translacao) ... ok
+test_dominio_limita_o_preenchimento (test_cor_alinhamento.TestDilatarDominio.test_dominio_limita_o_preenchimento) ... ok
+test_sem_dominio_comportamento_v1 (test_cor_alinhamento.TestDilatarDominio.test_sem_dominio_comportamento_v1) ... ok
+test_centros_e_media_linear (test_cor_amostragem.TestBilinear.test_centros_e_media_linear) ... ok
+test_fundo_nao_contamina_e_borda_nao_atravessa (test_cor_amostragem.TestBilinear.test_fundo_nao_contamina_e_borda_nao_atravessa) ... ok
+test_imagem_de_um_pixel (test_cor_amostragem.TestBilinear.test_imagem_de_um_pixel) ... ok
+test_pipeline_default_bilinear_e_controle_seco (test_cor_amostragem.TestBilinear.test_pipeline_default_bilinear_e_controle_seco) ... ok
+test_codigo_do_bake_cor08_s2_permanece_byte_identico (test_cor_autoauditoria_nuvem.TestAutoauditoria.test_codigo_do_bake_cor08_s2_permanece_byte_identico) ... ok
+test_expoente_positivo_nao_muda_vencedor_nem_empate (test_cor_autoauditoria_nuvem.TestAutoauditoria.test_expoente_positivo_nao_muda_vencedor_nem_empate) ... ok
+test_mapa_de_vistas_diretas_nao_explica_preenchimento_a3 (test_cor_autoauditoria_nuvem.TestAutoauditoria.test_mapa_de_vistas_diretas_nao_explica_preenchimento_a3) ... ok
+test_media_linear_da_cor_de_vertice_nao_e_media_srgb_do_bake (test_cor_autoauditoria_nuvem.TestAutoauditoria.test_media_linear_da_cor_de_vertice_nao_e_media_srgb_do_bake) ... ok
+test_controle_negativo_discrimina_erro_antigo (test_cor_centro_nuvem.TestCentroPublicado.test_controle_negativo_discrimina_erro_antigo) ... ok
+test_coordenadas_por_texel_contra_formula_independente (test_cor_centro_nuvem.TestCentroPublicado.test_coordenadas_por_texel_contra_formula_independente) ... ok
+test_translacao_conjunta_nao_muda_amostras_bbox_e_override (test_cor_centro_nuvem.TestCentroPublicado.test_translacao_conjunta_nao_muda_amostras_bbox_e_override) ... ok
+test_forma_ja_linear_nao_sofre_segunda_conversao (test_cor_colorimetria.TestCorGLBReal.test_forma_ja_linear_nao_sofre_segunda_conversao) ... skipped 'Blender nao executado nesta rodada sem PC'
+test_png_real_exporta_oliva_linear (test_cor_colorimetria.TestCorGLBReal.test_png_real_exporta_oliva_linear) ... skipped 'Blender nao executado nesta rodada sem PC'
+test_oliva_nao_e_gravado_como_luz_linear_crua (test_cor_colorimetria.TestCurvaCor.test_oliva_nao_e_gravado_como_luz_linear_crua) ... ok
+test_tons_intermediarios_e_extremos (test_cor_colorimetria.TestCurvaCor.test_tons_intermediarios_e_extremos) ... ok
+test_aresta_partida_e_costura_e_continua_e_interna (test_cor_costura.TestCostura.test_aresta_partida_e_costura_e_continua_e_interna) ... ok
+test_cor_por_face_amostra_a_regiao_certa (test_cor_costura.TestCostura.test_cor_por_face_amostra_a_regiao_certa) ... ok
+test_descontinuidade_separa_costura_de_interna (test_cor_costura.TestCostura.test_descontinuidade_separa_costura_de_interna) ... ok
+test_distancia_por_direcao_separa_alvo_de_controle (test_cor_costura.TestCostura.test_distancia_por_direcao_separa_alvo_de_controle) ... ok
+test_piores_costuras_ordena_e_da_ponto_medio (test_cor_costura.TestCostura.test_piores_costuras_ordena_e_da_ponto_medio) ... ok
+test_textura_rgba_usa_so_rgb (test_cor_costura.TestCostura.test_textura_rgba_usa_so_rgb) ... ok
+test_vertice_duplicado_sem_solda_vira_borda_e_com_solda_classifica (test_cor_costura.TestCostura.test_vertice_duplicado_sem_solda_vira_borda_e_com_solda_classifica) ... ok
+test_acessor_ou_material_malformado (test_cor_guardas.TestDefesaColor0.test_acessor_ou_material_malformado) ... ok
+test_arquivo_quebrado_recusa_sem_excecao (test_cor_guardas.TestDefesaColor0.test_arquivo_quebrado_recusa_sem_excecao) ... ok
+test_contagens_nao_podem_se_compensar (test_cor_guardas.TestDefesaColor0.test_contagens_nao_podem_se_compensar) ... ok
+test_controle_multiplos_primitivos (test_cor_guardas.TestDefesaColor0.test_controle_multiplos_primitivos) ... ok
+test_cor_inteira_normalizada_valida (test_cor_guardas.TestDefesaColor0.test_cor_inteira_normalizada_valida) ... ok
+test_indices_negativos_bool_e_fora_da_lista (test_cor_guardas.TestDefesaColor0.test_indices_negativos_bool_e_fora_da_lista) ... ok
+test_reordenacao_valida_e_contagem_deslocada (test_cor_guardas.TestDefesaColor0.test_reordenacao_valida_e_contagem_deslocada) ... ok
+test_todos_os_meshes_e_mesh_vazio (test_cor_guardas.TestDefesaColor0.test_todos_os_meshes_e_mesh_vazio) ... ok
+test_troca_de_acessores_entre_primitivos (test_cor_guardas.TestDefesaColor0.test_troca_de_acessores_entre_primitivos) ... ok
+test_nan_infinito_negativo_e_nao_numerico_recusam (test_cor_guardas.TestDistanciasValidas.test_nan_infinito_negativo_e_nao_numerico_recusam) ... ok
+test_numpy_e_gerador_sao_aceitos_sem_truth_value_ambiguo (test_cor_guardas.TestDistanciasValidas.test_numpy_e_gerador_sao_aceitos_sem_truth_value_ambiguo) ... ok
+test_razoes_nao_finitas_ou_nao_numericas_recusam (test_cor_guardas.TestDistanciasValidas.test_razoes_nao_finitas_ou_nao_numericas_recusam) ... ok
+test_c_cor01_leitor_byte_decodifica_e_float_preserva (test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_cor01_leitor_byte_decodifica_e_float_preserva) ... ok
+test_c_cor02_bilinear_muda_cor_preserva_fonte (test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_cor02_bilinear_muda_cor_preserva_fonte) ... ok
+test_c_guard01_contagens_cruzadas_antes_aceitas_agora_recusadas (test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_guard01_contagens_cruzadas_antes_aceitas_agora_recusadas) ... ok
+test_c_guard01_nan_antes_aceito_agora_recusado (test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_guard01_nan_antes_aceito_agora_recusado) ... ok
+test_flag_cor_no_enviar (test_cor_passo.TestCliCor.test_flag_cor_no_enviar) ... ok
+test_faixas_ordenadas_e_cor_entre_refino_e_exportar (test_cor_passo.TestFaixasCor.test_faixas_ordenadas_e_cor_entre_refino_e_exportar) ... ok
+test_progresso_chamado_nas_fronteiras_e_monotonico (test_cor_passo.TestGerarUvProgresso.test_progresso_chamado_nas_fronteiras_e_monotonico) ... skipped 'xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json'
+test_progresso_que_levanta_em_80_nao_grava_npz (test_cor_passo.TestGerarUvProgresso.test_progresso_que_levanta_em_80_nao_grava_npz) ... skipped 'xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json'
+test_sem_progresso_mantem_comportamento (test_cor_passo.TestGerarUvProgresso.test_sem_progresso_mantem_comportamento) ... skipped 'xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json'
+test_padrao_desligado_e_true_valido (test_cor_passo.TestOpcaoCor.test_padrao_desligado_e_true_valido) ... ok
+test_texto_rejeitado (test_cor_passo.TestOpcaoCor.test_texto_rejeitado) ... ok
+test_projecao_declara_modo_e_rotulo (test_cor_passo.TestPassoCorDeclaraModo.test_projecao_declara_modo_e_rotulo) ... ok
+test_arquivo_canonico_ausente_levanta (test_cor_passo.TestSelecionarVistas.test_arquivo_canonico_ausente_levanta) ... ok
+test_arquivo_relativo_resolve_no_job_dir (test_cor_passo.TestSelecionarVistas.test_arquivo_relativo_resolve_no_job_dir) ... ok
+test_canonicas_em_ordem_duplicata_vence_primeira_e_diagonal_ignorada (test_cor_passo.TestSelecionarVistas.test_canonicas_em_ordem_duplicata_vence_primeira_e_diagonal_ignorada) ... ok
+test_sem_canonica_levanta (test_cor_passo.TestSelecionarVistas.test_sem_canonica_levanta) ... ok
+test_sem_imagem_levanta (test_cor_passo.TestSelecionarVistas.test_sem_imagem_levanta) ... ok
+test_sha256_de_conteudo_conhecido (test_cor_passo.TestSha256Worker.test_sha256_de_conteudo_conhecido) ... ok
+test_adjacencia_com_solda (test_cor_preenchimento.TestPreenchimento.test_adjacencia_com_solda) ... ok
+test_aplicar_so_nas_alcancaveis (test_cor_preenchimento.TestPreenchimento.test_aplicar_so_nas_alcancaveis) ... ok
+test_cores_diretas_media (test_cor_preenchimento.TestPreenchimento.test_cores_diretas_media) ... ok
+test_difusao_em_cadeia (test_cor_preenchimento.TestPreenchimento.test_difusao_em_cadeia) ... ok
+test_dominio_exclui_face_inalcancavel (test_cor_preenchimento.TestPreenchimento.test_dominio_exclui_face_inalcancavel) ... ok
+test_dominio_passe_zero_e_area_uv_menos_inalcancavel (test_cor_preenchimento.TestPreenchimento.test_dominio_passe_zero_e_area_uv_menos_inalcancavel) ... ok
+test_expandir_mascara_sem_wrap (test_cor_preenchimento.TestPreenchimento.test_expandir_mascara_sem_wrap) ... ok
+test_mapa_texel_face (test_cor_preenchimento.TestPreenchimento.test_mapa_texel_face) ... ok
+test_cada_vertice_pinta_com_a_sua_vista (test_cor_vertice.TestAmostrarVertices.test_cada_vertice_pinta_com_a_sua_vista) ... ok
+test_desempate_primeira_vista_da_lista (test_cor_vertice.TestAmostrarVertices.test_desempate_primeira_vista_da_lista) ... ok
+test_facing_baixo_nao_pinta (test_cor_vertice.TestAmostrarVertices.test_facing_baixo_nao_pinta) ... ok
+test_mascara_vazia_nao_pinta (test_cor_vertice.TestAmostrarVertices.test_mascara_vazia_nao_pinta) ... ok
+test_oculto_nao_pinta (test_cor_vertice.TestAmostrarVertices.test_oculto_nao_pinta) ... ok
+test_caixa_comprimida_recusa_e_borda_aceita (test_cor_vertice.TestAvaliarAlinhamentoForma.test_caixa_comprimida_recusa_e_borda_aceita) ... ok
+test_caso_do_critico_x2_recusado_pela_caixa (test_cor_vertice.TestAvaliarAlinhamentoForma.test_caso_do_critico_x2_recusado_pela_caixa) ... ok
+test_legitimo_aceita (test_cor_vertice.TestAvaliarAlinhamentoForma.test_legitimo_aceita) ... ok
+test_mediana_alta_recusa (test_cor_vertice.TestAvaliarAlinhamentoForma.test_mediana_alta_recusa) ... ok
+test_p90_alto_recusa_mesmo_com_mediana_baixa (test_cor_vertice.TestAvaliarAlinhamentoForma.test_p90_alto_recusa_mesmo_com_mediana_baixa) ... ok
+test_razoes_incompletas_recusam_s4_2 (test_cor_vertice.TestAvaliarAlinhamentoForma.test_razoes_incompletas_recusam_s4_2) ... ok
+test_sem_amostra_recusa (test_cor_vertice.TestAvaliarAlinhamentoForma.test_sem_amostra_recusa) ... ok
+test_projecao_menciona_bake (test_cor_vertice.TestAvisoVistasIgnoradas.test_projecao_menciona_bake) ... ok
+test_sem_chave_nao_quebra_s4_2 (test_cor_vertice.TestAvisoVistasIgnoradas.test_sem_chave_nao_quebra_s4_2) ... ok
+test_vertice_nao_menciona_bake (test_cor_vertice.TestAvisoVistasIgnoradas.test_vertice_nao_menciona_bake) ... ok
+test_centroide_e_cantos (test_cor_vertice.TestBaricentricas3d.test_centroide_e_cantos) ... ok
+test_degenerado_devolve_none (test_cor_vertice.TestBaricentricas3d.test_degenerado_devolve_none) ... ok
+test_flag_cor_modo_no_enviar (test_cor_vertice.TestCliCorModo.test_flag_cor_modo_no_enviar) ... ok
+test_mesclar_forma_respeita_vista (test_cor_vertice.TestMesclaEPropagacao.test_mesclar_forma_respeita_vista) ... ok
+test_propagacao_deterministica (test_cor_vertice.TestMesclaEPropagacao.test_propagacao_deterministica) ... ok
+test_propagacao_preenche_componente_e_isola_o_outro (test_cor_vertice.TestMesclaEPropagacao.test_propagacao_preenche_componente_e_isola_o_outro) ... ok
+test_padrao_projecao (test_cor_vertice.TestOpcaoCorModo.test_padrao_projecao) ... ok
+test_vertice_valido_e_desconhecido_rejeitado (test_cor_vertice.TestOpcaoCorModo.test_vertice_valido_e_desconhecido_rejeitado) ... ok
+test_com_vistas_repassa_ao_runner (test_cor_vertice.TestPassoVertice.test_com_vistas_repassa_ao_runner) ... ok
+test_runner_sem_modelo_levanta_runtime (test_cor_vertice.TestPassoVertice.test_runner_sem_modelo_levanta_runtime) ... ok
+test_sem_vistas_com_forma_prossegue_e_rotula (test_cor_vertice.TestPassoVertice.test_sem_vistas_com_forma_prossegue_e_rotula) ... ok
+test_sem_vistas_sem_forma_levanta (test_cor_vertice.TestPassoVertice.test_sem_vistas_sem_forma_levanta) ... ok
+test_despacha_por_modo_e_rejeita_desconhecido (test_cor_vertice.TestWorkerDespachoCor.test_despacha_por_modo_e_rejeita_desconhecido) ... ok
+test_bbox_da_mascara (test_diagnostico_dh0.TestMascaraIoUPerfil.test_bbox_da_mascara) ... ok
+test_iou_espelhado_de_lados_simetricos (test_diagnostico_dh0.TestMascaraIoUPerfil.test_iou_espelhado_de_lados_simetricos) ... ok
+test_iou_identidade_e_disjunto (test_diagnostico_dh0.TestMascaraIoUPerfil.test_iou_identidade_e_disjunto) ... ok
+test_perfil_largura (test_diagnostico_dh0.TestMascaraIoUPerfil.test_perfil_largura) ... ok
+test_cranio_a_direita_da_fivela_nas_4_vistas (test_diagnostico_dh0.TestTabelaDeMarcos.test_cranio_a_direita_da_fivela_nas_4_vistas) ... ok
+test_faixas_recomputadas_iguais_as_publicadas (test_diagnostico_dh0.TestTabelaDeMarcos.test_faixas_recomputadas_iguais_as_publicadas) ... ok
+test_joelho_com_bandeira_de_pose_registrada (test_diagnostico_dh0.TestTabelaDeMarcos.test_joelho_com_bandeira_de_pose_registrada) ... ok
+test_tabela_tem_as_4_vistas_com_sha (test_diagnostico_dh0.TestTabelaDeMarcos.test_tabela_tem_as_4_vistas_com_sha) ... ok
+test_tronco_sem_bandeira_regua_005 (test_diagnostico_dh0.TestTabelaDeMarcos.test_tronco_sem_bandeira_regua_005) ... ok
+test_imagem_vazia (test_entrada.TestAvisosRecorte.test_imagem_vazia) ... ok
+test_objeto_cortado_na_borda (test_entrada.TestAvisosRecorte.test_objeto_cortado_na_borda) ... ok
+test_resolucao_baixa (test_entrada.TestAvisosRecorte.test_resolucao_baixa) ... ok
+test_resolucao_boa_sem_avisos (test_entrada.TestAvisosRecorte.test_resolucao_boa_sem_avisos) ... ok
+test_assinatura_e_distancia (test_entrada.TestCores.test_assinatura_e_distancia) ... ok
+test_mesmo_personagem_sem_aviso (test_entrada.TestCores.test_mesmo_personagem_sem_aviso) ... ok
+test_personagens_diferentes_detecta (test_entrada.TestCores.test_personagens_diferentes_detecta) ... ok
+test_sem_pixels_opacos_sem_assinatura (test_entrada.TestCores.test_sem_pixels_opacos_sem_assinatura) ... ok
+test_alfa_limpo_ok (test_entrada.TestDiagnosticoFundo.test_alfa_limpo_ok) ... ok
+test_sem_canal_alfa (test_entrada.TestDiagnosticoFundo.test_sem_canal_alfa) ... ok
+test_tudo_opaco_e_fundo_nao_removido (test_entrada.TestDiagnosticoFundo.test_tudo_opaco_e_fundo_nao_removido) ... ok
+test_distintas_sem_aviso (test_entrada.TestVistasRepetidas.test_distintas_sem_aviso) ... ok
+test_repetida_avisa (test_entrada.TestVistasRepetidas.test_repetida_avisa) ... ok
+test_criacao_basica (test_job.TestCriarJob.test_criacao_basica) ... ok
+test_entradas_invalidas_nao_criam_pasta (test_job.TestCriarJob.test_entradas_invalidas_nao_criam_pasta) ... ok
+test_extensao_corrigida_pelo_conteudo (test_job.TestCriarJob.test_extensao_corrigida_pelo_conteudo) ... ok
+test_falha_no_meio_apaga_a_pasta (test_job.TestCriarJob.test_falha_no_meio_apaga_a_pasta) ... ok
+test_motor_automatico (test_job.TestCriarJob.test_motor_automatico) ... ok
+test_motor_explicito_e_aviso (test_job.TestCriarJob.test_motor_explicito_e_aviso) ... ok
+test_nomes_repetidos_e_estranhos (test_job.TestCriarJob.test_nomes_repetidos_e_estranhos) ... ok
+test_so_refinar (test_job.TestCriarJob.test_so_refinar) ... ok
+test_atualizar_job (test_job.TestGravacaoETrava.test_atualizar_job) ... ok
+test_escrita_atomica_sem_lixo (test_job.TestGravacaoETrava.test_escrita_atomica_sem_lixo) ... ok
+test_falha_ao_serializar_nao_estraga (test_job.TestGravacaoETrava.test_falha_ao_serializar_nao_estraga) ... ok
+test_pid_vivo (test_job.TestGravacaoETrava.test_pid_vivo) ... ok
+test_registrar (test_job.TestGravacaoETrava.test_registrar) ... ok
+test_salvar_job_inexistente (test_job.TestGravacaoETrava.test_salvar_job_inexistente) ... ok
+test_trava_abandonada (test_job.TestGravacaoETrava.test_trava_abandonada) ... ok
+test_trava_ocupada_por_outra_thread (test_job.TestGravacaoETrava.test_trava_ocupada_por_outra_thread) ... ok
+test_trava_reentrante (test_job.TestGravacaoETrava.test_trava_reentrante) ... ok
+test_criacao_concorrente_sem_corrida (test_job.TestId.test_criacao_concorrente_sem_corrida) ... ok
+test_ids_repetidos_ganham_sufixo (test_job.TestId.test_ids_repetidos_ganham_sufixo) ... ok
+test_nome_longo_e_acentuado (test_job.TestId.test_nome_longo_e_acentuado) ... ok
+test_toda_funcao_com_id_valida (test_job.TestId.test_toda_funcao_com_id_valida) ... ok
+test_validar_id (test_job.TestId.test_validar_id) ... ok
+test_jpeg_e_webp_sem_pillow (test_job.TestImagens.test_jpeg_e_webp_sem_pillow) ... ok
+test_lados (test_job.TestImagens.test_lados) ... ok
+test_limite_de_bytes (test_job.TestImagens.test_limite_de_bytes) ... ok
+test_nao_e_imagem (test_job.TestImagens.test_nao_e_imagem) ... ok
+test_png_truncado_sem_pillow (test_job.TestImagens.test_png_truncado_sem_pillow) ... ok
+test_png_valido (test_job.TestImagens.test_png_valido) ... ok
+test_ler_inexistente_e_corrompido (test_job.TestLerEListar.test_ler_inexistente_e_corrompido) ... ok
+test_listar (test_job.TestLerEListar.test_listar) ... ok
+test_listar_sem_pasta (test_job.TestLerEListar.test_listar_sem_pasta) ... ok
+test_invalidas (test_job.TestOpcoes.test_invalidas) ... ok
+test_none_usa_padrao (test_job.TestOpcoes.test_none_usa_padrao) ... ok
+test_padroes (test_job.TestOpcoes.test_padroes) ... ok
+test_validas (test_job.TestOpcoes.test_validas) ... ok
+test_vista_repetida_vira_aviso (test_job.TestOpcoes.test_vista_repetida_vira_aviso) ... ok
+test_cancelar_exige_confirmacao (test_mcp.TestFerramentasJobs.test_cancelar_exige_confirmacao) ... ok
+test_listar_e_status (test_mcp.TestFerramentasJobs.test_listar_e_status) ... ok
+test_status_id_malformado_recusa (test_mcp.TestFerramentasJobs.test_status_id_malformado_recusa) ... ok
+test_status_inexistente_recusa (test_mcp.TestFerramentasJobs.test_status_inexistente_recusa) ... ok
+test_listar_motores (test_mcp.TestFerramentasLeitura.test_listar_motores) ... ok
+test_saude_tem_o_envelope (test_mcp.TestFerramentasLeitura.test_saude_tem_o_envelope) ... ok
+test_criar_servidor_registra_as_ferramentas (test_mcp.TestRegistroServidor.test_criar_servidor_registra_as_ferramentas) ... skipped 'pacote mcp nao instalado neste venv'
+test_glb_valido (test_motores.TestBase.test_glb_valido) ... ok
+test_job_object_mata_ao_fechar (test_motores.TestBase.test_job_object_mata_ao_fechar) ... ok
+test_processo_vivo (test_motores.TestBase.test_processo_vivo) ... ok
+test_worker_morre_e_motor_morre_junto (test_motores.TestBase.test_worker_morre_e_motor_morre_junto) ... ok
+test_ambiente_do_subprocesso (test_motores.TestGerarFalso.test_ambiente_do_subprocesso) ... ok
+test_batimento_chama_progresso_sem_linha_nova (test_motores.TestGerarFalso.test_batimento_chama_progresso_sem_linha_nova) ... ok
+test_cancelar_pelo_callback_mata_filho_e_neto (test_motores.TestGerarFalso.test_cancelar_pelo_callback_mata_filho_e_neto) ... ok
+test_erro_do_motor (test_motores.TestGerarFalso.test_erro_do_motor) ... ok
+test_gpu_lock_real_fica_em_locks_do_teste (test_motores.TestGerarFalso.test_gpu_lock_real_fica_em_locks_do_teste) ... ok
+test_ok_progresso_glb_metricas (test_motores.TestGerarFalso.test_ok_progresso_glb_metricas) ... ok
+test_saiu_sem_resultado_mostra_fim_do_log (test_motores.TestGerarFalso.test_saiu_sem_resultado_mostra_fim_do_log) ... ok
+test_tempo_maximo (test_motores.TestGerarFalso.test_tempo_maximo) ... ok
+test_usa_gpu_lock_do_agente_g (test_motores.TestGerarFalso.test_usa_gpu_lock_do_agente_g) ... ok
+test_campos_e_motivo (test_motores.TestListar.test_campos_e_motivo) ... ok
+test_catalogo_do_plano (test_motores.TestListar.test_catalogo_do_plano) ... ok
+test_disponivel_quando_venv_e_pesos_existem (test_motores.TestListar.test_disponivel_quando_venv_e_pesos_existem) ... ok
+test_os_cinco_motores_no_formato_publico (test_motores.TestListarFormatoPublico.test_os_cinco_motores_no_formato_publico) ... ok
+test_caminho_relativo_e_inexistente (test_motores.TestPedido.test_caminho_relativo_e_inexistente) ... ok
+test_flashvdm_desliga_sem_vae_turbo_em_motor_nao_turbo (test_motores.TestPedido.test_flashvdm_desliga_sem_vae_turbo_em_motor_nao_turbo) ... ok
+test_indisponivel_da_erro_claro (test_motores.TestPedido.test_indisponivel_da_erro_claro) ... ok
+test_motor_desconhecido (test_motores.TestPedido.test_motor_desconhecido) ... ok
+test_multivista_com_uma_vista_avisa (test_motores.TestPedido.test_multivista_com_uma_vista_avisa) ... ok
+test_multivista_mapeia_vistas_e_forca_flashvdm (test_motores.TestPedido.test_multivista_mapeia_vistas_e_forca_flashvdm) ... ok
+test_triposr (test_motores.TestPedido.test_triposr) ... ok
+test_uma_vista_escolhe_frente (test_motores.TestPedido.test_uma_vista_escolhe_frente) ... ok
+test_hunyuan_com_flashvdm_soma_o_vae_turbo (test_motores.TestPesosNecessarios.test_hunyuan_com_flashvdm_soma_o_vae_turbo) ... ok
+test_hunyuan_exige_safetensors_e_config (test_motores.TestPesosNecessarios.test_hunyuan_exige_safetensors_e_config) ... ok
+test_tipo_desconhecido_sem_pesos (test_motores.TestPesosNecessarios.test_tipo_desconhecido_sem_pesos) ... ok
+test_triposr_exige_ckpt_e_config (test_motores.TestPesosNecessarios.test_triposr_exige_ckpt_e_config) ... ok
+test_bronze_multivista_deixa_o_automatico (test_qualidades.TestAplicar.test_bronze_multivista_deixa_o_automatico) ... ok
+test_bronze_uma_vista_sugere_triposr (test_qualidades.TestAplicar.test_bronze_uma_vista_sugere_triposr) ... ok
+test_completo_multivista_e_hunyuan_mv (test_qualidades.TestAplicar.test_completo_multivista_e_hunyuan_mv) ... ok
+test_completo_uma_vista_e_hunyuan_mini (test_qualidades.TestAplicar.test_completo_uma_vista_e_hunyuan_mini) ... ok
+test_opcao_explicita_vence_o_perfil (test_qualidades.TestAplicar.test_opcao_explicita_vence_o_perfil) ... ok
+test_sem_qualidade_nao_muda_nada (test_qualidades.TestAplicar.test_sem_qualidade_nao_muda_nada) ... ok
+test_slug_desconhecido_levanta (test_qualidades.TestAplicar.test_slug_desconhecido_levanta) ... ok
+test_turbo_nao_forca_motor_nem_passos (test_qualidades.TestAplicar.test_turbo_nao_forca_motor_nem_passos) ... ok
+test_cinco_niveis_na_ordem_do_rpg (test_qualidades.TestPerfis.test_cinco_niveis_na_ordem_do_rpg) ... ok
+test_custo_sobe_com_o_nivel (test_qualidades.TestPerfis.test_custo_sobe_com_o_nivel) ... ok
+test_parametros_dentro_das_faixas_do_job (test_qualidades.TestPerfis.test_parametros_dentro_das_faixas_do_job) ... ok
+test_lendario_ponta_a_ponta (test_qualidades.TestValidarOpcoes.test_lendario_ponta_a_ponta) ... ok
+test_prata_mantem_automatico_turbo (test_qualidades.TestValidarOpcoes.test_prata_mantem_automatico_turbo) ... ok
+test_qualidade_invalida_levanta (test_qualidades.TestValidarOpcoes.test_qualidade_invalida_levanta) ... ok
+test_glb_ida_e_volta (test_refino.TestArquivosPuros.test_glb_ida_e_volta) ... ok
+test_glb_invalido (test_refino.TestArquivosPuros.test_glb_invalido) ... ok
+test_pbm_ida_e_volta (test_refino.TestArquivosPuros.test_pbm_ida_e_volta) ... ok
+test_png_assinatura (test_refino.TestArquivosPuros.test_png_assinatura) ... ok
+test_blender (test_refino.TestConvencaoVistas.test_blender) ... ok
+test_gltf (test_refino.TestConvencaoVistas.test_gltf) ... ok
+test_vista_desconhecida (test_refino.TestConvencaoVistas.test_vista_desconhecida) ... ok
+test_aceita_bool (test_refino.TestIoUPuro.test_aceita_bool) ... ok
+test_alinhado_detecta_espelho (test_refino.TestIoUPuro.test_alinhado_detecta_espelho) ... ok
+test_alinhado_ignora_escala_e_posicao (test_refino.TestIoUPuro.test_alinhado_ignora_escala_e_posicao) ... ok
+test_alinhado_vazia (test_refino.TestIoUPuro.test_alinhado_vazia) ... ok
+test_disjuntas (test_refino.TestIoUPuro.test_disjuntas) ... ok
+test_iguais (test_refino.TestIoUPuro.test_iguais) ... ok
+test_parcial (test_refino.TestIoUPuro.test_parcial) ... ok
+test_recortar_caixa (test_refino.TestIoUPuro.test_recortar_caixa) ... ok
+test_redimensionar_espelhar (test_refino.TestIoUPuro.test_redimensionar_espelhar) ... ok
+test_tamanho_diferente (test_refino.TestIoUPuro.test_tamanho_diferente) ... ok
+test_vazias (test_refino.TestIoUPuro.test_vazias) ... ok
+test_frente_sozinha_nao_vira_nota (test_refino.TestNota.test_frente_sozinha_nao_vira_nota) ... ok
+test_lateral_e_costas (test_refino.TestNota.test_lateral_e_costas) ... ok
+test_so_um_lado (test_refino.TestNota.test_so_um_lado) ... ok
+test_fechada_e_limpa (test_refino.TestRefinarBlender.test_fechada_e_limpa) ... skipped 'Blender excluido pela missao sem PC'
+test_glb_e_triangulos (test_refino.TestRefinarBlender.test_glb_e_triangulos) ... skipped 'Blender excluido pela missao sem PC'
+test_iou_e_convencao (test_refino.TestRefinarBlender.test_iou_e_convencao) ... skipped 'Blender excluido pela missao sem PC'
+test_normalizacao (test_refino.TestRefinarBlender.test_normalizacao) ... skipped 'Blender excluido pela missao sem PC'
+test_previas (test_refino.TestRefinarBlender.test_previas) ... skipped 'Blender excluido pela missao sem PC'
+test_progresso (test_refino.TestRefinarBlender.test_progresso) ... skipped 'Blender excluido pela missao sem PC'
+test_entrada_inexistente (test_refino.TestRefinarErros.test_entrada_inexistente) ... ok
+test_backend_pymeshlab (test_refino.TestRefinarPymeshlab.test_backend_pymeshlab) ... skipped 'Blender excluido pela missao sem PC'
+test_simetrizar (test_refino.TestRefinarSimetriaSemUV.test_simetrizar) ... skipped 'Blender excluido pela missao sem PC'
+test_alerta_disco_baixo (test_saude.TestDisco.test_alerta_disco_baixo) ... ok
+test_disco_ok (test_saude.TestDisco.test_disco_ok) ... ok
+test_espaco (test_saude.TestDisco.test_espaco) ... ok
+test_lancador_compila (test_saude.TestModeloTarefa.test_lancador_compila) ... ok
+test_xml (test_saude.TestModeloTarefa.test_xml) ... ok
+test_cli_json (test_saude.TestSaude.test_cli_json) ... ok
+test_cli_texto (test_saude.TestSaude.test_cli_texto) ... ok
+test_gpu_com_erro_nao_quebra (test_saude.TestSaude.test_gpu_com_erro_nao_quebra) ... ok
+test_saude_completa (test_saude.TestSaude.test_saude_completa) ... ok
+test_cache_drive_usa_localappdata (test_saude.TestTamanhoPasta.test_cache_drive_usa_localappdata) ... ok
+test_inexistente (test_saude.TestTamanhoPasta.test_inexistente) ... ok
+test_soma (test_saude.TestTamanhoPasta.test_soma) ... ok
+test_leitura_real_do_registro (test_saude.TestWindowsUpdate.test_leitura_real_do_registro) ... ok
+test_pausa_vencida_ou_ausente (test_saude.TestWindowsUpdate.test_pausa_vencida_ou_ausente) ... ok
+test_pausado (test_saude.TestWindowsUpdate.test_pausado) ... ok
+test_esperar_gpu_livre (test_travas.TestGpu.test_esperar_gpu_livre) ... ok
+test_falha_de_leitura_e_ocupada (test_travas.TestGpu.test_falha_de_leitura_e_ocupada) ... ok
+test_interpretar (test_travas.TestGpu.test_interpretar) ... ok
+test_limiar_por_variavel (test_travas.TestGpu.test_limiar_por_variavel) ... ok
+test_livre (test_travas.TestGpu.test_livre) ... ok
+test_nvidia_smi_real (test_travas.TestGpu.test_nvidia_smi_real) ... skipped 'nvidia-smi ausente'
+test_ocupada_por_processo_pesado_e_tela_cheia (test_travas.TestGpu.test_ocupada_por_processo_pesado_e_tela_cheia) ... ok
+test_ocupada_por_uso (test_travas.TestGpu.test_ocupada_por_uso) ... ok
+test_ocupada_por_vram (test_travas.TestGpu.test_ocupada_por_vram) ... ok
+test_dois_processos_disputando (test_travas.TestTravaEntreProcessos.test_dois_processos_disputando) ... ok
+test_exclusao_mutua_varios_processos (test_travas.TestTravaEntreProcessos.test_exclusao_mutua_varios_processos) ... ok
+test_registro_velho_com_pid_morto (test_travas.TestTravaEntreProcessos.test_registro_velho_com_pid_morto) ... trava 'worker' órfã (PID 10620 morreu sem soltar); assumida pelo PID 7160
+ok
+test_trava_orfa_de_processo_morto (test_travas.TestTravaEntreProcessos.test_trava_orfa_de_processo_morto) ... trava 'gpu' órfã (PID 7848 morreu sem soltar); assumida pelo PID 7160
+ok
+test_estado_sem_arquivo (test_travas.TestTravaMesmoProcesso.test_estado_sem_arquivo) ... ok
+test_gpu_e_worker_independentes (test_travas.TestTravaMesmoProcesso.test_gpu_e_worker_independentes) ... ok
+test_nao_reentrante (test_travas.TestTravaMesmoProcesso.test_nao_reentrante) ... ok
+test_pid_reaproveitado (test_travas.TestTravaMesmoProcesso.test_pid_reaproveitado) ... ok
+test_solta_em_excecao (test_travas.TestTravaMesmoProcesso.test_solta_em_excecao) ... ok
+test_gerar_uv_registra_parametros_do_empacotamento (test_uv_xatlas.TestUvMargemD_T5_1.test_gerar_uv_registra_parametros_do_empacotamento) ... skipped 'xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json'
+test_margem_padrao_cubo_em_2048_cumpre_regua (test_uv_xatlas.TestUvMargemD_T5_1.test_margem_padrao_cubo_em_2048_cumpre_regua) ... skipped 'xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json'
+test_margem_sintetica_dois_quadrados_mede_o_gap (test_uv_xatlas.TestUvMargemD_T5_1.test_margem_sintetica_dois_quadrados_mede_o_gap) ... ok
+test_gerar_uv_grava_npz_legivel (test_uv_xatlas.TestUvXatlas.test_gerar_uv_grava_npz_legivel) ... skipped 'xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json'
+test_metricas_batem_com_projecao (test_uv_xatlas.TestUvXatlas.test_metricas_batem_com_projecao) ... skipped 'xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json'
+test_metricas_cubo_sao_finitas_e_ocupacao_positiva (test_uv_xatlas.TestUvXatlas.test_metricas_cubo_sao_finitas_e_ocupacao_positiva) ... skipped 'xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json'
+test_parametrizar_preserva_faces_e_uv_em_01 (test_uv_xatlas.TestUvXatlas.test_parametrizar_preserva_faces_e_uv_em_01) ... skipped 'xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json'
+test_grava_validacao_json_na_saida (test_validar.TestEtapaNoWorker.test_grava_validacao_json_na_saida) ... ok
+test_opcoes_do_job (test_validar.TestEtapaNoWorker.test_opcoes_do_job) ... ok
+test_validador_quebrado_vira_reprovado (test_validar.TestEtapaNoWorker.test_validador_quebrado_vira_reprovado) ... ok
+test_pivo_fora_dos_pes (test_validar.TestGodotDeVerdade.test_pivo_fora_dos_pes) ... skipped 'Godot não encontrado neste PC'
+test_textura_nao_derruba_o_godot (test_validar.TestGodotDeVerdade.test_textura_nao_derruba_o_godot) ... skipped 'Godot não encontrado neste PC'
+test_triangulo_aprovado (test_validar.TestGodotDeVerdade.test_triangulo_aprovado) ... skipped 'Godot não encontrado neste PC'
+test_comprimento_nao_bate (test_validar.TestLeitorGLB.test_comprimento_nao_bate) ... ok
+test_imagem_png_de_verdade (test_validar.TestLeitorGLB.test_imagem_png_de_verdade) ... ok
+test_imagem_que_mente_o_tipo (test_validar.TestLeitorGLB.test_imagem_que_mente_o_tipo) ... ok
+test_magic_errado (test_validar.TestLeitorGLB.test_magic_errado) ... ok
+test_triangulo (test_validar.TestLeitorGLB.test_triangulo) ... ok
+test_truncado (test_validar.TestLeitorGLB.test_truncado) ... ok
+test_arquivo_ruim_reprova (test_validar.TestRegrasSemGodot.test_arquivo_ruim_reprova) ... ok
+test_godot_ausente_nao_finge_aprovar_carga (test_validar.TestRegrasSemGodot.test_godot_ausente_nao_finge_aprovar_carga) ... ok
+test_imagem_ruim_reprova (test_validar.TestRegrasSemGodot.test_imagem_ruim_reprova) ... ok
+test_limite_avulso_sobrescreve (test_validar.TestRegrasSemGodot.test_limite_avulso_sobrescreve) ... ok
+test_perfil_desconhecido (test_validar.TestRegrasSemGodot.test_perfil_desconhecido) ... ok
+test_perfil_jogo_exige_albedo (test_validar.TestRegrasSemGodot.test_perfil_jogo_exige_albedo) ... ok
+test_criar_modo_invalido_e_422 (test_web.TestWeb.test_criar_modo_invalido_e_422) ... ok
+test_criar_sem_imagem_e_422 (test_web.TestWeb.test_criar_sem_imagem_e_422) ... ok
+test_fluxo_criar_ler_cancelar (test_web.TestWeb.test_fluxo_criar_ler_cancelar) ... ok
+test_job_inexistente_e_404 (test_web.TestWeb.test_job_inexistente_e_404) ... ok
+test_motores_batem_com_o_modulo (test_web.TestWeb.test_motores_batem_com_o_modulo) ... ok
+test_pagina_inicial (test_web.TestWeb.test_pagina_inicial) ... ok
+test_saude_responde_ok (test_web.TestWeb.test_saude_responde_ok) ... ok
+test_contrato_da_fila (test_worker.TestFila.test_contrato_da_fila) ... ok
+test_pendentes_so_traz_pendentes (test_worker.TestFila.test_pendentes_so_traz_pendentes) ... ok
+test_proximo_pendente_respeita_permitidos (test_worker.TestFila.test_proximo_pendente_respeita_permitidos) ... ok
+test_env_valido_invalido_e_ausente (test_worker.TestLivreMin.test_env_valido_invalido_e_ausente) ... ok
+test_motor_explicito_vence (test_worker.TestMotorDoJob.test_motor_explicito_vence) ... ok
+test_padrao_multivista_e_uma_vista (test_worker.TestMotorDoJob.test_padrao_multivista_e_uma_vista) ... ok
+test_concluido_nao_e_tocado (test_worker.TestOrfaos.test_concluido_nao_e_tocado) ... ok
+test_orfao_estourado_vira_erro (test_worker.TestOrfaos.test_orfao_estourado_vira_erro) ... ok
+test_orfao_sem_worker_volta_para_fila (test_worker.TestOrfaos.test_orfao_sem_worker_volta_para_fila) ... ok
+
+----------------------------------------------------------------------
+Ran 388 tests in 144.228s
+
+OK (skipped=24)

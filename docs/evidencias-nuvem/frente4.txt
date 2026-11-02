@@ -1,0 +1,9 @@
+test_codigo_do_bake_cor08_s2_permanece_byte_identico (testes.test_cor_autoauditoria_nuvem.TestAutoauditoria.test_codigo_do_bake_cor08_s2_permanece_byte_identico) ... ok
+test_expoente_positivo_nao_muda_vencedor_nem_empate (testes.test_cor_autoauditoria_nuvem.TestAutoauditoria.test_expoente_positivo_nao_muda_vencedor_nem_empate) ... ok
+test_mapa_de_vistas_diretas_nao_explica_preenchimento_a3 (testes.test_cor_autoauditoria_nuvem.TestAutoauditoria.test_mapa_de_vistas_diretas_nao_explica_preenchimento_a3) ... ok
+test_media_linear_da_cor_de_vertice_nao_e_media_srgb_do_bake (testes.test_cor_autoauditoria_nuvem.TestAutoauditoria.test_media_linear_da_cor_de_vertice_nao_e_media_srgb_do_bake) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 3.792s
+
+OK

@@ -1,0 +1,133 @@
+{
+  "base_main_preservada": "5cd092d37bddf36a2d888404936d4c9f394528c4",
+  "branch": "codex/auditoria-sem-pc",
+  "head_antes_fechamento": "2995ad0b795151e6c273ba157a668d16adad0c36",
+  "arquivos_bake_preservados": [
+    "oficina3d/cor/projecao.py",
+    "oficina3d/cor/_blender_cor.py",
+    "oficina3d/cor/preenchimento.py",
+    "oficina3d/cor/passo.py"
+  ],
+  "sha256_integracao_normalizado_lf": {
+    "oficina3d/cor/vertice.py": "b1d9bf6ed42e6905ef07c602018bc4276487d811a719462fbddc0c46baad2641",
+    "oficina3d/cor/_blender_vertice.py": "a4f0579b95ede82ab814e237d8fdf1d8b2e4988646384cd37c72178d8d6a52de",
+    "oficina3d/cor/validacao_vertice.py": "1c8871d6ea157487810757c6fa25649e22caa0bcddbf24b3b6eff7f40913c802",
+    "testes/test_cor_amostragem.py": "c63f376bca8376d610dce05bb181ad4c1da3055d0601b02da49a6ffe89a5bfd8",
+    "testes/test_cor_colorimetria.py": "b2b5170cacac7275f7f46212365bd3dece3e41c78fc88cc16a8326bfacbf6f6d",
+    "testes/test_cor_guardas.py": "d789132d9cb660229226d6c7a9516572b653196e58d20826abba95934fd7f77a",
+    "testes/codex/glb_evidencia.py": "40a92e87dca51f3977f7180c927f6b802e67600b061539d18241efabaafc00ba"
+  },
+  "fontes_python_compiladas_sem_executar": 88,
+  "alteracoes_somente_textuais": true,
+  "MISSAO_md_preservado_fora_dos_commits": true,
+  "baseline_aprovacoes_contadas_no_log": 293,
+  "baseline_aprovacoes_json_antigo": 292,
+  "motivo_correcao": "erro setUpClass nao conta como metodo executado; runner novo usa addSuccess",
+  "suite_final": {
+    "testes_executados": 388,
+    "passaram": 364,
+    "falhas": 0,
+    "erros": 0,
+    "skips": [
+      {
+        "teste": "test_forma_ja_linear_nao_sofre_segunda_conversao (test_cor_colorimetria.TestCorGLBReal.test_forma_ja_linear_nao_sofre_segunda_conversao)",
+        "motivo": "Blender nao executado nesta rodada sem PC"
+      },
+      {
+        "teste": "test_png_real_exporta_oliva_linear (test_cor_colorimetria.TestCorGLBReal.test_png_real_exporta_oliva_linear)",
+        "motivo": "Blender nao executado nesta rodada sem PC"
+      },
+      {
+        "teste": "test_progresso_chamado_nas_fronteiras_e_monotonico (test_cor_passo.TestGerarUvProgresso.test_progresso_chamado_nas_fronteiras_e_monotonico)",
+        "motivo": "xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json"
+      },
+      {
+        "teste": "test_progresso_que_levanta_em_80_nao_grava_npz (test_cor_passo.TestGerarUvProgresso.test_progresso_que_levanta_em_80_nao_grava_npz)",
+        "motivo": "xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json"
+      },
+      {
+        "teste": "test_sem_progresso_mantem_comportamento (test_cor_passo.TestGerarUvProgresso.test_sem_progresso_mantem_comportamento)",
+        "motivo": "xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json"
+      },
+      {
+        "teste": "test_criar_servidor_registra_as_ferramentas (test_mcp.TestRegistroServidor.test_criar_servidor_registra_as_ferramentas)",
+        "motivo": "pacote mcp nao instalado neste venv"
+      },
+      {
+        "teste": "test_fechada_e_limpa (test_refino.TestRefinarBlender.test_fechada_e_limpa)",
+        "motivo": "Blender excluido pela missao sem PC"
+      },
+      {
+        "teste": "test_glb_e_triangulos (test_refino.TestRefinarBlender.test_glb_e_triangulos)",
+        "motivo": "Blender excluido pela missao sem PC"
+      },
+      {
+        "teste": "test_iou_e_convencao (test_refino.TestRefinarBlender.test_iou_e_convencao)",
+        "motivo": "Blender excluido pela missao sem PC"
+      },
+      {
+        "teste": "test_normalizacao (test_refino.TestRefinarBlender.test_normalizacao)",
+        "motivo": "Blender excluido pela missao sem PC"
+      },
+      {
+        "teste": "test_previas (test_refino.TestRefinarBlender.test_previas)",
+        "motivo": "Blender excluido pela missao sem PC"
+      },
+      {
+        "teste": "test_progresso (test_refino.TestRefinarBlender.test_progresso)",
+        "motivo": "Blender excluido pela missao sem PC"
+      },
+      {
+        "teste": "test_backend_pymeshlab (test_refino.TestRefinarPymeshlab.test_backend_pymeshlab)",
+        "motivo": "Blender excluido pela missao sem PC"
+      },
+      {
+        "teste": "test_simetrizar (test_refino.TestRefinarSimetriaSemUV.test_simetrizar)",
+        "motivo": "Blender excluido pela missao sem PC"
+      },
+      {
+        "teste": "test_nvidia_smi_real (test_travas.TestGpu.test_nvidia_smi_real)",
+        "motivo": "nvidia-smi ausente"
+      },
+      {
+        "teste": "test_gerar_uv_registra_parametros_do_empacotamento (test_uv_xatlas.TestUvMargemD_T5_1.test_gerar_uv_registra_parametros_do_empacotamento)",
+        "motivo": "xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json"
+      },
+      {
+        "teste": "test_margem_padrao_cubo_em_2048_cumpre_regua (test_uv_xatlas.TestUvMargemD_T5_1.test_margem_padrao_cubo_em_2048_cumpre_regua)",
+        "motivo": "xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json"
+      },
+      {
+        "teste": "test_gerar_uv_grava_npz_legivel (test_uv_xatlas.TestUvXatlas.test_gerar_uv_grava_npz_legivel)",
+        "motivo": "xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json"
+      },
+      {
+        "teste": "test_metricas_batem_com_projecao (test_uv_xatlas.TestUvXatlas.test_metricas_batem_com_projecao)",
+        "motivo": "xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json"
+      },
+      {
+        "teste": "test_metricas_cubo_sao_finitas_e_ocupacao_positiva (test_uv_xatlas.TestUvXatlas.test_metricas_cubo_sao_finitas_e_ocupacao_positiva)",
+        "motivo": "xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json"
+      },
+      {
+        "teste": "test_parametrizar_preserva_faces_e_uv_em_01 (test_uv_xatlas.TestUvXatlas.test_parametrizar_preserva_faces_e_uv_em_01)",
+        "motivo": "xatlas 0.0.11 aborta em Atlas.add_mesh nesta maquina (0xC0000005); sondas xatlas-*.json"
+      },
+      {
+        "teste": "test_pivo_fora_dos_pes (test_validar.TestGodotDeVerdade.test_pivo_fora_dos_pes)",
+        "motivo": "Godot não encontrado neste PC"
+      },
+      {
+        "teste": "test_textura_nao_derruba_o_godot (test_validar.TestGodotDeVerdade.test_textura_nao_derruba_o_godot)",
+        "motivo": "Godot não encontrado neste PC"
+      },
+      {
+        "teste": "test_triangulo_aprovado (test_validar.TestGodotDeVerdade.test_triangulo_aprovado)",
+        "motivo": "Godot não encontrado neste PC"
+      }
+    ]
+  },
+  "gpu": "nao usada",
+  "blender": "nao executado",
+  "qualidade_visual": "nao medida"
+}

@@ -5,6 +5,7 @@ Temporários só em <BASE>\\jobs_teste\\ (apagados no fim).
 """
 import json
 import os
+import signal
 import subprocess
 import sys
 import tempfile
@@ -126,7 +127,9 @@ class TestTravaEntreProcessos(BaseTemp):
         self.filhos.append(p)
         _esperar_pronto(p)
         pid_filho = _pid_reportado(self.registro)
-        p.kill()  # "Finalizar tarefa": sem chance de soltar
+        # No venv, Popen.pid pode ser o lancador, nao o dono da trava.
+        # Matar o PID reportado pelo interprete reproduz a morte real do dono.
+        os.kill(pid_filho, signal.SIGTERM)  # TerminateProcess no Windows, sem finally
         p.wait(timeout=10)
         est = travas.estado_trava("gpu", self.pasta)
         self.assertFalse(est["ocupada"])

@@ -1,0 +1,6 @@
+test_tempo_maximo (testes.test_motores.TestGerarFalso.test_tempo_maximo) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.126s
+
+OK

@@ -389,11 +389,32 @@ class TestGerarFalso(unittest.TestCase):
         self.assertTrue(esperar_ate(lambda: not base.processo_vivo(pids["neto"]), 10), "neto vivo (Job Object)")
 
     def test_tempo_maximo(self):
-        with self.assertRaises(motores.ErroMotor) as cm:
-            self._gerar("silencioso", tempo_max_s=1.5)
+        # O timeout pode matar o Python antes de ele gravar pids_falso.json.
+        # Capturar o processo real no pai testa o encerramento mesmo nesse caso.
+        popen_real = subprocess.Popen
+        processos = []
+
+        def capturar(*args, **kwargs):
+            proc = popen_real(*args, **kwargs)
+            processos.append((proc, base.hora_criacao(proc.pid)))
+            return proc
+
+        with mock.patch.object(motores.subprocess, "Popen", side_effect=capturar):
+            with self.assertRaises(motores.ErroMotor) as cm:
+                self._gerar("silencioso", tempo_max_s=1.5)
         self.assertIn("tempo máximo", str(cm.exception))
-        pids = json.loads((self.pasta / "pids_falso.json").read_text(encoding="utf-8"))
-        self.assertTrue(esperar_ate(lambda: not base.processo_vivo(pids["filho"]), 10))
+        self.assertTrue(processos, "motor nao iniciou processo")
+        proc, criado = processos[0]
+        self.assertIsNotNone(proc.poll(), "motor nao foi aguardado apos o timeout")
+        self.assertTrue(esperar_ate(lambda: not base.processo_vivo(proc.pid, criado), 10))
+        # Se o runner chegou a registrar seu PID real, conserva tambem essa
+        # checagem: Popen.pid pode pertencer ao lancador de um venv.
+        try:
+            pids = json.loads((self.pasta / "pids_falso.json").read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError):
+            pids = {}  # timeout antes de completar o registro nao e falha do motor
+        if pids.get("filho"):
+            self.assertTrue(esperar_ate(lambda: not base.processo_vivo(pids["filho"]), 10))
 
     def test_batimento_chama_progresso_sem_linha_nova(self):
         chamadas = []
