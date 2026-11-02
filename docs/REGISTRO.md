@@ -1131,3 +1131,25 @@ Proximo passo: executar a P1 a partir do pacote de territorios, com autoauditori
   consulta em `docs/CONSULTA-ref01-frente-dir-r3.md`. Nenhuma imagem
   instalada no PC nesta rodada (a t2 segue só local; a arte do RPG nunca
   entra no git).
+
+### 2026-11-01 (noite) - REF-01 lote 4, frontal direita: DECISAO do Critico (CM-000009-I0003) sobre a rota da tentativa unica de edicao
+
+Ordem do Mestre (01/11/2026 22:44): "Use o Comestre critico e escolha a melhor opcao para o app, registre tudo". A decisao e do Critico CM-000009-I0003 (instancia de Critica/Auditoria do CM-000009, vinculada ao Auditor CM-000003); o documento integral esta em decisao-critico-rota.md (pasta local ref01-frontal-direita do workspace do Muse).
+
+DECISAO EM DUAS CAMADAS:
+
+1. NO MERITO: a melhor rota para gastar uma tentativa ainda nao gasta e a A1 - inpainting local mascarado sobre a r3-t2 (FLUX Fill ou SDXL-inpaint via ComfyUI; mascara parcial preservando focinho, olho e orelha frontal do lobo como ancoras). Fundamento estrutural verificado pelo Critico: e o unico mecanismo em que "o resto nao muda" e propriedade do metodo (pixel identico fora da mascara), sustentando as condicoes 1 e 5 da consulta por construcao, e nao por obediencia probabilistica de gerador - o mesmo gerador que levou 11 tentativas para obedecer a um sinal de camera. Chance do estudo (50-65%) aceita como faixa, com a correcao de que ela vale para a execucao, nao para a entrega ponta-a-ponta (o setup no ambiente real nao estava precificado).
+
+2. NO ESTADO REAL: a tentativa unica JA FOI GASTA. As 22:30 de 01/11/2026 - 14 minutos antes da ordem do Mestre - a frente REF-01 executou a edicao da r3-t2 pela rota A2 (ferramenta de imagem da casa, edicao por instrucao), sob a autorizacao generica da consulta de processo (ramo expresso para ferramenta sem edicao regional controlada). Arquivo produzido: media-generation-orc-diag-frente-dir-r3-t2-edit-0-bf78200e-2942-4ab5-b41f-a537b5479673.png, SHA-256 01fd9c27396790e2785473f55c884c7fdbb3741885fe019bcff2dab2482b20f9, sob julgamento do Critico Visual independente do ciclo REF-01 desde ~22:36. Pela condicao 6 da consulta e pela exclusividade A1 x A2 (as duas decididas ANTES de gastar), ESSA edicao e a tentativa unica. Ordenar a A1 agora criaria duas "tentativas unicas" concorrentes - defeito de processo.
+
+CONDICOES VINCULANTES DA DECISAO (alem das 6 da consulta, reafirmadas):
+- Se o Critico do ciclo aprovar o editado na bateria completa (paragrafo 7 integral + N9 com tabela + N10), a vaga fecha com ele; a A1 NAO e executada.
+- Se reprovar em qualquer item S1/S2, a tentativa esta consumida: A1, A3 pelo executor, B2 e C ficam CONGELADAS para esta vaga; declara-se a vaga intratavavel por geracao/edicao e escala-se ao Mestre com as opcoes G: (a) aceitar a lacuna; (b) retoque manual humano so na regiao do lobo, sob as mesmas condicoes; (c) excecao documentada - com o parecer contrario do Critico registrado (o modelador le a imagem, nao a anotacao). A A1 so retorna como decisao expressa do Mestre nessa escalada, nunca por iniciativa de agente.
+- N10 ADOTADA para este julgamento (a consulta a propos ao Critico da rodada da edicao): regiao tocada e proveniencia declaradas, antes/depois; como a A2 re-renderiza a imagem inteira, o editado e julgado como geracao nova integral - nada do que a r3-t2 passou e herdado.
+- Quem julga a candidatura e o Critico Visual independente do ciclo REF-01, com remedicao propria. A leitura visual preliminar do Critico decisor (lobo fundido a pele, rosto/kit/pes aparentemente preservados) NAO e veredito e nao substitui essa remedicao.
+- Painel de metricas do job de edicao obrigatorio no registro do desfecho (ferramenta, duracao, hashes de entrada/saida); tokens da plataforma nao sao expostos pela ferramenta - declarar "nao medido", nunca estimar.
+- Escopo de qualquer aprovacao declarado (L-33): conformidade medida ao paragrafo 7 e ao processo; a palavra final de fidelidade artistica e do Mestre.
+
+VERIFICACAO PROPRIA DO CRITICO DECISOR (fontes, nao relatorios): r3-t2 conferida a olho e por hash (SHA-256 425105374b3cd2c38019121049364fda0aa65162ab193ad048f9fa2355285eca) - passa rosto, pes, kit (paragrafo 5) e item 5; o defeito do lobo confirmado (cabeca inteira a frente da capa, oclusao 0%, onde o item 1 exige parcialidade) - classificacao S2 da consulta correta. Tratamento-alvo confirmado a olho em tras_dir (lobo quase todo atras da capa; so focinho e borda espiam). Probabilidades do estudo julgadas uma a uma na decisao integral: A1 50-65% aceita com correcoes; A2 25-40% era prior generico - a amostra realizada das 22:30 nao exibiu os dois modos de falha centrais previstos (rosto nao reverteu; o lobo nao foi apenas encolhido, foi fundido/ocluido pela pele, a olho), e o desfecho da A2 sera o medido no julgamento, nao o prior; B1, B2, C, D, E e F com faixas e rejeicoes aceitas e congeladas pela condicao 6.
+
+ESTADO DA VAGA: frontal direita continua ABERTA ate o veredito do Critico do ciclo sobre o editado das 22:30.
