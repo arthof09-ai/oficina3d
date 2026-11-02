@@ -186,3 +186,55 @@ Registro Git: a primeira gravação de índice foi barrada pelo sandbox; após
 autorização, o primeiro commit falhou por identidade ausente. Resolvido usando
 `git -c user.name=Codex -c user.email=codex@users.noreply.github.com commit`,
 sem alterar configuração global. Frente 1 ficou no commit `d11449a`.
+
+## Frente 3 — auditoria adversarial: FECHADA como diagnóstico reproduzível
+
+Código auditado: projeção/amostragem, preparação de vistas e salvamento em
+`_blender_cor.py`, mapa texel→face, médias e BFS/dilatação em
+`preenchimento.py`, sempre contra `5cd092d`. Não foi feita pesquisa externa.
+Achados abaixo são contracasos provados desta rodada; não se atribui ocorrência
+ao Orc real sem seus artefatos, nem se afirma que ninguém os observou antes.
+
+| ID / classificação | Prova mínima CPU e leitura da base publicada | Consequência e encaminhamento |
+|---|---|---|
+| N01 — S3, contagem falsa de faces pintadas | `projecao.py:495` incrementa `faces_ok` antes de máscara, facing por texel e vencedor; `:533` publica como `faces_pintadas_por_vista`. Máscara com um único pixel fora das amostras: **0 texels pintados, 2 faces reportadas pintadas** | O campo conta faces candidatas rasterizáveis. Corrigir nome ou contar faces com escrita aceita; não usá-lo para atestar cobertura/proveniência. |
+| N02 — S3, telemetria de texels dependente da ordem | `projecao.py:526–534` soma vitórias intermediárias, sem retirar a fonte anterior quando há sobrescrita. Frente facing 0,6, esquerda 0,8: textura final idêntica nas duas ordens, toda azul, **1.024 texels**; frente→esquerda reporta **1.024+1.024=2.048**, ordem inversa **0+1.024=1.024** | Esses campos são eventos de escrita, não contribuição final de cada vista. Não somá-los como cobertura nem chamar de mapa de proveniência. Manter eventos explicitamente nomeados e adicionar contagem final por mapa de dono/vista. |
+| N03 — S3 condicional, fonte direta fora do quadro | `projecao.py:516–519` aplica `clip` antes de testar máscara, sem rejeição das coordenadas contínuas fora da imagem. Override x+10.000, borda vermelha válida: **1.024 texels diretos vermelhos**, embora nenhuma projeção esteja dentro do quadro | Com arte recortada/alinhamento extrapolado e primeiro/último pixel opaco, a borda vira fonte esticada. O comportamento já é reconhecido por contraste no docstring de `vertice.py`; aqui recebe prova isolada no bake. Rejeitar fora do quadro antes do clip em futura mudança separada, com re-baseline; efeito real no Orc não medido. |
+| N04 — S3 documental, trava de aspecto relativa | `projecao.py:331` aceita IoU≥0,999 sem busca; `:369` limita **sx/sy relativo ao inicial**. Caso inicial ax=2, ay=1 já com IoU=1 retorna **ax/ay=2**, enquanto `info.escala_x/escala_y=1`. `docs/REGISTRO.md:877` descreve `|ax/ay−1|≤0,15` | A alegação de trava absoluta não vale. O docstring técnico usa sx/sy; o registro executivo usa ax/ay. Corrigir a leitura para “variação de aspecto relativa ao bbox inicial”; uma trava absoluta exigiria decisão e teste próprios. |
+
+Os IDs de teste correspondentes são `test_n01…` a `test_n04…` em
+`testes/test_cor_adversarial_nuvem.py`. Eles carregam o **snapshot congelado**
+do Git: documentam o defeito publicado e não obrigam código futuro a conservar
+o comportamento. Nenhuma dessas quatro mudanças de produção foi aplicada
+silenciosamente ao pacote de integração. São pendências nomeadas, com a
+correção e o limite de evidência explícitos.
+
+**S2-linear já conhecido, não contado como achado novo:**
+`preenchimento.py:91` tira média no espaço recebido, e `_blender_cor.py`
+continua recebendo RGB byte sem decodificação. Dois texels preto/branco dão
+**0,5 sRGB**; média em luz linear reencodificada daria
+**0,7353569830524495**, diferença **60,0160306784/255** no contracaso de alto
+contraste. O quinto teste quantifica essa operação; não mede o erro médio do
+Orc, nem demonstra que todo preenchimento se desvia em 60 níveis.
+C-COR01 é do modo vértice e não fecha esse S2 do bake. Standard corrige
+salvamento; não converte retroativamente a aritmética de médias.
+
+**Outros limites verificados por leitura, sem promover suspeita a defeito novo:**
+a oclusão de `_blender_cor.py:400–412` é por centroide da face e não um z-buffer
+por texel; a BFS opera no grafo soldado, sem semântica de regiões do corpo.
+Não se mediram aqui falsos visíveis nem vazamento semântico na âncora.
+O parâmetro `dim` não usado dentro da rasterização não foi anunciado como
+novo controle de qualidade. Não há `expoente` de facing exposto no pipeline
+de produção auditado; a análise do antigo experimento fica no item 4.
+
+Execução: `python -B testes/auditoria_nuvem.py frente3
+testes.test_cor_adversarial_nuvem` — **5 executados, 5 passaram,
+0 falhas, 0 erros, 0 skips**. `frente3.txt/.json`: parede **15,341488 s**,
+CPU **2,546875 s**, pico **111.095.808 bytes**. GPU/Blender não usados;
+VRAM, energia, frequência/impacto dos defeitos no Orc real, SSIM/DeltaE:
+**não medido**. Prioridade sugerida de trabalho futuro: tornar telemetria
+inequívoca (N01/N02), tratar extrapolação com re-baseline (N03), corrigir a
+descrição da trava (N04). Isso é diagnóstico/proposta, não novo job comandado.
+
+Frente 2 fechada no commit `c2828ab`; este registro não declara aprovação
+visual nem aprovação independente de qualquer uma das frentes.

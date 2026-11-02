@@ -1,0 +1,10 @@
+test_n01_faces_contadas_sem_um_texel_aceito (testes.test_cor_adversarial_nuvem.TestPipelinePublicado.test_n01_faces_contadas_sem_um_texel_aceito) ... ok
+test_n02_contagens_de_vistas_nao_sao_proveniencia_final (testes.test_cor_adversarial_nuvem.TestPipelinePublicado.test_n02_contagens_de_vistas_nao_sao_proveniencia_final) ... ok
+test_n03_fora_do_quadro_vira_fonte_direta_por_clip (testes.test_cor_adversarial_nuvem.TestPipelinePublicado.test_n03_fora_do_quadro_vira_fonte_direta_por_clip) ... ok
+test_n04_trava_de_aspecto_e_relativa_ao_inicial (testes.test_cor_adversarial_nuvem.TestPipelinePublicado.test_n04_trava_de_aspecto_e_relativa_ao_inicial) ... ok
+test_s2_linear_ja_conhecido_media_srgb_quantificada (testes.test_cor_adversarial_nuvem.TestPipelinePublicado.test_s2_linear_ja_conhecido_media_srgb_quantificada) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 5.104s
+
+OK
