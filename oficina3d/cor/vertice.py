@@ -38,16 +38,52 @@ FONTE_FORMA = 2
 FONTE_PROPAGACAO = 3
 
 
+def srgb_para_linear(rgb):
+    """Decodifica RGB sRGB 0..1 para luz linear (nao recebe alfa).
+
+    As imagens PNG canonicas lidas por bpy entregam bytes sRGB como
+    floats; FLOAT_COLOR.color e COLOR_0 do glTF exigem luz linear.
+    Converter so a fonte imagem: a cor da forma ja chega linear pelo
+    importador glTF. Mascara/facing/alinhamento nao dependem desta curva.
+    """
+    rgb = np.asarray(rgb, dtype=np.float64)
+    return np.where(rgb <= 0.04045, rgb / 12.92,
+                    ((rgb + 0.055) / 1.055) ** 2.4)
+
+
+def amostrar_bilinear(imagem, mascara, x, y):
+    """Interpola cores LINEARES; x/y usam centros em i+0.5.
+
+    Chamador garante ponto dentro da imagem e pixel-base com mascara valida.
+    Vizinhos fora da mascara nao contribuem (sem halos do fundo).
+    """
+    # Centros de pixels em i+0.5; renormalizar evita misturar fundo transparente.
+    x = np.clip(x - .5, 0, imagem.shape[1]-1)
+    y = np.clip(y - .5, 0, imagem.shape[0]-1)
+    x0 = np.floor(x).astype(int); y0 = np.floor(y).astype(int)
+    x1 = np.minimum(x0+1, imagem.shape[1]-1)
+    y1 = np.minimum(y0+1, imagem.shape[0]-1)
+    dx=x-x0; dy=y-y0
+    total=np.zeros(len(x)); rgb=np.zeros((len(x),3))
+    for xx,yy,w in [(x0,y0,(1-dx)*(1-dy)),(x1,y0,dx*(1-dy)),
+                    (x0,y1,(1-dx)*dy),(x1,y1,dx*dy)]:
+        w=w*mascara[yy,xx];total+=w;rgb+=w[:,None]*imagem[yy,xx]
+    return rgb/np.maximum(total[:,None],1e-15)
+
+
 def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict],
-                      centro: np.ndarray, ortho_scale: float):
+                      centro: np.ndarray, ortho_scale: float, *,
+                      amostragem: str = "bilinear"):
     """Pinta vertices por projecao das vistas. Retorna (cores, fonte, melhor, info).
 
     ``vistas``: lista de dicts com ``vista`` (nome), ``imagem`` (HxWx3 float
-    0..1, linha 0 = topo), ``mascara`` (HxW bool) e ``visivel`` (N,) bool
+    0..1 LINEAR, linha 0 = topo), ``mascara`` (HxW bool) e ``visivel`` (N,) bool
     (oclusao pre-calculada por quem chama - no Blender, via BVH). A ordem
     da lista e a ordem de desempate (a primeira vista vence facing igual),
     como em ``projecao.rasterizar_textura``.
     """
+    if amostragem not in ("bilinear", "seco"):
+        raise ValueError("amostragem deve ser bilinear ou seco")
     verts = np.asarray(verts, dtype=np.float64)
     normais = np.asarray(normais, dtype=np.float64)
     n = len(verts)
@@ -86,7 +122,11 @@ def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict]
             sel = idx[ganha]
             if len(sel):
                 melhor[sel] = facing[sel]
-                cores[sel] = imagem[ipy[sel], ipx[sel]]
+                if amostragem == "bilinear":
+                    cores[sel] = amostrar_bilinear(
+                        imagem, mascara, ax * px_all[sel] + bx, ay * py_all[sel] + by)
+                else:
+                    cores[sel] = imagem[ipy[sel], ipx[sel]]
                 fonte[sel] = FONTE_VISTA
             info["vertices_por_vista"][nome] = int(len(sel))
         else:
@@ -239,15 +279,25 @@ def avaliar_alinhamento_forma(distancias_frac_altura, razoes_caixa):
     aceita; metricas traz mediana, p90 e razoes (arredondados) para o
     relatorio do job. A decisao usa os valores sem arredondar.
     """
-    dists = np.asarray(list(distancias_frac_altura or []), dtype=np.float64)
-    razoes = dict(razoes_caixa or {})
+    metricas = {"dist_mediana_frac_altura": None, "dist_p90_frac_altura": None,
+                "razao_caixa": {}}
+    try:
+        dists = np.asarray(list(distancias_frac_altura) if distancias_frac_altura is not None else [],
+                           dtype=np.float64)
+        razoes = {k: float(v) for k, v in dict(razoes_caixa or {}).items()}
+    except (TypeError, ValueError, OverflowError):
+        return False, "alinhamento forma x refinado com dados nao numericos", metricas
+    if dists.ndim != 1 or not np.isfinite(dists).all() or (dists < 0).any():
+        return False, "alinhamento forma x refinado com distancias invalidas", metricas
+    if not all(math.isfinite(v) for v in razoes.values()):
+        return False, "alinhamento forma x refinado com razoes de caixa invalidas", metricas
     med = float(np.median(dists)) if len(dists) else None
     p90 = float(np.percentile(dists, 90)) if len(dists) else None
-    metricas = {
+    metricas.update({
         "dist_mediana_frac_altura": round(med, 5) if med is not None else None,
         "dist_p90_frac_altura": round(p90, 5) if p90 is not None else None,
-        "razao_caixa": {k: round(float(v), 5) for k, v in razoes.items()},
-    }
+        "razao_caixa": {k: round(v, 5) for k, v in razoes.items()},
+    })
     if not len(dists):
         return False, "alinhamento forma x refinado sem amostra de distancia", metricas
     faltam = [e for e in ("x", "y", "z") if e not in razoes]

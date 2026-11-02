@@ -78,3 +78,111 @@ separadamente; seu resultado será registrado na frente de integração.
 texel→face→vista→pixel e medir regiões inferiores, determinismo, textura×GLB e
 render flat. Qualidade visual e fidelidade continuam pendentes; não reaplicar
 um patch de centro que já entrou.
+
+## Frente 2 — Frente D v2: PRONTO PARA INTEGRAR (código + provas CPU)
+
+Pacote montado seletivamente sobre COR-08/S2. Não se fez merge da branch antiga.
+`testes/preparar_frente_d_nuvem.py` extrai somente sete arquivos do commit público
+`31c2d883e9351b11dcbac6896c5b1f266e619f7e`; antes da escrita verifica que os
+dois arquivos de produção já existentes são idênticos entre `0e8746e` e
+`5cd092d` e que a cópia de trabalho ainda corresponde à base. Assim, nenhum
+delta da COR-08/S2 foi substituído. Manifesto SHA-256 de origem/integrado:
+`docs/evidencias-nuvem/integracao-manifesto.json`.
+
+| Mudança / origem pública | Arquivos de produção | Provas nesta rodada |
+|---|---|---|
+| C-COR01, `7511a68`: decodificar imagem byte sRGB para linear no modo vértice; float e forma já lineares preservados | `cor/vertice.py`, `cor/_blender_vertice.py` | `test_cor_colorimetria.TestCurvaCor` (2) e `test_cor_integracao_nuvem.test_c_cor01…` |
+| C-GUARD01, `53e845c` + sabotagens `80c48d0`: recusar NaN/distâncias inválidas; validar COLOR_0 por primitivo | mesmos dois + `cor/validacao_vertice.py` novo | `test_cor_guardas` (12), mais duas contraprovas antes/depois |
+| C-COR02, `4836e6f`: bilinear linear com centros i+0,5, máscara renormalizada e controle `seco` | `cor/vertice.py`, `cor/_blender_vertice.py` | `test_cor_amostragem` (4) e contraprova integrada |
+
+Os caminhos de produção da tabela são relativos a `oficina3d/`.
+Também entram `testes/test_cor_colorimetria.py`, `test_cor_amostragem.py`,
+`test_cor_guardas.py`, leitor puro `testes/codex/glb_evidencia.py` e seu
+`__init__.py`. Do teste antigo de colorimetria só foram adaptados o import do
+leitor e o skip explícito de Blender nesta rodada. Nada de scripts que leem
+jobs do PC ou executam experimentos GPU foi importado. Os demais arquivos
+novos da frente são o preparador, o runner, `publicado_nuvem.py` e
+`test_cor_integracao_nuvem.py`, mais evidências textuais.
+
+### Antes/depois realmente medido em CPU
+
+`test_cor_integracao_nuvem.py` carrega o código de `5cd092d` por `git show`,
+sem checkout. Funções que dependem de bpy são extraídas por AST e recebem
+somente a API de pixels simulada; não se finge uma exportação real.
+
+| Contracaso controlado | Publicado `5cd092d` | Integrado |
+|---|---:|---:|
+| Imagem byte com canal sRGB 0,5 → leitor de vértice | 0,5 tratado como linear | 0,21404114048223255 linear |
+| Imagem float com canal 0,5 | 0,5 | 0,5 (sem dupla conversão) |
+| Centro do tabuleiro 2×2, amostra de vértice | RGB 0/0/0 (`seco`) | RGB 0,5/0,5/0,5 (bilinear); mesma fonte |
+| Distância NaN, caixas 1/1/1 | aceita | recusa |
+| Dois primitivos POSITION 3/3, COLOR_0 2/4 | aceita somas 6=6 | recusa, 2 primitivos inválidos |
+
+Quatro contraprovas passaram, 0 falhas/erros/skips: `frente2-contraprovas.txt`
+e `.json` (10,670741 s parede; 2,328125 s CPU; pico 43.806.720 bytes).
+A bateria integrada `frente2-puro` terminou com **52 executados: 50 passaram,
+2 skips, 0 falhas, 0 erros**. Abrange os cinco módulos
+`test_cor_amostragem`, `test_cor_colorimetria`, `test_cor_guardas`,
+`test_cor_vertice` e `test_cor_integracao_nuvem`; todos os nomes estão no `.txt`.
+Skips: exportação real PNG→GLB e forma já linear→GLB, porque Blender é
+expressamente excluído nesta missão. Tempo unittest 11,127 s;
+parede 92,421240 s; CPU 5,390625 s; pico working set 90.243.072 bytes.
+O tempo de parede inclui importação e infraestrutura; não é tempo de bake.
+GPU não usada; VRAM, energia, métricas visuais e desempenho do PC: não medido.
+
+### Integração mecânica na volta do PC
+
+1. Em cópia/branch de integração, conferir base e os hashes do manifesto.
+   Trazer o commit desta Frente 2 por cherry-pick, ou seu diff seletivo;
+   não reaplicar os commits antigos inteiros, que carregam documentação caduca.
+2. Ordem lógica já resolvida no pacote: C-COR01 → C-GUARD01 (inclui módulo
+   novo e import do verificador) → C-COR02 → testes da Frente C/sabotagens.
+   Os três estão num único commit coerente para não deixar import quebrado.
+3. Rodar as 52 verificações acima e a suíte completa no ambiente do PC.
+   Fora desta rodada, liberar os dois testes de exportação real e validar
+   oliva, ausência de dupla conversão, todos os primitivos e controle `seco`.
+4. Reexecutar bakes/cores duas vezes sobre entradas preservadas com hash,
+   comparar geometria/normais/UV/índices, máscaras, cobertura e determinismo.
+   Medir renders flat por região e submeter qualidade ao Mestre/Crítico.
+   Os números antigos de DeltaE/SSIM não são aceite desta base.
+
+Conflitos esperados: **zero de conteúdo contra a base exata `5cd092d`** nos
+arquivos existentes, comprovado pela igualdade acima; sobre avanços futuros,
+concentrados em `vertice.py` e `_blender_vertice.py`. Preservar a correção
+Standard de `_blender_cor.py`, o centro em `projecao.py`, A1/A3 e os testes
+novos da principal. Não aplicar C-COR01 ao bake por simples cópia: o bake tem
+contrato de textura sRGB e sua pendência S2-linear requer desenho próprio.
+`validacao_vertice` valida estrutura JSON, não offsets/payload binário,
+identidade semântica de modelos ou conformidade glTF completa.
+
+### Suíte ampla: tentativas, infraestrutura e bloqueio nativo
+
+- Primeira descoberta, antes de instalar dependências: **337 executados,
+  292 passaram, 39 erros, 6 skips, 0 falhas**; parede 186,169598 s,
+  CPU 48,656250 s, pico 92.168.192 bytes. Evidência preservada em
+  `baseline-completa.json/.txt`. Os erros incluem dependências ausentes e
+  raízes temporárias fora da pasta inicialmente gravável; não foram mascarados.
+- Criado `.venv_auditoria` com herança de pacotes do runtime, somente nesta
+  cópia. Instaladas dependências gratuitas de CPU, sem modelos/torch/CUDA.
+  A primeira tentativa de pip foi bloqueada pela rede do sandbox; a repetição
+  autorizada concluiu. Versões efetivas constam dos JSONs. Não se alteraram
+  requisitos do app nem o ambiente do PC.
+- O runner passou a definir `OFICINA3D_JOBS_TESTE`, redireciona apenas a raiz
+  `JOBS_TESTE` de módulos legados e desabilita a descoberta de Blender.
+  As asserções e os testes originais permanecem intactos.
+- Duas tentativas amplas encerraram ao entrar no primeiro teste nativo de UV,
+  sem resumo unittest/JSON final. `integracao-completa.txt` é log **incompleto**,
+  não uma suíte aprovada. A repetição `frente2` foi interrompida pela troca do
+  ambiente/permissões e deixou arquivo vazio; não tem contagem utilizável.
+- Sonda independente `testes/sonda_xatlas_nuvem.py`: tetraedro, NumPy 2.3.5,
+  xatlas 0.0.11, CPython 3.12.14; **access violation 0xC0000005** em
+  `Atlas.add_mesh`, antes de `generate`, exit 3221225477; 27,856659 s parede.
+  `xatlas-isolado.json` guarda stdout e faulthandler. CPU/pico do filho:
+  não medido. Isso prova falha desta combinação local, não defeito da COR-08
+  nem falha no PC. A contraprova com NumPy fixado e o resultado amplo final
+  serão fechados na seção de autoauditoria.
+
+Registro Git: a primeira gravação de índice foi barrada pelo sandbox; após
+autorização, o primeiro commit falhou por identidade ausente. Resolvido usando
+`git -c user.name=Codex -c user.email=codex@users.noreply.github.com commit`,
+sem alterar configuração global. Frente 1 ficou no commit `d11449a`.

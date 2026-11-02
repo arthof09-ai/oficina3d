@@ -1,0 +1,102 @@
+{
+  "rotulo": "baseline-completa",
+  "branch": "codex/auditoria-sem-pc",
+  "head": "5cd092d37bddf36a2d888404936d4c9f394528c4",
+  "comando": [
+    "python",
+    "-B",
+    "testes/auditoria_nuvem.py",
+    "baseline-completa"
+  ],
+  "python": "3.12.14",
+  "plataforma": "Windows-10-10.0.19045-SP0",
+  "versoes": {
+    "numpy": "2.3.5",
+    "Pillow": "12.3.0",
+    "trimesh": "ausente",
+    "fastapi": "ausente",
+    "httpx": "ausente",
+    "mcp": "ausente",
+    "scipy": "ausente"
+  },
+  "testes_executados": 337,
+  "passaram": 292,
+  "falhas": 0,
+  "erros": 39,
+  "skips": [
+    {
+      "teste": "test_criar_servidor_registra_as_ferramentas (test_mcp.TestRegistroServidor.test_criar_servidor_registra_as_ferramentas)",
+      "motivo": "pacote mcp nao instalado neste venv"
+    },
+    {
+      "teste": "test_backend_pymeshlab (test_refino.TestRefinarPymeshlab.test_backend_pymeshlab)",
+      "motivo": "precisa de Blender + numpy/trimesh/pymeshlab"
+    },
+    {
+      "teste": "test_nvidia_smi_real (test_travas.TestGpu.test_nvidia_smi_real)",
+      "motivo": "nvidia-smi ausente"
+    },
+    {
+      "teste": "test_pivo_fora_dos_pes (test_validar.TestGodotDeVerdade.test_pivo_fora_dos_pes)",
+      "motivo": "Godot não encontrado neste PC"
+    },
+    {
+      "teste": "test_textura_nao_derruba_o_godot (test_validar.TestGodotDeVerdade.test_textura_nao_derruba_o_godot)",
+      "motivo": "Godot não encontrado neste PC"
+    },
+    {
+      "teste": "test_triangulo_aprovado (test_validar.TestGodotDeVerdade.test_triangulo_aprovado)",
+      "motivo": "Godot não encontrado neste PC"
+    }
+  ],
+  "falhas_ids": [],
+  "erros_ids": [
+    "test_arquiva_confere_e_apaga (test_arquivar.TestArquivarJob.test_arquiva_confere_e_apaga)",
+    "test_conferencia_extra_recusa (test_arquivar.TestArquivarJob.test_conferencia_extra_recusa)",
+    "test_destino_inacessivel_fica_na_fila (test_arquivar.TestArquivarJob.test_destino_inacessivel_fica_na_fila)",
+    "test_destino_pela_variavel (test_arquivar.TestArquivarJob.test_destino_pela_variavel)",
+    "test_erro_de_es_fica_na_fila (test_arquivar.TestArquivarJob.test_erro_de_es_fica_na_fila)",
+    "test_falha_de_hash_nao_apaga (test_arquivar.TestArquivarJob.test_falha_de_hash_nao_apaga)",
+    "test_id_invalido (test_arquivar.TestArquivarJob.test_id_invalido)",
+    "test_saida_mudou_durante_copia_nao_apaga (test_arquivar.TestArquivarJob.test_saida_mudou_durante_copia_nao_apaga)",
+    "test_sem_destino_nao_arquiva (test_arquivar.TestArquivarJob.test_sem_destino_nao_arquiva)",
+    "test_data_pelo_arquivo_quando_falta_no_job (test_arquivar.TestArquivarPendentes.test_data_pelo_arquivo_quando_falta_no_job)",
+    "test_politica (test_arquivar.TestArquivarPendentes.test_politica)",
+    "test_sem_destino_so_avisa (test_arquivar.TestArquivarPendentes.test_sem_destino_so_avisa)",
+    "test_sem_internet_fica_tudo (test_arquivar.TestArquivarPendentes.test_sem_internet_fica_tudo)",
+    "test_urgente_ignora_espera (test_arquivar.TestArquivarPendentes.test_urgente_ignora_espera)",
+    "test_progresso_chamado_nas_fronteiras_e_monotonico (test_cor_passo.TestGerarUvProgresso.test_progresso_chamado_nas_fronteiras_e_monotonico)",
+    "test_progresso_que_levanta_em_80_nao_grava_npz (test_cor_passo.TestGerarUvProgresso.test_progresso_que_levanta_em_80_nao_grava_npz)",
+    "test_sem_progresso_mantem_comportamento (test_cor_passo.TestGerarUvProgresso.test_sem_progresso_mantem_comportamento)",
+    "test_sem_vistas_com_forma_prossegue_e_rotula (test_cor_vertice.TestPassoVertice.test_sem_vistas_com_forma_prossegue_e_rotula)",
+    "test_glb_ida_e_volta (test_refino.TestArquivosPuros.test_glb_ida_e_volta)",
+    "test_glb_invalido (test_refino.TestArquivosPuros.test_glb_invalido)",
+    "test_pbm_ida_e_volta (test_refino.TestArquivosPuros.test_pbm_ida_e_volta)",
+    "test_png_assinatura (test_refino.TestArquivosPuros.test_png_assinatura)",
+    "setUpClass (test_refino.TestRefinarBlender)",
+    "test_entrada_inexistente (test_refino.TestRefinarErros.test_entrada_inexistente)",
+    "test_simetrizar (test_refino.TestRefinarSimetriaSemUV.test_simetrizar)",
+    "test_cache_drive_usa_localappdata (test_saude.TestTamanhoPasta.test_cache_drive_usa_localappdata)",
+    "test_inexistente (test_saude.TestTamanhoPasta.test_inexistente)",
+    "test_soma (test_saude.TestTamanhoPasta.test_soma)",
+    "test_dois_processos_disputando (test_travas.TestTravaEntreProcessos.test_dois_processos_disputando)",
+    "test_exclusao_mutua_varios_processos (test_travas.TestTravaEntreProcessos.test_exclusao_mutua_varios_processos)",
+    "test_registro_velho_com_pid_morto (test_travas.TestTravaEntreProcessos.test_registro_velho_com_pid_morto)",
+    "test_trava_orfa_de_processo_morto (test_travas.TestTravaEntreProcessos.test_trava_orfa_de_processo_morto)",
+    "test_estado_sem_arquivo (test_travas.TestTravaMesmoProcesso.test_estado_sem_arquivo)",
+    "test_gpu_e_worker_independentes (test_travas.TestTravaMesmoProcesso.test_gpu_e_worker_independentes)",
+    "test_nao_reentrante (test_travas.TestTravaMesmoProcesso.test_nao_reentrante)",
+    "test_pid_reaproveitado (test_travas.TestTravaMesmoProcesso.test_pid_reaproveitado)",
+    "test_solta_em_excecao (test_travas.TestTravaMesmoProcesso.test_solta_em_excecao)",
+    "test_uv_xatlas (unittest.loader._FailedTest.test_uv_xatlas)",
+    "test_web (unittest.loader._FailedTest.test_web)"
+  ],
+  "parede_s": 186.169598,
+  "cpu_processo_s": 48.65625,
+  "pico_working_set_processo_bytes": 92168192,
+  "gpu": "nao usada",
+  "vram": "nao medido",
+  "blender": "nao executado",
+  "jobs_reais_e_qualidade_visual": "nao medido",
+  "nota_recursos": "CPU e memoria do processo runner; nao incluem processos filhos; pico desde inicio do processo"
+}

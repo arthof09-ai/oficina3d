@@ -34,7 +34,6 @@ import hashlib
 import json
 import math
 import os
-import struct
 import sys
 import time
 import traceback
@@ -56,6 +55,7 @@ if APP not in sys.path:
 
 from oficina3d.cor import projecao as P  # noqa: E402
 from oficina3d.cor import vertice as V  # noqa: E402
+from oficina3d.cor.validacao_vertice import verificar_glb_vertice  # noqa: E402
 
 ANGULOS = P.ANGULOS
 CORES_SINTETICO = {"frente": (1.0, 0.0, 0.0), "costas": (0.0, 0.0, 1.0),
@@ -155,7 +155,12 @@ def extrair_malha(obj):
 
 
 def ler_imagem(caminho, limiar_alfa=10.0):
-    """(rgb HxWx3 float 0..1 linha 0 = topo, mascara HxW bool, origem)."""
+    """(RGB linear HxWx3, mascara HxW bool, origem), linha 0 = topo.
+
+    PNG/JPEG canonicos: bpy retorna os canais sRGB sem decodificar.
+    Imagens float (ex.: EXR) ja fornecem luz linear. A mascara continua
+    calculada nos pixels originais para preservar o contrato de fundo.
+    """
     img = bpy.data.images.load(caminho, check_existing=False)
     try:
         w, h = img.size
@@ -174,7 +179,10 @@ def ler_imagem(caminho, limiar_alfa=10.0):
             fundo = np.median(borda, axis=0)
             masc = np.abs(rgb - fundo).max(axis=2) * 255.0 > 40
             origem = "fundo"
-        return px[..., :3].astype(np.float64), masc, origem
+        rgb = px[..., :3].astype(np.float64)
+        if not img.is_float:
+            rgb = V.srgb_para_linear(rgb)
+        return rgb, masc, origem
     finally:
         bpy.data.images.remove(img)
 
@@ -311,67 +319,6 @@ def transferir_forma(obj_forma, verts_ref, fonte, dim_ref):
     return cores_forma, info
 
 
-def verificar_glb_vertice(caminho):
-    """Parse do JSON do GLB exportado: COLOR_0 presente e COMPLETO,
-    nenhuma imagem, material presente. Sem isso o passo nao se entrega.
-
-    Completo = COLOR_0 com a mesma contagem de POSITION no mesmo
-    primitivo (a invariante real do formato: todos os atributos de um
-    primitivo dividem a contagem). A contagem exportada NAO e a da malha
-    do Blender: o exportador duplica vertices em costuras (a cadeia
-    65.274 -> 71.336 medida na D-COR05 e o mesmo fenomeno; na esfera do
-    sintetico, 1.986 -> 2.143). Exigir igualdade com a malha reprovaria
-    todo modelo real - defeito cacado na autoauditoria pos-sintetico.
-
-    D-T2-4: a checagem antiga lia SO o primeiro primitivo do primeiro
-    mesh - um GLB com 2 primitivos, o segundo sem COLOR_0, passava.
-    Agora TODOS os primitivos de TODOS os meshes sao exigidos (na
-    pratica de hoje a importacao unifica os objetos e o passo entrega
-    1 primitivo; a exigencia e defesa em profundidade). As chaves
-    antigas (color_0, color_0_vertices, posicao_vertices) passam a
-    descrever o AGREGADO: color_0 = todos tem COLOR_0; as contagens
-    somam todos os primitivos. Primitivo malformado (S4-1) conta como
-    sem cor: o verificador reprova GLB quebrado em vez de excecao.
-    """
-    with open(caminho, "rb") as f:
-        cab = f.read(12)
-        magico, versao, _total = struct.unpack("<III", cab)
-        if magico != 0x46546C67:
-            raise ValueError("saida nao e GLB")
-        tam, tipo = struct.unpack("<II", f.read(8))
-        if tipo != 0x4E4F534A:
-            raise ValueError("GLB sem bloco JSON")
-        g = json.loads(f.read(tam).decode("utf-8"))
-    prims = [prim for malha in g.get("meshes", [])
-             for prim in malha.get("primitives", [])]
-    acessores = g.get("accessors", [])
-    conta_cor = 0
-    conta_pos = 0
-    primitivos_sem_cor = 0
-    for prim in prims:
-        # S4-1 (fechamento D-T2): primitivo malformado (acessor invalido,
-        # atributo ausente, contagem ausente) REPROVA em vez de quebrar:
-        # o verificador e defesa em profundidade e tem de falhar fechado.
-        try:
-            attrs = prim.get("attributes", {})
-            i_cor = attrs["COLOR_0"]
-            i_pos = attrs["POSITION"]
-            conta_cor += acessores[i_cor]["count"]
-            conta_pos += acessores[i_pos]["count"]
-        except (KeyError, IndexError, TypeError, AttributeError):
-            primitivos_sem_cor += 1
-    tem = bool(prims) and primitivos_sem_cor == 0
-    return {"color_0": bool(tem), "color_0_vertices": conta_cor,
-            "posicao_vertices": conta_pos,
-            "primitivos": len(prims),
-            "primitivos_sem_cor": primitivos_sem_cor,
-            "imagens_no_glb": len(g.get("images", [])),
-            "materiais": len(g.get("materials", [])),
-            "ok": bool(tem and conta_cor == conta_pos
-                       and len(g.get("images", [])) == 0
-                       and len(g.get("materials", [])) >= 1)}
-
-
 def apontar_camera(cam, vista, centro, raio):
     if vista == "cima":
         cam.location = Vector((centro.x, centro.y, centro.z + raio))
@@ -480,11 +427,15 @@ def main():
 
         progresso(55, "Blender VERTICE: amostrando as vistas nos vertices")
         cores, fonte, _melhor, info_amostra = V.amostrar_vertices(
-            verts, normais, vistas_prontas, np.array(centro), ortho)
+            verts, normais, vistas_prontas, np.array(centro), ortho,
+            amostragem=pedido.get("amostragem", "bilinear"))
         for vista in por_vista:
             por_vista[vista]["vertices_pintados"] = int(
                 info_amostra["vertices_por_vista"].get(vista, 0))
         res["por_vista"] = por_vista
+        res["amostragem"] = pedido.get("amostragem", "bilinear")
+        res["espaco_cor"] = {"atributo": "linear", "imagens_byte": "sRGB decodificado",
+                             "imagens_float": "linear", "forma": "linear preservado"}
 
         # Fonte 2: cor da forma (TripoSR etc.), se o passo a declarou.
         info_forma = {"presente": False, "aceita": False}
@@ -585,4 +536,5 @@ def main():
         sys.exit(3)
 
 
-main()
+if __name__ == "__main__":
+    main()

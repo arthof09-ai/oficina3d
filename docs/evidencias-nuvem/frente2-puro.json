@@ -1,0 +1,53 @@
+{
+  "rotulo": "frente2-puro",
+  "branch": "codex/auditoria-sem-pc",
+  "head": "d11449a141e8961a6de8d4aa357bda919909f994",
+  "comando": [
+    "python",
+    "-B",
+    "testes/auditoria_nuvem.py",
+    "frente2-puro",
+    "testes.test_cor_amostragem",
+    "testes.test_cor_colorimetria",
+    "testes.test_cor_guardas",
+    "testes.test_cor_vertice",
+    "testes.test_cor_integracao_nuvem"
+  ],
+  "python": "3.12.14",
+  "plataforma": "Windows-10-10.0.19045-SP0",
+  "versoes": {
+    "numpy": "2.3.5",
+    "Pillow": "12.3.0",
+    "trimesh": "5.2.0",
+    "fastapi": "0.162.0",
+    "httpx": "0.28.1",
+    "mcp": "ausente",
+    "scipy": "1.18.1",
+    "xatlas": "0.0.11",
+    "psutil": "7.2.2"
+  },
+  "testes_executados": 52,
+  "passaram": 50,
+  "falhas": 0,
+  "erros": 0,
+  "skips": [
+    {
+      "teste": "test_forma_ja_linear_nao_sofre_segunda_conversao (testes.test_cor_colorimetria.TestCorGLBReal.test_forma_ja_linear_nao_sofre_segunda_conversao)",
+      "motivo": "Blender nao executado nesta rodada sem PC"
+    },
+    {
+      "teste": "test_png_real_exporta_oliva_linear (testes.test_cor_colorimetria.TestCorGLBReal.test_png_real_exporta_oliva_linear)",
+      "motivo": "Blender nao executado nesta rodada sem PC"
+    }
+  ],
+  "falhas_ids": [],
+  "erros_ids": [],
+  "parede_s": 92.42124,
+  "cpu_processo_s": 5.390625,
+  "pico_working_set_processo_bytes": 90243072,
+  "gpu": "nao usada",
+  "vram": "nao medido",
+  "blender": "nao executado",
+  "jobs_reais_e_qualidade_visual": "nao medido",
+  "nota_recursos": "CPU e memoria do processo runner; nao incluem processos filhos; pico desde inicio do processo"
+}

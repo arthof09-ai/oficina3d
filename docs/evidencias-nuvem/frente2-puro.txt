@@ -1,0 +1,57 @@
+test_centros_e_media_linear (testes.test_cor_amostragem.TestBilinear.test_centros_e_media_linear) ... ok
+test_fundo_nao_contamina_e_borda_nao_atravessa (testes.test_cor_amostragem.TestBilinear.test_fundo_nao_contamina_e_borda_nao_atravessa) ... ok
+test_imagem_de_um_pixel (testes.test_cor_amostragem.TestBilinear.test_imagem_de_um_pixel) ... ok
+test_pipeline_default_bilinear_e_controle_seco (testes.test_cor_amostragem.TestBilinear.test_pipeline_default_bilinear_e_controle_seco) ... ok
+test_forma_ja_linear_nao_sofre_segunda_conversao (testes.test_cor_colorimetria.TestCorGLBReal.test_forma_ja_linear_nao_sofre_segunda_conversao) ... skipped 'Blender nao executado nesta rodada sem PC'
+test_png_real_exporta_oliva_linear (testes.test_cor_colorimetria.TestCorGLBReal.test_png_real_exporta_oliva_linear) ... skipped 'Blender nao executado nesta rodada sem PC'
+test_oliva_nao_e_gravado_como_luz_linear_crua (testes.test_cor_colorimetria.TestCurvaCor.test_oliva_nao_e_gravado_como_luz_linear_crua) ... ok
+test_tons_intermediarios_e_extremos (testes.test_cor_colorimetria.TestCurvaCor.test_tons_intermediarios_e_extremos) ... ok
+test_acessor_ou_material_malformado (testes.test_cor_guardas.TestDefesaColor0.test_acessor_ou_material_malformado) ... ok
+test_arquivo_quebrado_recusa_sem_excecao (testes.test_cor_guardas.TestDefesaColor0.test_arquivo_quebrado_recusa_sem_excecao) ... ok
+test_contagens_nao_podem_se_compensar (testes.test_cor_guardas.TestDefesaColor0.test_contagens_nao_podem_se_compensar) ... ok
+test_controle_multiplos_primitivos (testes.test_cor_guardas.TestDefesaColor0.test_controle_multiplos_primitivos) ... ok
+test_cor_inteira_normalizada_valida (testes.test_cor_guardas.TestDefesaColor0.test_cor_inteira_normalizada_valida) ... ok
+test_indices_negativos_bool_e_fora_da_lista (testes.test_cor_guardas.TestDefesaColor0.test_indices_negativos_bool_e_fora_da_lista) ... ok
+test_reordenacao_valida_e_contagem_deslocada (testes.test_cor_guardas.TestDefesaColor0.test_reordenacao_valida_e_contagem_deslocada) ... ok
+test_todos_os_meshes_e_mesh_vazio (testes.test_cor_guardas.TestDefesaColor0.test_todos_os_meshes_e_mesh_vazio) ... ok
+test_troca_de_acessores_entre_primitivos (testes.test_cor_guardas.TestDefesaColor0.test_troca_de_acessores_entre_primitivos) ... ok
+test_nan_infinito_negativo_e_nao_numerico_recusam (testes.test_cor_guardas.TestDistanciasValidas.test_nan_infinito_negativo_e_nao_numerico_recusam) ... ok
+test_numpy_e_gerador_sao_aceitos_sem_truth_value_ambiguo (testes.test_cor_guardas.TestDistanciasValidas.test_numpy_e_gerador_sao_aceitos_sem_truth_value_ambiguo) ... ok
+test_razoes_nao_finitas_ou_nao_numericas_recusam (testes.test_cor_guardas.TestDistanciasValidas.test_razoes_nao_finitas_ou_nao_numericas_recusam) ... ok
+test_cada_vertice_pinta_com_a_sua_vista (testes.test_cor_vertice.TestAmostrarVertices.test_cada_vertice_pinta_com_a_sua_vista) ... ok
+test_desempate_primeira_vista_da_lista (testes.test_cor_vertice.TestAmostrarVertices.test_desempate_primeira_vista_da_lista) ... ok
+test_facing_baixo_nao_pinta (testes.test_cor_vertice.TestAmostrarVertices.test_facing_baixo_nao_pinta) ... ok
+test_mascara_vazia_nao_pinta (testes.test_cor_vertice.TestAmostrarVertices.test_mascara_vazia_nao_pinta) ... ok
+test_oculto_nao_pinta (testes.test_cor_vertice.TestAmostrarVertices.test_oculto_nao_pinta) ... ok
+test_caixa_comprimida_recusa_e_borda_aceita (testes.test_cor_vertice.TestAvaliarAlinhamentoForma.test_caixa_comprimida_recusa_e_borda_aceita) ... ok
+test_caso_do_critico_x2_recusado_pela_caixa (testes.test_cor_vertice.TestAvaliarAlinhamentoForma.test_caso_do_critico_x2_recusado_pela_caixa) ... ok
+test_legitimo_aceita (testes.test_cor_vertice.TestAvaliarAlinhamentoForma.test_legitimo_aceita) ... ok
+test_mediana_alta_recusa (testes.test_cor_vertice.TestAvaliarAlinhamentoForma.test_mediana_alta_recusa) ... ok
+test_p90_alto_recusa_mesmo_com_mediana_baixa (testes.test_cor_vertice.TestAvaliarAlinhamentoForma.test_p90_alto_recusa_mesmo_com_mediana_baixa) ... ok
+test_razoes_incompletas_recusam_s4_2 (testes.test_cor_vertice.TestAvaliarAlinhamentoForma.test_razoes_incompletas_recusam_s4_2) ... ok
+test_sem_amostra_recusa (testes.test_cor_vertice.TestAvaliarAlinhamentoForma.test_sem_amostra_recusa) ... ok
+test_projecao_menciona_bake (testes.test_cor_vertice.TestAvisoVistasIgnoradas.test_projecao_menciona_bake) ... ok
+test_sem_chave_nao_quebra_s4_2 (testes.test_cor_vertice.TestAvisoVistasIgnoradas.test_sem_chave_nao_quebra_s4_2) ... ok
+test_vertice_nao_menciona_bake (testes.test_cor_vertice.TestAvisoVistasIgnoradas.test_vertice_nao_menciona_bake) ... ok
+test_centroide_e_cantos (testes.test_cor_vertice.TestBaricentricas3d.test_centroide_e_cantos) ... ok
+test_degenerado_devolve_none (testes.test_cor_vertice.TestBaricentricas3d.test_degenerado_devolve_none) ... ok
+test_flag_cor_modo_no_enviar (testes.test_cor_vertice.TestCliCorModo.test_flag_cor_modo_no_enviar) ... ok
+test_mesclar_forma_respeita_vista (testes.test_cor_vertice.TestMesclaEPropagacao.test_mesclar_forma_respeita_vista) ... ok
+test_propagacao_deterministica (testes.test_cor_vertice.TestMesclaEPropagacao.test_propagacao_deterministica) ... ok
+test_propagacao_preenche_componente_e_isola_o_outro (testes.test_cor_vertice.TestMesclaEPropagacao.test_propagacao_preenche_componente_e_isola_o_outro) ... ok
+test_padrao_projecao (testes.test_cor_vertice.TestOpcaoCorModo.test_padrao_projecao) ... ok
+test_vertice_valido_e_desconhecido_rejeitado (testes.test_cor_vertice.TestOpcaoCorModo.test_vertice_valido_e_desconhecido_rejeitado) ... ok
+test_com_vistas_repassa_ao_runner (testes.test_cor_vertice.TestPassoVertice.test_com_vistas_repassa_ao_runner) ... ok
+test_runner_sem_modelo_levanta_runtime (testes.test_cor_vertice.TestPassoVertice.test_runner_sem_modelo_levanta_runtime) ... ok
+test_sem_vistas_com_forma_prossegue_e_rotula (testes.test_cor_vertice.TestPassoVertice.test_sem_vistas_com_forma_prossegue_e_rotula) ... ok
+test_sem_vistas_sem_forma_levanta (testes.test_cor_vertice.TestPassoVertice.test_sem_vistas_sem_forma_levanta) ... ok
+test_despacha_por_modo_e_rejeita_desconhecido (testes.test_cor_vertice.TestWorkerDespachoCor.test_despacha_por_modo_e_rejeita_desconhecido) ... ok
+test_c_cor01_leitor_byte_decodifica_e_float_preserva (testes.test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_cor01_leitor_byte_decodifica_e_float_preserva) ... ok
+test_c_cor02_bilinear_muda_cor_preserva_fonte (testes.test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_cor02_bilinear_muda_cor_preserva_fonte) ... ok
+test_c_guard01_contagens_cruzadas_antes_aceitas_agora_recusadas (testes.test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_guard01_contagens_cruzadas_antes_aceitas_agora_recusadas) ... ok
+test_c_guard01_nan_antes_aceito_agora_recusado (testes.test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_guard01_nan_antes_aceito_agora_recusado) ... ok
+
+----------------------------------------------------------------------
+Ran 52 tests in 11.127s
+
+OK (skipped=2)

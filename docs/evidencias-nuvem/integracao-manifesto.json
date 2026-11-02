@@ -1,0 +1,49 @@
+{
+  "fonte_commit": "31c2d883e9351b11dcbac6896c5b1f266e619f7e",
+  "base_antiga": "0e8746e",
+  "base_nova": "5cd092d",
+  "arquivos": [
+    {
+      "arquivo": "oficina3d/cor/vertice.py",
+      "sha256_fonte": "b1d9bf6ed42e6905ef07c602018bc4276487d811a719462fbddc0c46baad2641",
+      "sha256_integrado": "b1d9bf6ed42e6905ef07c602018bc4276487d811a719462fbddc0c46baad2641",
+      "adaptado": false
+    },
+    {
+      "arquivo": "oficina3d/cor/_blender_vertice.py",
+      "sha256_fonte": "a4f0579b95ede82ab814e237d8fdf1d8b2e4988646384cd37c72178d8d6a52de",
+      "sha256_integrado": "a4f0579b95ede82ab814e237d8fdf1d8b2e4988646384cd37c72178d8d6a52de",
+      "adaptado": false
+    },
+    {
+      "arquivo": "oficina3d/cor/validacao_vertice.py",
+      "sha256_fonte": "1c8871d6ea157487810757c6fa25649e22caa0bcddbf24b3b6eff7f40913c802",
+      "sha256_integrado": "1c8871d6ea157487810757c6fa25649e22caa0bcddbf24b3b6eff7f40913c802",
+      "adaptado": false
+    },
+    {
+      "arquivo": "testes/test_cor_amostragem.py",
+      "sha256_fonte": "c63f376bca8376d610dce05bb181ad4c1da3055d0601b02da49a6ffe89a5bfd8",
+      "sha256_integrado": "c63f376bca8376d610dce05bb181ad4c1da3055d0601b02da49a6ffe89a5bfd8",
+      "adaptado": false
+    },
+    {
+      "arquivo": "testes/test_cor_colorimetria.py",
+      "sha256_fonte": "c898762c1596ac0d2b77170a57d1cbd7605b05f20781dd64d9f35817e8d37722",
+      "sha256_integrado": "b2b5170cacac7275f7f46212365bd3dece3e41c78fc88cc16a8326bfacbf6f6d",
+      "adaptado": true
+    },
+    {
+      "arquivo": "testes/test_cor_guardas.py",
+      "sha256_fonte": "d789132d9cb660229226d6c7a9516572b653196e58d20826abba95934fd7f77a",
+      "sha256_integrado": "d789132d9cb660229226d6c7a9516572b653196e58d20826abba95934fd7f77a",
+      "adaptado": false
+    },
+    {
+      "arquivo": "testes/codex/glb_evidencia.py",
+      "sha256_fonte": "40a92e87dca51f3977f7180c927f6b802e67600b061539d18241efabaafc00ba",
+      "sha256_integrado": "40a92e87dca51f3977f7180c927f6b802e67600b061539d18241efabaafc00ba",
+      "adaptado": false
+    }
+  ]
+}

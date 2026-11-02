@@ -1,0 +1,22 @@
+{
+  "comando": [
+    "C:\\Users\\Antônio Tiburtino\\oficina3d-codex\\.venv_auditoria\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-X",
+    "faulthandler",
+    "-B",
+    "C:\\Users\\Antônio Tiburtino\\oficina3d-codex\\testes\\sonda_xatlas_nuvem.py",
+    "--filho"
+  ],
+  "exit_code": 3221225477,
+  "timeout_60s": false,
+  "parede_s": 27.856659,
+  "stdout": "inicio\nimports OK\nAtlas OK\n",
+  "stderr": "Windows fatal exception: access violation\n\nCurrent thread 0x000005bc (most recent call first):\n  File \"C:\\Users\\Ant\\xf4nio Tiburtino\\oficina3d-codex\\testes\\sonda_xatlas_nuvem.py\", line 22 in filho\n  File \"C:\\Users\\Ant\\xf4nio Tiburtino\\oficina3d-codex\\testes\\sonda_xatlas_nuvem.py\", line 36 in main\n  File \"C:\\Users\\Ant\\xf4nio Tiburtino\\oficina3d-codex\\testes\\sonda_xatlas_nuvem.py\", line 60 in <module>\nWindows fatal exception: access violation\n\nThread 0x000005bc (most recent call first):\n  File \"C:\\Users\\Ant\\xf4nio Tiburtino\\oficina3d-codex\\testes\\sonda_xatlas_nuvem.py\", line 22 in filho\n  File \"C:\\Users\\Ant\\xf4nio Tiburtino\\oficina3d-codex\\testes\\sonda_xatlas_nuvem.py\", line 36 in main\n  File \"C:\\Users\\Ant\\xf4nio Tiburtino\\oficina3d-codex\\testes\\sonda_xatlas_nuvem.py\", line 60 in <module>\n",
+  "gpu": "nao usada",
+  "blender": "nao executado",
+  "cpu_filho_s": "nao medido",
+  "pico_memoria_filho": "nao medido",
+  "vram": "nao medido"
+}

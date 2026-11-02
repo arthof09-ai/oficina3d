@@ -1,0 +1,9 @@
+test_c_cor01_leitor_byte_decodifica_e_float_preserva (testes.test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_cor01_leitor_byte_decodifica_e_float_preserva) ... ok
+test_c_cor02_bilinear_muda_cor_preserva_fonte (testes.test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_cor02_bilinear_muda_cor_preserva_fonte) ... ok
+test_c_guard01_contagens_cruzadas_antes_aceitas_agora_recusadas (testes.test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_guard01_contagens_cruzadas_antes_aceitas_agora_recusadas) ... ok
+test_c_guard01_nan_antes_aceito_agora_recusado (testes.test_cor_integracao_nuvem.TestIntegracaoCPU.test_c_guard01_nan_antes_aceito_agora_recusado) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 3.446s
+
+OK
