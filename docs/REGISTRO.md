@@ -1027,3 +1027,107 @@ P4: sem artefato dedicado nesta leva (depende de P0/P3) - desenho no bloco ADOCA
 P5: prontidao do T7 PRONTA (t7-prontidao.md, 15.496 B, SHA-256 40466FCB...): rotulo corrigido (pacote ComfyUI de comunidade, nao o framework oficial; numeros previos = alegacao a medir); checklist executavel de 8 fases com SHA-256 dos 7 pesos como portao; roda em paralelo sob a trava de GPU. Braco T3 (Paint 2.0 via fork 2GP) sem artefato novo nesta leva.
 
 Proximo passo: executar a P1 a partir do pacote de territorios, com autoauditoria adversarial registrada antes de submeter e Critico senior proprio (mecanismo x qualidade visual separados, L-33); painel de metricas do Mestre em toda tranche de modelagem/pintura.
+
+## 2026-11-01 — REF-01 rodada 3 da frontal direita do Orc + consulta de processo ao Crítico (NÃO é lote concluído, NÃO vai ao Mestre)
+
+- **Anti-colisão:** árvore do PC conferida LIMPA antes de qualquer escrita
+  (HEAD `6d93280`, `git status --porcelain` vazio). A aplicação do Adendo 3
+  (lote 4) já estava feita na rodada 19:54; esta rodada trata SÓ da vaga da
+  diagonal frontal DIREITA.
+- **Decisão de rota (cumprindo a autoauditoria r2):** NÃO foi variação de
+  fraseado — foi a hipótese (b) da r2, âncora nas TRASEIRAS. As 7 tentativas
+  anteriores usaram frente/tresquartos/T-pose (família frontal, onde mora o
+  viés); nesta rodada a fonte principal é a traseira aprovada
+  `orc_diag_tras_esq_refeita.png` (SHA `ad57447a…c95c618e`, conferido igual
+  ao da reconciliação e ao instalado no PC), sozinha (t1, t3) ou com a frente
+  canônica como autoridade do kit (t2, t4). Teto da rodada: 4 imagens.
+- **Tentativas (autoauditoria adversarial registrada em
+  `autoauditoria-orc-diag-frente-dir-r3.md`, local do executor; nenhuma
+  instalada no PC, nenhuma submetida como candidata):**
+
+  | # | SHA-256 integral | IoU × tresquartos_v2 (25/35/45) | IoU × frente (25/35/45) | Julgamento |
+  |---|---|---|---|---|
+  | r3-t1 | `74ecb708…f9b418` | 0,780 / 0,773 / 0,767 ✓ | 0,646 / 0,622 / 0,598 ✓ | REPROVADA: passa N5, falha rosto (direita), pés (esq. frontal / dir. perfil direita) e lobo (proeminente à direita) |
+  | r3-t2 | `42510537…f9fa2355285eca` | 0,756 / 0,749 / 0,743 ✓ | 0,699 / 0,673 / 0,647 ✓ | REPROVADA como candidata — MELHOR EM 11: passa rosto (3/4 esquerda), pés (esq. perfil esquerda, dir. frontal), kit §5 e N5 completo (6/6 vistas, 3/3 limiares, máx. 0,756); falha SÓ metade do item 1: lobo à direita mas grande e proeminente, 0% de oclusão, em vez de recuado atrás da linha do ombro |
+  | r3-t3 | `80f5f1d09bf85279edf522004ff19abd50dddf4d24af8b988aa286b3365355e4` | 0,765 / 0,757 / 0,750 ✓ | 0,647 / 0,621 / 0,596 ✓ | REPROVADA: passa N5, falha rosto, pés e lobo como a t1 |
+  | r3-t4 | `ec9a52ae…ac1a034caf23c8` | 0,856 / 0,848 / 0,840 ✗ instável | 0,672 / 0,646 / 0,619 ✓ | REPROVADA: falha rosto, pés, lobo e N5 instável (cruza 0,85 entre limiares) |
+
+  r3-t2 contra as demais vistas aprovadas (25/35/45): costas_v2
+  0,755/0,749/0,745 ✓; tras_dir 0,722/0,714/0,710 ✓; tras_esq_refeita
+  0,731/0,724/0,720 ✓; tpose_v2 0,422/0,420/0,416 ✓. Método: script
+  `iou_ref01.py` (máscara por distância ao fundo, bbox, grade 500×500
+  NEAREST), guardado com a autoauditoria. Zooms de conferência da t2:
+  lobo grande à frente da capa, focinho para a direita; pé esquerdo em
+  perfil para a esquerda com sola visível; pé direito frontal.
+- **Verificação nova N9 (APR-01, proposta do executor, ADOTADA pela
+  consulta — ver abaixo):** N5 exige IoU < 0,85 no MÁXIMO dos três limiares
+  (25/35/45), contra TODAS as vistas aprovadas. A r3-t4 é a prova do furo
+  da regra antiga: passaria só no limiar 35 (0,848) sendo composição da
+  família da diagonal esquerda.
+- **Consulta de processo ao Crítico Visual sênior independente
+  (docs/CONSULTA-ref01-frente-dir-r3.md, integral no repo; NÃO é veredito
+  de candidatura, NÃO instala nada, NÃO reporta ao Mestre):** primeira
+  tentativa da consulta perdida por reinício do daemon (sem resultado);
+  reemitida integralmente e concluída com relatório gravado. O Crítico
+  releu a reconciliação (§5/§7/§8, N6), as autoauditorias r2/r3, viu as
+  imagens com os próprios olhos e re-mediu tudo com o mesmo script:
+  - Q1 — leitura do executor sobre a t2 CONFIRMADA nos 4 subitens (rosto,
+    pés, kit §5, N5 18/18 medições, máx. 0,756, diferença 0,000 em todas as
+    células publicadas pelo executor); rivais t1/t3 também conferidas
+    (N5 passa, rosto/pés falham).
+  - Q2 — lobo da t2: FALHA do item 1 do §7, segunda metade, **S2**
+    (impede a entrada como está, exige retrabalho; não é S1 porque é
+    localizado e remediável, nem S3/S4 porque viola item explícito e o
+    sinal de câmera que justifica a vista). Oclusão medida: 0% — nenhuma
+    parte cortada pela linha do ombro/capa; nas referências de "recuado"
+    (`costas_v2`, `tras_dir`) só focinho e uma orelha espiam. Item 5
+    confirmado na t2 (tubo de osso no quadril esquerdo NÃO é bolsinha);
+    ombreira esquerda passa; olhar do lobo para a direita (orc para a
+    esquerda) registrado como S4 de coerência a re-checar, não como falha
+    autônoma.
+  - Q3 — edição controlada da t2: **SIM, com 6 condições exatas** (região
+    só x > 0,65, y < 0,35; original preservado, editado com nome/hash
+    novos; oclusão parcial REAL do lobo + fusão com tronco/capa + lobo
+    preservado como lobo; re-verificação TOTAL do §7 por Crítico
+    independente; N5/N9 no editado contra as 6 vistas; nenhum defeito
+    novo na região; UMA única tentativa de edição, sem loop de remendo).
+    Vetados: flip puro, só reduzir a cabeça sem oclusão, tocar rosto/pés/
+    cinto para "compensar". O editado será NOVO candidato, julgado do
+    zero — nada do que a t2 passou é herdado se a ferramenta re-renderizar
+    a imagem inteira.
+  - Q4 (condicional) — se a edição falhar: declarar a vaga intratável por
+    geração/edição e pedir decisão do Mestre (a: aceitar a lacuna; b:
+    edição manual externa sob as mesmas condições; c: exceção documentada
+    — DESACONSELHADA pelo Crítico). Vetado: mais uma variação de prompt,
+    usar t1/t4 como base, gerar sem lobo para "adicionar depois".
+  - Q5 — N9: **ADOTADA** (redação: "máximo dos três limiares"), com teste
+    N7 cumprido (par aprovado mais próximo do limiar, `tras_dir` ×
+    `costas_v2`, 0,832–0,841 na faixa — nenhuma aprovada reprovada pela
+    regra nova). N10 proposta (auditoria de região da edição) fica para o
+    Crítico da rodada da edição decidir.
+- **Achado incidental de higiene (consulta, §0; corrigido aqui):** no
+  diretório local do executor, `orc_diag_tras_esq.png` tem o MESMO hash da
+  refeita (`ad57447a…`) — sob esse nome já não se distingue a original
+  reprovada. A original NÃO está perdida: sobrevive como bruto do gerador
+  (`media-generation-orc-diag-tras-esq-0-dd1f2a94…png`, SHA
+  `6D0B0B35…37A6CA26413`). Sem efeito nas conclusões (a autoridade vigente
+  é a refeita, e foi contra ela que se mediu).
+- **AUTOAUDITORIA do executor nesta rodada (APR-02):** conferi as 4 com os
+  meus olhos (inteiras + zooms da t2) antes de qualquer submissão; a t2
+  foi reprovada por mim como candidata apesar de ser a melhor em 11 —
+  parcial não vai ao Crítico como candidata, pela regra das rodadas
+  anteriores. Defeito achado por mim e NÃO corrigido aqui (de propósito,
+  por ser decisão de processo): o lobo da t2 — levado à consulta em vez
+  de "ajeitado" por conta própria. Nenhum defeito novo nas demais; a t4
+  quase-duplicata foi pega pela N9, não pelo olho.
+- **Próximo passo (ordem de processo, não lote concluído):** tentativa
+  ÚNICA de edição controlada da t2 sob as 6 condições da consulta, com
+  autoauditoria adversarial + Crítico Visual independente julgando o
+  editado do zero (N10 a decidir por ele). Se a edição falhar, o pedido
+  de decisão vai ao Mestre nos termos do §4 da consulta. Depois da
+  frontal direita: classificação das 5 bestas novas de 31/10.
+- **Commit desta rodada (só documentos):** esta entrada + ESTADO_ATUAL +
+  APRENDIZADO_E_FLUXO (N9, N10 proposta, L-44) + relatório integral da
+  consulta em `docs/CONSULTA-ref01-frente-dir-r3.md`. Nenhuma imagem
+  instalada no PC nesta rodada (a t2 segue só local; a arte do RPG nunca
+  entra no git).
