@@ -366,3 +366,103 @@ Execucao explicita: python -B testes/codex/bateria_mistura_gama.py retorna verme
 Suite PADRAO separada: 363 testes / 0 falhas / 0 erros / 1 skip, 29,403 s. Nao inclui os quatro testes diagnosticos acima, cuja situacao esta explicita. Painel da suite: parede 31.447041 s, pico RSS arvore amostrado 508452864 bytes; CPU arvore ultimo valor amostrado 16.90625 s (intervalo 0,5 s; pode omitir filhos curtos, nao alegar CPU total exata). GPU: nao usada. **Tokens gastos: nao medido.** Ficheiros tocados: testes/codex/bateria_mistura_gama.py, testes/codex/auditar_mistura_gama.py, docs/REGISTRO-CODEX.md. Evidencias privadas: ../evidencias/missao_1h_20261102/parte2/{resultado.json,vertice_real.log,bake_real.log,mutante_identidade.log,mutante_mistura_srgb.log,suite.log,suite_painel.json}.
 
 Estado de encerramento da janela em 2026-11-02T20:31:45.373784-03:00: interrompida ANTES do limite 21:26:23 porque AMBAS as partes acionaram a regra de parada por quadro alterado. Parte 1 nao certificada, sem inventario/fixtures confirmadas. Parte 2 testes diagnosticos medidos, bake vermelho, nao fechada. Sem merge/cherry-pick, GPU, mudanca de limites ou escrita na main; nenhum job deixado em curso. Proxima decisao e do Mestre/re-julgamento, nao desta pesquisa.
+
+## Missao 1 hora — Parte 1 retomada: INVENTARIO E MEDICAO CONCLUIDOS
+
+Nova ordem de continuar: retomei os subitens de estrutura/hash que independem da identidade dos instrumentos e identifiquei uma terceira coluna historica distinta. A parada anterior permanece historica; este fechamento nao certifica o portao. Nao houve merge/cherry-pick nem escrita na principal.
+
+Busca C:/ e G:/ com rg --files --hidden --no-ignore -g modelo_cor.glb: 41 arquivos acessiveis em C: (exit 2 por diretorios protegidos; erros completos em busca_C.log); zero em G: com esse nome (exit 1, stderr vazio). Nao afirmar exaustividade em areas inacessiveis, discos desmontados ou arquivos renomeados. Repetida busca com UTF-8 explicito dos caminhos, preservada a primeira execucao.
+
+Instrumentos atuais Codex/main intactos e semanticamente identicos pelos hashes/AST anteriores. Comparacao adicional por AST da funcao verificar_glb_vertice extraida de git show da revisao ANTERIOR **a5feab40416acf840ea8c8bdfeb1c05752b4a91b**, sem executar bpy ou restante do arquivo. Fonte SHA b7b7dacb56bec1bb4fbcfe3b02fe2c4cea93dfc395abc6f243391dca52fbca31, funcao SHA 8a1229278b0b185af6bb4ed555945ee3f000bbfa8e7f791c451ba76eab21de5f. Este instrumento e historico, nao a main atual.
+
+### Tabela completa
+
+P/I/IE/M = primitivos/imagens declaradas/imagens embutidas/materiais; C/N/P/U = COLOR_0/NORMAL/POSITION/TEXCOORD_0. ok na ordem Codex/main atual/anterior historico. Dicts completos e atributos/acessores por primitivo em inventario_final.json. Classe estrutural nao garante qualidade visual ou publicacao do job.
+
+| Arquivo | SHA-256 integral | Atributos por primitivo | P/I/IE/M | Classe | ok C/M/H |
+|---|---|---|---|---|---|
+| Codex/evidencias/dt2/X2_misto/cor/modelo_cor.glb | 968915c49491cde0697f00382603975e9f8fa8d20322160bcbcbffc0dc520b4d | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Codex/evidencias/dt2/legitimo/cor/modelo_cor.glb | 1f62f63821dfe73933eff83c8a0cc319820bcdba0de75cc49a73ef8c2370656a | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Codex/evidencias/frente_a/entrada/modelo_cor.glb | 0f8385380b22f86894355e6e944fc74ce910ef3a3b60d56ef341bfb57e9bf48c | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Codex/evidencias/guardas/orc_reexecucao/cor/modelo_cor.glb | eed4cdf74205a692f4659622ebdcf3b38bc53477345a3526e71b2149c1534111 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Codex/evidencias/t2/antes_A/cor/modelo_cor.glb | 949e3cf7009b8e23e63474fc395d45226acb2ec63342e2a419b3996b7c9c2f3a | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Codex/evidencias/t2/antes_B/cor/modelo_cor.glb | 949e3cf7009b8e23e63474fc395d45226acb2ec63342e2a419b3996b7c9c2f3a | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Codex/evidencias/t2/depois_A/cor/modelo_cor.glb | eed4cdf74205a692f4659622ebdcf3b38bc53477345a3526e71b2149c1534111 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Codex/evidencias/t2/depois_B/cor/modelo_cor.glb | eed4cdf74205a692f4659622ebdcf3b38bc53477345a3526e71b2149c1534111 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Codex/evidencias/t2/outros/besta/antes/cor/modelo_cor.glb | 39f81010c581721e0c398dfa871e432dddaed1fe03540c4e7a1303a1409b6d03 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Codex/evidencias/t2/outros/besta/depois/cor/modelo_cor.glb | 211a8b295e8b098e916a340d35bd734e0b2578dc7b6a8c54f095cfb1a0013464 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Codex/evidencias/t2/outros/caprileo/antes/cor/modelo_cor.glb | 3798f623fef2aa079857a1890c6a1b572d3e2a0fac9229b6a91fd4f508fa7c82 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Codex/evidencias/t2/outros/caprileo/depois/cor/modelo_cor.glb | bb0663d246ba5da61128b895c8cdec99dc936ab13229d8892414f2c4cf6b6f96 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/jobs/20261101-101528-corint-orc-s7/cor/modelo_cor.glb | 0f8385380b22f86894355e6e944fc74ce910ef3a3b60d56ef341bfb57e9bf48c | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs/20261101-110659-dc05-cor-det-orc-s7/cor/modelo_cor.glb | 0f8385380b22f86894355e6e944fc74ce910ef3a3b60d56ef341bfb57e9bf48c | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs/20261101-124814-t2-orc-det/cor/modelo_cor.glb | 949e3cf7009b8e23e63474fc395d45226acb2ec63342e2a419b3996b7c9c2f3a | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/jobs/20261101-124814-t2-orc/cor/modelo_cor.glb | 949e3cf7009b8e23e63474fc395d45226acb2ec63342e2a419b3996b7c9c2f3a | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/jobs/20261101-124815-t2-besta/cor/modelo_cor.glb | 39f81010c581721e0c398dfa871e432dddaed1fe03540c4e7a1303a1409b6d03 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/jobs/20261101-124815-t2-caprileio/cor/modelo_cor.glb | 3798f623fef2aa079857a1890c6a1b572d3e2a0fac9229b6a91fd4f508fa7c82 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/jobs/20261101-124826-t2-orc-proj/cor/modelo_cor.glb | 0f8385380b22f86894355e6e944fc74ce910ef3a3b60d56ef341bfb57e9bf48c | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs/20261101-124826-t2-orc-triposr/cor/modelo_cor.glb | 0005907cb1f92519170d5fb04c17cb3199c1cb99a66a8a69124fb5e96d0c3522 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/jobs/20261101-124827-t2-orc-1vista/cor/modelo_cor.glb | 121240020a2bb1e520c321aae170415f46e0435f4caa603a1af4b9b0fb9faf73 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/jobs/20261101-131410-crit-t2-soforma/cor/modelo_cor.glb | 1f62f63821dfe73933eff83c8a0cc319820bcdba0de75cc49a73ef8c2370656a | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/jobs/20261101-131719-crit-t2-cancel/cor/modelo_cor.glb | 6372ca058c7c4c342ad6cd081b6578a0f0fa3324671c72ba27be94f71aa217d2 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/jobs_teste/cor08-critico/cor08rep/modelo_cor.glb | a8e793b267db27c2a06669dbb925c91b8863a99ec4f43f558c880a1d10a09b9a | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor08/ablacao1024/modelo_cor.glb | 820ae216c988b6a4dfcfa6fb31ead38c474c1ca1ca44b21daa6c03470df13f91 | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor08/baseline/modelo_cor.glb | 318e8f702231dbefb86fbb5407b2a3ade315c1dbcb33761f9180be3d57ec5cd4 | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor08/cor08/modelo_cor.glb | a8e793b267db27c2a06669dbb925c91b8863a99ec4f43f558c880a1d10a09b9a | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor08/cor08_det/modelo_cor.glb | a8e793b267db27c2a06669dbb925c91b8863a99ec4f43f558c880a1d10a09b9a | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor_d2d7/adv3v/modelo_cor.glb | 0f7663a7cc1d54aed06ac55fe2bdba426ae7bf057e697db22a24090c430d8c45 | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor_d2d7/adv512/modelo_cor.glb | c77195841f8e1f183db51553209a9c11480327ae32bbd712578c20a1457e8f6c | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor_d2d7/base/modelo_cor.glb | 5424a3ea6aa01eac6ec412acdf0c57dd9bccb1db257703d8eb2bde18f8d37e2a | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor_margem/prova/modelo_cor.glb | 9aa12f8e029294e9f9c9fd2527dd43852c0187f815d191214d4f5c9ae9112ca9 | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor_margem/prova_det/modelo_cor.glb | 9aa12f8e029294e9f9c9fd2527dd43852c0187f815d191214d4f5c9ae9112ca9 | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor_t1/orc/modelo_cor.glb | fe73cf889b32f86152e16caff68dc4b0491bbfb61d852ffc6106305120a8c3bd | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor_t1/sintetico/modelo_cor.glb | 328610b7e11f27f261470ae2f98fdef5cb250677ba2fd3f55fd43abfc0af6931 | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/jobs_teste/cor_t5/orc_xatlas/modelo_cor.glb | 7730405eb234af1cb0996d2cb0ff869fc3ab4462c67eb993409080d5bf8595de | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/probe-dt2-crit/job_legit/cor/modelo_cor.glb | 1f62f63821dfe73933eff83c8a0cc319820bcdba0de75cc49a73ef8c2370656a | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/probe-dt2-crit/job_misto_x2/cor/modelo_cor.glb | f350fa507131038e68c4e46ebe18fc2fb562c291cb531dc018e3995436271e67 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/probe-dt2-crit/job_proj/cor/modelo_cor.glb | 3851758dc18ea3d577fdaf91c01c9e7edcec5f482d3146e3e31058624769c283 | N,P,U | 1/1/1/1 | texturizado | False/False/False |
+| Principal/probe-dt2/job_legit/cor/modelo_cor.glb | 1f62f63821dfe73933eff83c8a0cc319820bcdba0de75cc49a73ef8c2370656a | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+| Principal/probe-dt2/job_x115/cor/modelo_cor.glb | b261b9463eb43583ae513ed22a441429fcc5941e6e131c8102953cf175fd3231 | C,N,P,U | 1/0/0/1 | T2_puro | True/True/True |
+
+**41 = 23 T2_puros aceitos + 18 texturizados reprovados**, nos tres instrumentos. Zero divergencias de aceite E dict completo. Recorte original Principal/jobs + Principal/jobs_teste: **24 = 8 aceitos + 16 reprovados**. Os outros 17 sao artefatos auxiliares/copias/provas fora desse recorte.
+
+### Oito fixtures positivas, SHA integral remedido
+
+| Fixture | SHA-256 | Bytes | POSITION / COLOR_0 contagens exportadas |
+|---|---|---|---|
+| t2-orc | 949e3cf7009b8e23e63474fc395d45226acb2ec63342e2a419b3996b7c9c2f3a | 3180412 | 65469/65469 |
+| t2-orc-det | 949e3cf7009b8e23e63474fc395d45226acb2ec63342e2a419b3996b7c9c2f3a | 3180412 | 65469/65469 |
+| t2-besta | 39f81010c581721e0c398dfa871e432dddaed1fe03540c4e7a1303a1409b6d03 | 2424932 | 48299/48299 |
+| t2-caprileio | 3798f623fef2aa079857a1890c6a1b572d3e2a0fac9229b6a91fd4f508fa7c82 | 2248668 | 44293/44293 |
+| t2-orc-triposr | 0005907cb1f92519170d5fb04c17cb3199c1cb99a66a8a69124fb5e96d0c3522 | 2488120 | 49735/49735 |
+| t2-orc-1vista | 121240020a2bb1e520c321aae170415f46e0435f4caa603a1af4b9b0fb9faf73 | 2026864 | 39252/39252 |
+| crit-t2-soforma | 1f62f63821dfe73933eff83c8a0cc319820bcdba0de75cc49a73ef8c2370656a | 1361224 | 27516/27516 |
+| crit-t2-cancel | 6372ca058c7c4c342ad6cd081b6578a0f0fa3324671c72ba27be94f71aa217d2 | 2488120 | 49735/49735 |
+
+Todas sao T2 puras: 1 primitivo, COLOR_0 completo, 1 material valido, 0 imagens. Orc e Orc-det duplicam o mesmo hash: oito arquivos, sete identidades unicas. crit-t2-cancel e artefato interno da etapa; nao certifica publicacao correta de job cancelado.
+
+### Dourados de forma/UV
+
+| Criatura | SHA-256 integral | Bytes | Veredito T2 nos tres |
+|---|---|---|---|
+| Orc | 88c30236272510603c74eb99fc7c5ecd90133c8f01494b3f011d80e310e12514 | 2173168 | False / False / False |
+| Caprileo | 1b92e3b83c0b2e19fac58ccb8260d6ef1335bce655c2a9f8bce655775db791f5 | 1681740 | False / False / False |
+| Besta | ba8d6cd56395ff17f62da25e07fc84001a01f0845f0528242864c974cf6d8621 | 1818732 | False / False / False |
+
+Tres hashes fornecidos CONFIRMADOS integralmente. Estrutura medida: 1 primitivo, NORMAL/POSITION/TEXCOORD_0, sem COLOR_0, zero materiais/imagens. Orc em Principal/jobs_teste/prova_validar/.../saida/modelo.glb; Besta/Caprileo em arquivo_jobs no Drive. Caminhos completos privados no JSON. Nomes apenas localizaram candidatos, hashes decidiram identidade.
+
+**Proposta, decisao do re-julgamento:** dourados de forma/refino/UV certificam regressao de geometria/UV/identidade e determinismo quando exigido, e servem de controles negativos T2, nao positivos. Portao T2 deve fixar corpus por hashes integrais, exigir aceite anterior e candidato em cada fixture positiva estrutural, comparar vereditos em todo o corpus e manter sabotagens adversariais. Limitar a alegacao ao corpus acessivel/data; nao prometer sobre-estricao universal nem validacao semantica/binaria.
+
+APR-02: rehash de todos os 41 arquivos antes da coluna historica; nenhuma mudanca. Hashes dos instrumentos atuais conferidos antes/depois. Comparacao de dict completo, positivos por arquivo e hash, duplicata deterministica e cancelamento explicitados. Estrutura por primitivo inclui tipos/componentes/contagens de acessores e material referenciado. Erro do gerador documental (KeyError fixture) detectado ANTES de gravar registro; corrigida preservacao do rotulo no instrumento historico, depois regerado a partir do JSON. Nenhuma alteracao aos valores medidos ou verificadores.
+
+### Painel e limites
+
+painel: {"duracao_s": 12.77641329999824, "cpu_usuario_s": 0.0625, "cpu_sistema_s": 0.171875, "pico_ram_processo_bytes": 34365440, "cpu_ram_busca_rg": "nao medidos", "tokens_gastos": "nao medido", "gpu": "nao usada"}
+
+painel_enriquecimento: {"duracao_s": 8.549950200002058, "cpu_usuario_s": 0.0, "cpu_sistema_s": 0.015625, "pico_ram_bytes": 30056448, "cpu_ram_rg": "nao medidos", "tokens_gastos": "nao medido", "gpu": "nao usada"}
+
+painel_historico: {"duracao_s": 0.29861109999910695, "cpu_usuario_s": 0.046875, "cpu_sistema_s": 0.15625, "pico_ram_bytes": 35414016, "gpu": "nao usada", "tokens_gastos": "nao medido"}
+
+CPU/RAM agregados da retomada e dos filhos rg: nao medidos; acima medicoes por processo Python e parede de cada fase, nao soma de picos. Tokens gastos: **nao medido**. GPU: nao usada. Arquivos tocados: REGISTRO-CODEX e quatro instrumentos em testes/codex (inventariar_portao, resumir_portao, comparar_portao_historico, publicar_relatorio_portao). Arte fora do git; evidencia privada em ../evidencias/missao_1h_20261102/parte1_retomada_v2/.
+
+
+Suite propria apos a retomada: **363 testes, 0 falhas/erros, 1 skip**, 30,468 s; suite.log. Manifesto SHA-256 de todos os arquivos privados em parte1_retomada_v2/manifesto.json. Parte 1 medicao fechada/publicavel; decisao de portao nao tomada.
