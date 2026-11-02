@@ -427,11 +427,13 @@ def main():
 
         progresso(55, "Blender VERTICE: amostrando as vistas nos vertices")
         cores, fonte, _melhor, info_amostra = V.amostrar_vertices(
-            verts, normais, vistas_prontas, np.array(centro), ortho)
+            verts, normais, vistas_prontas, np.array(centro), ortho,
+            amostragem=pedido.get("amostragem", "bilinear"))
         for vista in por_vista:
             por_vista[vista]["vertices_pintados"] = int(
                 info_amostra["vertices_por_vista"].get(vista, 0))
         res["por_vista"] = por_vista
+        res["amostragem"] = pedido.get("amostragem", "bilinear")
         res["espaco_cor"] = {"atributo": "linear", "imagens_byte": "sRGB decodificado",
                              "imagens_float": "linear", "forma": "linear preservado"}
 

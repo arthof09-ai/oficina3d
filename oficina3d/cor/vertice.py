@@ -51,8 +51,29 @@ def srgb_para_linear(rgb):
                     ((rgb + 0.055) / 1.055) ** 2.4)
 
 
+def amostrar_bilinear(imagem, mascara, x, y):
+    """Interpola cores LINEARES; x/y usam centros em i+0.5.
+
+    Chamador garante ponto dentro da imagem e pixel-base com mascara valida.
+    Vizinhos fora da mascara nao contribuem (sem halos do fundo).
+    """
+    # Centros de pixels em i+0.5; renormalizar evita misturar fundo transparente.
+    x = np.clip(x - .5, 0, imagem.shape[1]-1)
+    y = np.clip(y - .5, 0, imagem.shape[0]-1)
+    x0 = np.floor(x).astype(int); y0 = np.floor(y).astype(int)
+    x1 = np.minimum(x0+1, imagem.shape[1]-1)
+    y1 = np.minimum(y0+1, imagem.shape[0]-1)
+    dx=x-x0; dy=y-y0
+    total=np.zeros(len(x)); rgb=np.zeros((len(x),3))
+    for xx,yy,w in [(x0,y0,(1-dx)*(1-dy)),(x1,y0,dx*(1-dy)),
+                    (x0,y1,(1-dx)*dy),(x1,y1,dx*dy)]:
+        w=w*mascara[yy,xx];total+=w;rgb+=w[:,None]*imagem[yy,xx]
+    return rgb/np.maximum(total[:,None],1e-15)
+
+
 def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict],
-                      centro: np.ndarray, ortho_scale: float):
+                      centro: np.ndarray, ortho_scale: float, *,
+                      amostragem: str = "bilinear"):
     """Pinta vertices por projecao das vistas. Retorna (cores, fonte, melhor, info).
 
     ``vistas``: lista de dicts com ``vista`` (nome), ``imagem`` (HxWx3 float
@@ -61,6 +82,8 @@ def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict]
     da lista e a ordem de desempate (a primeira vista vence facing igual),
     como em ``projecao.rasterizar_textura``.
     """
+    if amostragem not in ("bilinear", "seco"):
+        raise ValueError("amostragem deve ser bilinear ou seco")
     verts = np.asarray(verts, dtype=np.float64)
     normais = np.asarray(normais, dtype=np.float64)
     n = len(verts)
@@ -99,7 +122,11 @@ def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict]
             sel = idx[ganha]
             if len(sel):
                 melhor[sel] = facing[sel]
-                cores[sel] = imagem[ipy[sel], ipx[sel]]
+                if amostragem == "bilinear":
+                    cores[sel] = amostrar_bilinear(
+                        imagem, mascara, ax * px_all[sel] + bx, ay * py_all[sel] + by)
+                else:
+                    cores[sel] = imagem[ipy[sel], ipx[sel]]
                 fonte[sel] = FONTE_VISTA
             info["vertices_por_vista"][nome] = int(len(sel))
         else:
