@@ -13,14 +13,23 @@ p=json.loads(Path(sys.argv[sys.argv.index('--')+1]).read_text(encoding='utf-8'))
 t=time.perf_counter();frames=[]
 for entrada in p['modelos']:
     obj=importar_glb(entrada['glb']);scene=bpy.context.scene
-    attr=obj.data.color_attributes.active_color or obj.data.color_attributes[0]
-    mat=bpy.data.materials.new('prova_unlit');mat.use_nodes=True
-    ns=mat.node_tree.nodes;ns.clear()
-    vertex=ns.new('ShaderNodeVertexColor');vertex.layer_name=attr.name
-    emit=ns.new('ShaderNodeEmission');out=ns.new('ShaderNodeOutputMaterial')
-    mat.node_tree.links.new(vertex.outputs['Color'],emit.inputs['Color'])
-    mat.node_tree.links.new(emit.outputs[0],out.inputs['Surface'])
-    obj.data.materials.clear();obj.data.materials.append(mat)
+    if entrada.get('textura'):
+        for mat in obj.data.materials:
+            nodes=mat.node_tree.nodes
+            tex=next(n for n in nodes if n.type=='TEX_IMAGE')
+            outnode=next(n for n in nodes if n.type=='OUTPUT_MATERIAL')
+            emission=nodes.new('ShaderNodeEmission')
+            mat.node_tree.links.new(tex.outputs['Color'],emission.inputs['Color'])
+            mat.node_tree.links.new(emission.outputs[0],outnode.inputs['Surface'])
+    else:
+        attr=obj.data.color_attributes.active_color or obj.data.color_attributes[0]
+        mat=bpy.data.materials.new('prova_unlit');mat.use_nodes=True
+        ns=mat.node_tree.nodes;ns.clear()
+        vertex=ns.new('ShaderNodeVertexColor');vertex.layer_name=attr.name
+        emit=ns.new('ShaderNodeEmission');out=ns.new('ShaderNodeOutputMaterial')
+        mat.node_tree.links.new(vertex.outputs['Color'],emit.inputs['Color'])
+        mat.node_tree.links.new(emit.outputs[0],out.inputs['Surface'])
+        obj.data.materials.clear();obj.data.materials.append(mat)
     coords=[obj.matrix_world@v.co for v in obj.data.vertices]
     lo=Vector(tuple(min(v[i] for v in coords) for i in range(3)))
     hi=Vector(tuple(max(v[i] for v in coords) for i in range(3)))
