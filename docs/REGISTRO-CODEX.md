@@ -186,3 +186,38 @@ Sequencia sugerida na copia de integracao do Muse: cherry-pick 7511a68 e depois 
 - Os quatro arquivos reservados NAO constam do diff desses dois commits. Nenhuma dependencia Python nova do app: numpy/bpy ja existentes. Arte, pesos, ambientes e logs nao acompanham o commit; executores de prova pressupõem as entradas privadas documentadas, testes unitarios geram suas proprias fixtures.
 
 **APR-02:** lista conferida contra git show --stat dos SHAs completos; ordem, dependencia documental do pai, arquivo novo obrigatorio e mudanca posterior de default explicitados. Nao fiz cherry-pick na principal e nao prometo ausencia de conflitos com commits da COR-08 ainda nao integrados nesta copia. Veredito: pacote de codigo/testes/provas pronto para revisao/integracao; qualidade visual continua NAO aprovada. Suite atual segue **316 / 0 falhas / 0 erros / 1 skip**, nenhuma mudanca executavel nesta entrega documental.
+## Frente E — Gate 0 Paint, tentativa 2: APROVADO (retomada noturna)
+
+Tentativa 1 preservada. Toolchain em terminal novo vcvars64: **MSVC 14.44.35207 / cl 19.44.35229 / nvcc 12.4.131**. Venv proprio Python 3.10.22, torch 2.5.1+cu124, setuptools 84.2.1, wheel 0.48.0, pybind11 3.1.0 e ninja 1.13.2. CUDA_HOME/PATH alterados so no processo. Comando em ambas as extensoes da copia: python -B setup.py build_ext --inplace, TORCH_CUDA_ARCH_LIST=8.9, MAX_JOBS=2.
+
+| Extensao | Build | Tempo | Nativo | Bytes | SHA-256 |
+|---|---|---:|---|---:|---|
+| custom_rasterizer | exit 0 | 58,1232 s | custom_rasterizer_kernel.cp310-win_amd64.pyd | 294.400 | f5f480989015c42f9b05545fabb5bf2371b57554d3150f4926d18439394bfb7b |
+| differentiable_renderer | exit 0 | 3,2791 s | mesh_processor.cp310-win_amd64.pyd | 165.376 | 5e265ffb33a66b161ba41e661cc7166449451b7f19824b7142e57369557004c3 |
+
+- Falhas intermediarias preservadas: pacote sem Pillow, kernel importado antes de torch (DLL nao localizada), depois cv2 ausente. Resolvidas no ambiente proprio; NAO eram falhas de compilacao. Imports completos e ambos nativos comprovados por EXTENSION_SUFFIXES em resultado_final.json, sem aceitar fallback .py.
+- Dependencias copiadas fisicamente do ambiente fonte somente-leitura, hashes por arquivo: Pillow 10.4.0, pygltflib 1.16.5, scipy 1.15.3, OpenCV headless 5.0.0.93 e transitivas. Duas sondas pip ausente registradas; ensurepip instalou pip 23.0.1 somente no venv proprio. Sem site-packages compartilhado/symlinks. Depois foram copiadas as dependencias da pipeline: diffusers 0.39.0, transformers 4.49.0, torchvision 0.20.1+cu124, mmgp 3.2.7, accelerate 1.15.0, xatlas 0.0.11 e trimesh 5.2.0; torch preservado.
+- Preflight da pipeline completa + mmgp, offline/CPU: passou em **26,8255 s**. Suite inteira: **316 executados, 0 falhas, 0 erros, 1 skip, 27,238 s**.
+- APR-02: distinguir build/import/native/inferencia; resultado inicial nao apagado, resultado_final.json reconcilia os builds e imports finais. Executor agora enumera tentativa, recusa sobrescrever prova, importa torch antes da extensao, persiste timeout/OSError. **Gate 0 aprovado; spike visual ainda em curso.**
+- Evidencias: ../evidencias/gate0_tentativa2/{resultado.json,resultado_final.json,suite.log,*_build.log,*_native*.log,dependencias_copiadas.json,dependencias_opencv.json,dependencias_pipeline.json}. Erro de sintaxe de uma chamada de ferramenta documental nao executou shell; depois a revisao automatica negou execucao por limite de uso. Nenhuma tentativa de alterar limite/plano; apos nova ordem do usuario a revisao voltou a aprovar normalmente. Registro/publicacao retomados aqui.
+
+### Pesos, trava e primeiras cargas (ainda nao sao pintura)
+
+Inventario ANTES do download em ../evidencias/paint_spike/inventario_pesos.json: repo tencent/Hunyuan3D-2, revision **9cd649ba6913f7a852e3286bad86bfa9a2d83dcf**. Pastas Paint+Delight completas: **13.504.594.413 bytes**; selecao inicial sem binarios duplicados: **9.506.772.449 bytes**, disco livre antes **21.732.290.560 bytes**. Download concluido com hashes LFS conferidos, livre apos **11.749.711.872 bytes**. Destino exclusivo modelos/paint_spike. Reserva de 6 GiB conferida por bloco. Erro inicial de API tqdm_class preservado em download_erro_argumento.*; streaming HTTP/Range corrigido sem perder registro.
+
+**Autoauditoria encontrou erro meu na selecao:** o UNet customizado do fork faz torch.load do nome .bin fixo; safetensors nao e substituto automatico neste carregador. Segunda carga falhou por esse arquivo ausente. Inventario complementar ANTES do novo download: **3.663.114.747 bytes**, livre observado **12.607.848.448 bytes**, destino igual; detalhes em download_bin.json. Nao estimei tamanho nem escondi essa falha.
+
+Trava: existencia de gpu.lock vazio NAO prova ocupacao. Sonda pelo byte **1<<30** do protocolo Windows, handle **rb**, adquiriu/soltou sem escrever na principal. Livre naquele instante, GPU 2%, 1.013/8.188 MiB. Launcher mantem trava exclusiva durante todo o processo e rejeita uso externo >=30% ou VRAM inicial >=3.000 MiB. Registro local, sem escrever dono na principal. RAM fisica medida **34.178.985.984 bytes**, disponivel **17.729.679.360 bytes**, swap **14.950.580.224 bytes**.
+
+Codigo real do fork: Delight seed **42**, **50 passos**; Paint seed **0**, **30 passos**. Perfil 5, VAE slicing e budgets 2200 conforme gradio_app. Sem alterar arquitetura/passos para caber artificialmente.
+
+| Tentativa de carga | Parede supervisionada | Pico VRAM total | Pico RAM processo | Resultado |
+|---|---:|---:|---:|---|
+| perfil5_A | 12,1149 s | 1.209 MiB | 2.913.501.184 bytes | Diffusers exige opt-in para custom_pipeline local |
+| perfil5_A_local | 16,1629 s | 1.205 MiB | 10.427.797.504 bytes | UNet .bin ausente |
+
+Primeiro erro resolvido com opt-in RESTRITO aos caminhos locais inspecionados e hashados; carregamento offline, sem confiar genericamente em repos remotos. Segundo erro em resolucao por download complementar. Ambos falharam em carregar_modelos, **nao chegaram a pintura**; zero OOM observado nessas cargas nao comprova capacidade da inferencia. Triangulos/GLB/textura de saida, tempo de pintura e SSIM/DeltaE: **nao medidos** ate existir saida. Regua do spike permanece <=8.188 MB, <=45 min, zero OOM e qualidade frontal nao pior que T1. Proximo adendo registra o resultado final.
+
+## Nova ordem noturna recebida — fila preservada
+
+COR-08/S2 publicadas, congelamento dos quatro arquivos oficialmente cancelado pelo Mestre. Depois de fechar E: merge da main publicada (fetch identificou b6074f3, descendente dos commits informados), reproduzir IoUs/cobertura COR-08, auditar centro no bake publicado, compor C-COR01/C-COR02 sobre a base nova e atualizar PRONTO PARA INTEGRAR v2. Leitura preliminar encontrou a subtracao de centro na COR-08; isso NAO substitui a medicao ainda pendente. Arvore principal continua intocada.
