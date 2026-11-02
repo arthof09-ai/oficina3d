@@ -292,3 +292,47 @@ Evidencias: ../evidencias/cor08_composicao/auditoria_centro.json, metricas_compo
 Fechamento da auditoria/composicao: suite integral repetida **363 testes, zero falhas/erros, 1 skip MCP, 41,849 s**, suite_final.log. Contraprovas e render concluidos, nenhum processo proprio pendente. Uma consulta intermediaria tentou nome de log cor.log inexistente; corrigida para blender_cor.log, sem efeito sobre execucoes.
 Manifesto privado paint_spike/manifesto_fechamento.json: 58 arquivos, SHA-256 3cb0c1592c8030de22ebd8480437ac39336c9cc0563f209d9dcfbf7d21255f98.
 Manifesto privado cor08_composicao/manifesto_fechamento.json: 71 arquivos, SHA-256 18ce3c6237e692625221452d5678a5d7140289ca01046e718efbd85fa74d4f4f.
+
+## Frente D v2 — PRONTO PARA INTEGRAR
+
+Substitui o pacote parcial da Frente D. Base testada: main b6074f3 (inclui COR-08 27704b1 e S2 22b9d5c), merge nesta linha 6083b89. Integracao na arvore oficial e decisao/execucao do Muse; nao realizada por esta linha.
+
+### Ordem dos commits e arquivos
+
+| Ordem | Commit | Producao | Testes | Dependencia |
+|---|---|---|---|---|
+| 1 | 7511a68 (C-COR01) | oficina3d/cor/vertice.py, _blender_vertice.py | testes/test_cor_colorimetria.py (4) | sRGB byte -> linear; sem converter forma GLB novamente |
+| 2 | 53e845c (C-GUARD01) | vertice.py, _blender_vertice.py, NOVO validacao_vertice.py | testes/test_cor_guardas.py (10 originais) | extracao do verificador: levar modulo novo junto |
+| 3 | 4836e6f (C-COR02) | vertice.py, _blender_vertice.py | testes/test_cor_amostragem.py (4) | requer C-COR01: bilinear precisa de amostras lineares |
+| 4 | 80c48d0 (Frente C) | nenhum | test_cor_guardas.py (+2) | ataques ao verificador de C-GUARD01 |
+
+C-COR01: curva/tons medios, PNG real -> GLB real, forma ja linear sem dupla conversao. C-GUARD01: indices invalidos, materiais/acessores malformados, multiplos meshes, contagens compensadas, NaN/inf/dados nao numericos e arrays/geradores. Frente C: troca de acessores entre primitivos 3/5, contagens deslocadas 4/4 versus 3/5, reordenacao legitima aceita. C-COR02: centro/meio de pixel linear, fundo mascarado renormalizado, bordas, imagem de um pixel, default bilinear/controle seco/caminho real.
+
+Arquivos auxiliares/documentais acompanham cada commit: 7511a68 e 53e845c tocam APRENDIZADO_E_FLUXO, DECISOES, ESTADO_ATUAL e REGISTRO-CODEX, alem dos executores listados no D original. 4836e6f leva frente_b.py, metricas_frentes.py, validar_frente_b.py, variantes_vertice_blender.py e REGISTRO-CODEX. 80c48d0 leva contraprova_primitivos.py e REGISTRO-CODEX. Nenhum desses quatro commits altera projecao.py, _blender_cor.py, passo.py ou test_cor.py. Paint e auditoria A nao sao dependencias do codigo T2.
+
+### Conflitos concretos e criterio de integracao
+
+Merge completo da main nesta branch teve SOMENTE conflitos documentais: APRENDIZADO_E_FLUXO, DECISOES, ERROS e ESTADO_ATUAL. Codigo/testes foram combinados automaticamente. ERROS veio do historico Gate 0, nao dos quatro commits T2 acima. Cherry-pick seletivo pode pedir contexto em REGISTRO-CODEX (historico intermediario omitido) e no ajuste do gate0_paint.py de 53e845c; nao e dependencia funcional da cor. Nao substitua o estado atual da main por paragrafo historico Codex. Resolucao de referencia: preservar linhas novas da principal nas tabelas, manter adendos Codex e rotular estados antigos como superados. Nao foi ensaiado cherry-pick numa terceira arvore; o ensaio executado foi o merge completo 6083b89 com provas reais e suite.
+
+Nao reintroduzir patch antigo de centro/PNG: A0 e S2 pertencem a principal e devem permanecer. C-COR01 nao deve ser aplicado ao albedo de textura T1 por analogia. Sem dependencias novas do app; instrumentos de medicao pressupõem bibliotecas/Blender e arte privada documentadas. Todos os testes unitarios geram fixtures. Arte/pesos/venvs nao acompanham git; check-ignore da imagem canonica confirmado.
+
+### Antes/depois REEXECUTADO sobre COR-08/S2
+
+Baseline executada com AMBOS os modulos T2 extraidos da main b6074f3, evitando contaminar a baseline com default bilinear desta branch. Controles C-COR01 seco e C-COR02 executados pelo caminho de producao atual; render Emission/Cycles CPU/Standard, mesma mascara/ROIs congeladas.
+
+| Caso | Rosto DeltaE / SSIM | Peito DeltaE | Pernas DeltaE | Cor CPU (s) | GLB bytes |
+|---|---|---|---|---|---|
+| Main Prata | 28,377653 / 0,103590 | 27,830549 | 26,789014 | 1,87 | 3.180.412 |
+| C-COR01 Prata seco | 17,100706 / 0,137458 | 14,864229 | 13,170665 | 2,02 | 3.180.412 |
+| C-COR02 Prata bilinear | 17,093655 / 0,145694 | 14,731746 | 12,958736 | 2,04 | 3.180.412 |
+| C-COR02 Ouro bilinear | 14,249079 / 0,269898 | 11,931728 | 10,688905 | 6,37 | 8.053.592 |
+
+SHAs reproduzidos: main 949e3cf7009b8e23e63474fc395d45226acb2ec63342e2a419b3996b7c9c2f3a; C01 eed4cdf74205a692f4659622ebdcf3b38bc53477345a3526e71b2149c1534111; C02 Prata 44d6d066e136bcb0048f83a0f8a001048a1120a177a3a66496343630de56ad1e; C02 Ouro 0b6bfdbc43399580420921566f0d4e9148144a1b39aca0dab1e24caade0eac7a. Todos identicos as provas anteriores. Prata 49.750 triangulos/65.274 vertices Blender; Ouro 149.250/142.019. RAM/VRAM desses passos CPU: nao medidas. Tempos sao observacoes concorrentes, nao ganho de desempenho alegado.
+
+Geometria Prata SHA c4bfc17342c982bd24c6a7b4a29da1f705373c8f9156aeab614135793cb553c7 identica nos tres controles. Cobertura identica: 31.033 vertices de vista, 22.661 propagados, 11.580 sem cor. Nao ocultar vertices sem cor nem comparar cobertura T2 em vertices com cobertura T1 em texels. T1 composto reproduz exatamente IoUs/cobertura/GLB/PNG de COR-08/S2 (secao do merge). Ganho entre niveis inclui mudanca de forma: Ouro nao e prova causal isolada de densidade. Ganho bilinear Prata segue pequeno, sem declarar rosto resolvido.
+
+APR-02 v2: verificacao por hashes dos arquivos novos e reexecucao das fontes, mascara congelada, geometria/cobertura invariantes. Repetida contraprova das duas sabotagens contra 7511a68: duas falhas de assercao esperadas, nenhum erro de infraestrutura; codigo composto passa ambos na suite de 363. Limites continuam: guarda estrutural nao prova semantica de cores/payload binario; testes de gamma nao aprovam anatomia; parametro facing continua nao introduzido por ser placebo no argmax. Mecanismo pronto para integracao; qualidade visual final NAO aprovada ate julgamento do Mestre.
+
+Provas novas: ../evidencias/cor08_composicao/{t2_composicao.json,t2_metricas.json,contraprova_guardas.log,suite.log}, executores testes/codex/compor_t2_cor08.py e reproduzir_cor08.py. Pacote tem 20 testes adicionais, sem remover os 343 da base.
+
+Fechamento v2: auditoria/composicao publicada em **548b61c**, merge em **6083b89**, Paint em **197ef15**. Suite final da mesma arvore executavel: **363 / 0 falhas / 0 erros / 1 skip**, 41,849 s. Este commit acrescenta somente documentacao; nenhuma alteracao executavel desde essa suite. A0 encerrada por prova positiva e negativa, S2 confirmada pixel a pixel, nao ha patch de centro adicional. Pendencia externa: integracao seletiva pelo Muse e julgamento visual do Mestre; nenhuma tarefa A–E desta rodada ficou em execucao oculta.

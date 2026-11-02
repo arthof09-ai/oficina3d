@@ -107,4 +107,4 @@ Estado proprio, sem substituir o veredito da principal: Gate 0 T3 reprovado por 
 
 ## Linha paralela Codex — retomada 02/11/2026
 
-Gate 0 tentativa 2 aprovado e Paint executado; configuracao arquivada por rosto DeltaE pior que COR-08. C-COR01, C-COR02 e C-GUARD01 implementados e medidos, qualidade final nao aprovada. Main b6074f3 incorporada nesta copia; reproducao COR-08 e auditoria do centro em curso. Ver REGISTRO-CODEX para provas e limites.
+Gate 0 tentativa 2 aprovado e Paint executado; configuracao arquivada por rosto DeltaE pior que COR-08. C-COR01, C-COR02 e C-GUARD01 implementados e medidos, qualidade final nao aprovada. Main b6074f3 incorporada nesta copia e COR-08/S2 reproduzida por hashes, IoUs e cobertura. Centro corrigido pela A0 confirmado por contraprova; sem patch adicional. Composicao T2 reproduzida, suite 363 sem falhas/erros (1 skip), pacote PRONTO PARA INTEGRAR v2 no registro. Ver REGISTRO-CODEX para provas e limites.
