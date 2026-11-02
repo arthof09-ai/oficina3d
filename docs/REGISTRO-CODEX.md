@@ -251,3 +251,44 @@ Suite integral: **363 testes, 0 falhas, 0 erros, 1 skip MCP**, 44,702 s. Sao 343
 GLB SHA **a8e793b267db27c2a06669dbb925c91b8863a99ec4f43f558c880a1d10a09b9a**, PNG **e4056741a2d124947873fe50e1d547ce6a9d9f7a77cf2c465a9bf2bb8184fd93**: ambos reproduzem COR-08/S2. Bake 120,48 s, parede Blender 121,25 s; CPU concorrente nesta observacao, nao benchmark contra tempos historicos. 49.750 triangulos / 71.289 vertices Blender. RAM/VRAM deste bake CPU: nao medidas. Artefatos e manifestos em ../evidencias/cor08_composicao/producao e entradas.json.
 
 APR-02 do merge: hashes e contagens remedidos dos artefatos, nao copiados do relatorio; dados canonicos COR-08 nao substituidos pelas vistas preproc do T2. Codigo de projecao, bake, passo e testes COR-08 identicos a origin/main; apenas os tres arquivos T2 diferem em producao. Conflitos documentais mantiveram os dois historicos; estado antigo rotulado como superado. Mecanismo de composicao passou; nenhum novo aceite visual. Auditoria de proveniencia/contraprova do centro segue em frente propria.
+
+## Achado do centro — ENCERRADO: COR-08/A0 corrigiu (02/11/2026)
+
+Veredito medido no bake publicado: o deslocamento NAO persiste. A0 corrige explicitamente a projecao dos pontos baricentricos; nao e apenas compensacao casual da A1. Nenhum patch adicional de centro aplicado. Comparacao controlada: mesmos inputs canonicos, UV, otimizacao A1, tamanho 2048, preenchimento A3 e save S2; contraprova remove SOMENTE a subtracao do centro em memoria, sem tocar producao.
+
+| Medida | Contraprova sem A0 | COR-08/S2 de producao |
+|---|---:|---:|
+| Erro maximo das coordenadas contra projetar(), frente | 711,298456 px | 0 px |
+| Costas / esquerda / direita | 698,551172 / 715,231225 / 715,256917 px | 0 / 0 / 0 px |
+| Texels diretos / dominio UV | 167.568 / 845.063 (19.82905417%) | 420.713 / 845.063 (49,78480894%) |
+| Fonte frontal, y minimo..maximo | 165..869 | 165..1581 |
+| Maximo y fonte, costas/esquerda/direita | 882 / 869 / 871 | 1580 / 1584 / 1586 |
+| Texels vindos da ROI frontal das pernas | 0 | 20.278 |
+| Desses texels, na faixa inferior da malha | 0 | 20.278 |
+| Fonte rosto aplicada na faixa inferior | 3.068 | 0 |
+| Fonte peito aplicada na faixa inferior | 7.023 | 0 |
+| Preenchimento 3D, anel medio / max | 20,49 / 84 | 3,18 / 21 |
+
+Imagens CANONICAS desta prova: frente 1280x1820; a antiga prova COR-05 usava preproc 1024 e afinidade diferente. Por isso os 711 px atuais da contraprova nao contradizem os 429,496684 px historicos; nao comparar valores em pixels como se a resolucao fosse a mesma. Regioes-fonte normalizadas mantidas (.40,.07,.62,.21 rosto; .30,.26,.70,.43 peito; .25,.64,.86,.94 pernas). ROI pernas aqui [398,1121,1011,1568].
+
+Faixa inferior = 35% inferiores da altura geometrica, reconstruida independentemente dos acessores GLB e UV; nao e segmentacao semantica das pernas e pode conter capa/equipamento. Todos os texels diretos tem posicao no mapa reconstruido (zero fora); nodes sem transformacao verificados. Total de texels com fonte frontal nessa faixa e 35.062 na contraprova contra 32.821 corrigidos: QUANTIDADE sozinha enganaria, porque antes vinha rosto/peito. A prova de recuperacao e a fonte correta chegando a faixa, nao simplesmente mais tinta.
+
+Producao sem instrumentacao e instrumentada: GLB a8e793... e PNG e4056741... BYTE-IDENTICOS, comprovando que capturar proveniencia nao mudou o resultado. Erro coordenado maximo calculado para os pontos baricentricos visitados nas quatro vistas = 0, antes de clipping/arredondamento. Contraprova GLB bf98a7b1e4e5ec8ba5529bad733f3757fb1af4d2dca93643f6d7bb4fc67dc585. PNG externo vs PNG extraido do GLB corrigido: erro maximo RGB **0**, confirmando S2 no artefato novo. IoUs iguais nas tres execucoes: a A1 sozinha NAO detecta a regressao A0, mas proveniencia e cobertura detectam.
+
+### Regua flat e autoauditoria adversarial (APR-02)
+
+| Regiao | Sem A0 DeltaE / SSIM | COR-08/S2 DeltaE / SSIM |
+|---|---|---|
+| Rosto | 22,052280 / 0,058384 | 21,811685 / 0,000844 |
+| Peito | 25,015092 / 0,077407 | 21,752279 / 0,043063 |
+| Pernas | 23,808634 / 0,048014 | 17,017702 / 0,067412 |
+
+Todos os DeltaEs melhoram; SSIM PIORA no rosto e peito apesar da correcao espacial obvia. Mantive os numeros negativos, nao mudei a regua. Painel Emission inspecionado: sem A0, rosto fica na parte inferior e topo escuro; com A0 volta ao lugar, mas persistem desencaixe/anatomia e costuras. A metrica pixel-a-pixel em caixas congeladas pode premiar borramento e punir detalhe deslocado: nao pode, sozinha, ranquear fidelidade global entre T1/T2/Paint nem aprovar identidade. Isto tambem limita a interpretacao das entregas anteriores; C-COR01 tem prova fisica independente de gamma, C-COR02 tem ganho pequeno de amostragem, nenhum promete fidelidade resolvida.
+
+Instrumentacao exige ancoras unicas no codigo antes de substituir; contraprova deve falhar criterios de coordenada/pernas, controles positivos devem reproduzir SHA de producao. Instrumentado 122,51 s; contraprova 119,73 s; producao 120,48 s. Tempos concorrentes locais, nao ganho de desempenho. RAM/VRAM CPU nao medidas. Artefatos canonicos de producao 49.750 triangulos, GLB 5.978.716 bytes e PNG 3.097.592 bytes. Mecanismo A0/S2 confirmado; nenhuma nova aprovacao visual final. Achado de centro encerrado sem duplicar correcao da principal.
+
+Evidencias: ../evidencias/cor08_composicao/auditoria_centro.json, metricas_composicao.json, painel_composicao.png, producao/, instrumentado/ e contraprova_absoluto/. Reproducao: testes/codex/reproduzir_cor08.py e medir_cor08.py; composicao T2 real: compor_t2_cor08.py. Executores e registro em git, entradas/GLBs/PNGs fora do git.
+
+Fechamento da auditoria/composicao: suite integral repetida **363 testes, zero falhas/erros, 1 skip MCP, 41,849 s**, suite_final.log. Contraprovas e render concluidos, nenhum processo proprio pendente. Uma consulta intermediaria tentou nome de log cor.log inexistente; corrigida para blender_cor.log, sem efeito sobre execucoes.
+Manifesto privado paint_spike/manifesto_fechamento.json: 58 arquivos, SHA-256 3cb0c1592c8030de22ebd8480437ac39336c9cc0563f209d9dcfbf7d21255f98.
+Manifesto privado cor08_composicao/manifesto_fechamento.json: 71 arquivos, SHA-256 18ce3c6237e692625221452d5678a5d7140289ca01046e718efbd85fa74d4f4f.
