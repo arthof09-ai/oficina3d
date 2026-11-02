@@ -1,5 +1,5 @@
 """Launcher: trava Windows principal em rb, telemetria 1 Hz, limite 45 min."""
-import argparse,json,msvcrt,os,subprocess,sys,time
+import argparse,hashlib,json,msvcrt,os,subprocess,sys,time
 from pathlib import Path
 import psutil
 BASE=Path(__file__).resolve().parents[3];APP=BASE/'app';OUT=BASE/'evidencias/paint_spike'
@@ -9,7 +9,16 @@ folder=(OUT/args.run).resolve();assert folder.is_relative_to(OUT.resolve())
 folder.mkdir(exist_ok=False)
 report={'ok':False,'perfil':args.perfil,'trava':'Windows byte 1<<30; handle rb; sem escrever metadados na principal'}
 def save():(folder/'supervisao.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
-assert json.loads((OUT/'download.json').read_text())['ok'],'Pesos incompletos'
+weights=json.loads((OUT/'download_verificado.json').read_text())
+assert weights['ok'],'Pesos incompletos'
+for item in weights['arquivos']:
+ path=(BASE/'modelos/paint_spike'/item['arquivo']).resolve()
+ assert path.is_relative_to((BASE/'modelos/paint_spike').resolve())
+ assert path.stat().st_size==item['bytes']
+ digest=hashlib.sha256()
+ with path.open('rb') as stream:
+  for chunk in iter(lambda:stream.read(8*1024**2),b''):digest.update(chunk)
+ assert digest.hexdigest()==item['sha256'],f'Peso alterado: {path.name}'
 lock=BASE.parent/'Oficina3D/locks/gpu.lock'
 with lock.open('rb',buffering=0) as handle:
  handle.seek(1<<30)

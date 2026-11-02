@@ -221,3 +221,21 @@ Primeiro erro resolvido com opt-in RESTRITO aos caminhos locais inspecionados e 
 ## Nova ordem noturna recebida — fila preservada
 
 COR-08/S2 publicadas, congelamento dos quatro arquivos oficialmente cancelado pelo Mestre. Depois de fechar E: merge da main publicada (fetch identificou b6074f3, descendente dos commits informados), reproduzir IoUs/cobertura COR-08, auditar centro no bake publicado, compor C-COR01/C-COR02 sobre a base nova e atualizar PRONTO PARA INTEGRAR v2. Leitura preliminar encontrou a subtracao de centro na COR-08; isso NAO substitui a medicao ainda pendente. Arvore principal continua intocada.
+
+## Frente E — fechamento do spike (02/11/2026)
+
+Gate 0 aprovado; inferencia real perfil 5 concluida, mas configuracao ARQUIVADA por piorar DeltaE do rosto contra T1 COR-08/S2. Nao significa impossibilidade de qualquer Paint futuro. A baseline originalmente COR-05 e superada; a comparacao adicional com a principal publicada responde a nova ordem de aperfeicoar seu resultado atual, sem ocultar a mudanca de baseline.
+
+| Regiao fixa | COR-05 DeltaE / SSIM | COR-08/S2 DeltaE / SSIM | Paint DeltaE / SSIM |
+|---|---|---|---|
+| Rosto | 24,853960 / 0,030589 | 21,811685 / 0,000844 | 22,241797 / 0,045126 |
+| Peito | 28,486167 / 0,043030 | 21,752279 / 0,043063 | 18,471548 / 0,082708 |
+| Pernas | 22,323554 / 0,058203 | 17,017702 / 0,067412 | 15,260030 / 0,117669 |
+
+Painel medido perfil5_A_bin: parede supervisionada 141,285151 s; worker 138,689036 s, carga 20,738958 s e pintura 115,595942 s. Pico amostrado VRAM TOTAL 3.306 MiB (inicial 1.106), RSS arvore do processo 15.863.304.192 bytes, 140 amostras aproximadamente 1 Hz. Nao e pico instantaneo absoluto nem VRAM exclusiva do processo. Exit 0, zero OOM observado. Saida 49.750 triangulos, 71.195 vertices exportados; GLB 6.687.892 bytes, SHA 09af5fad2d143cdccb55e9d359c3287311b1d36c57f7f955a1d218373edaf4e4; PNG 4.665.659 bytes, SHA f4ba352d08b42187109b752c1c24b78aca06e0bcc8e71061edc8f41bd43d8c15.
+
+Pesos finais 28 arquivos / 9.507.250.724 bytes. Bin complementar verificado; duplicata safetensors nao usada removida apenas apos verificar caminho e hash (3.662.636.472 bytes). Venv 5.092.110.048 bytes, runtime 61.232.289, motor 260.796.374. Downloader corrigido para selecionar o .bin exigido pelo UNet desde o inicio; download_verificado.json reconfere arquivos locais, launcher verifica tamanho e SHA antes de adquirir GPU. Historicos anteriores preservados. Aviso de classe UNet de modulo customizado diferente emitido pelo diffusers: inferencia concluiu, compatibilidade geral nao comprovada.
+
+APR-02: alfa T1/Paint exatamente identico, ROIs/mascara congeladas, nenhum ajuste para ganhar nota. T1 comparador copiado da prova COR-08, SHA a8e793b267db27c2a06669dbb925c91b8863a99ec4f43f558c880a1d10a09b9a. Prova independente de trava durante inferencia recusou segundo handle; gpu.lock principal permaneceu vazio, sem escrita. Oito angulos inspecionados em painel_8_angulos.png: Paint suaviza manchas mas descaracteriza rosto, cabelo e capa. SSIM por caixas fixas nao equivale a identidade visual. Rosto DeltaE piora 0,430112 contra COR-08, portanto nao promover. Determinismo em duas execucoes, perfil 4 e cobertura semantica: NAO MEDIDOS; nao continuar gasto de GPU apos quebrar a regua de qualidade atual. Mecanismo de compilacao/inferencia comprovado; qualidade visual final NAO aprovada pelo Mestre.
+
+Suite integral 316 testes, 0 falhas, 0 erros, 1 skip, 42,162 s (CPU compartilhada com renders nesta observacao; nao benchmark). Evidencias privadas em ../evidencias/paint_spike/: supervisao/telemetria/resultado/metricas do perfil5_A_bin, comparacao_t1_atual.json, auditoria_final.json, prova_trava.json, painel_8_angulos.png, suite.log e manifestos de pesos. Arte e pesos fora do git.

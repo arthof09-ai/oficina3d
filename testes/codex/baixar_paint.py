@@ -36,10 +36,11 @@ def baixar(f,revision):
 parser=argparse.ArgumentParser();parser.add_argument('--complemento-bin',action='store_true');args=parser.parse_args()
 inventory=json.loads((OUT/'inventario_pesos.json').read_text())
 names={f['arquivo'] for f in inventory['arquivos']}
-files=[f for f in inventory['arquivos'] if not (f['arquivo'].endswith('.bin') and f['arquivo'][:-4]+'.safetensors' in names)]
+required_bin='hunyuan3d-paint-v2-0/unet/diffusion_pytorch_model.bin'
+files=[f for f in inventory['arquivos'] if f['arquivo'] != required_bin[:-4]+'.safetensors' and (f['arquivo']==required_bin or not (f['arquivo'].endswith('.bin') and f['arquivo'][:-4]+'.safetensors' in names))]
 if args.complemento_bin:
     files=[f for f in inventory['arquivos'] if f['arquivo']=='hunyuan3d-paint-v2-0/unet/diffusion_pytorch_model.bin']
-report_name='download_bin.json' if args.complemento_bin else 'download.json'
+report_name='download_bin.json' if args.complemento_bin else 'download_verificado.json'
 report={'revision':inventory['revision'],'bytes_selecionados':sum(f['bytes'] for f in files),
  'livre_antes_bytes':shutil.disk_usage(BASE).free,'destino':str(TARGET),'reserva_bytes':6*1024**3,'arquivos':[],'ok':False}
 def save():(OUT/report_name).write_text(json.dumps(report,indent=2),encoding='utf-8')
