@@ -1,0 +1,39 @@
+{
+  "rotulo": "frente1",
+  "branch": "codex/auditoria-sem-pc",
+  "head": "5cd092d37bddf36a2d888404936d4c9f394528c4",
+  "comando": [
+    "python",
+    "-B",
+    "testes/auditoria_nuvem.py",
+    "frente1",
+    "testes.test_cor_centro_nuvem",
+    "testes.test_cor"
+  ],
+  "python": "3.12.14",
+  "plataforma": "Windows-10-10.0.19045-SP0",
+  "versoes": {
+    "numpy": "2.3.5",
+    "Pillow": "12.3.0",
+    "trimesh": "ausente",
+    "fastapi": "ausente",
+    "httpx": "ausente",
+    "mcp": "ausente",
+    "scipy": "ausente"
+  },
+  "testes_executados": 36,
+  "passaram": 36,
+  "falhas": 0,
+  "erros": 0,
+  "skips": [],
+  "falhas_ids": [],
+  "erros_ids": [],
+  "parede_s": 86.757012,
+  "cpu_processo_s": 27.96875,
+  "pico_working_set_processo_bytes": 78675968,
+  "gpu": "nao usada",
+  "vram": "nao medido",
+  "blender": "nao executado",
+  "jobs_reais_e_qualidade_visual": "nao medido",
+  "nota_recursos": "CPU e memoria do processo runner; nao incluem processos filhos; pico desde inicio do processo"
+}

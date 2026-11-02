@@ -1,0 +1,41 @@
+test_controle_negativo_discrimina_erro_antigo (testes.test_cor_centro_nuvem.TestCentroPublicado.test_controle_negativo_discrimina_erro_antigo) ... ok
+test_coordenadas_por_texel_contra_formula_independente (testes.test_cor_centro_nuvem.TestCentroPublicado.test_coordenadas_por_texel_contra_formula_independente) ... ok
+test_translacao_conjunta_nao_muda_amostras_bbox_e_override (testes.test_cor_centro_nuvem.TestCentroPublicado.test_translacao_conjunta_nao_muda_amostras_bbox_e_override) ... ok
+test_alinhamento_aspectos_distintos (testes.test_cor.TestAlinhamento.test_alinhamento_aspectos_distintos) ... ok
+test_caixa_degenerada_erro_em_vez_de_lixo (testes.test_cor.TestAlinhamento.test_caixa_degenerada_erro_em_vez_de_lixo) ... ok
+test_caixas_iguais_da_identidade (testes.test_cor.TestAlinhamento.test_caixas_iguais_da_identidade) ... ok
+test_iou (testes.test_cor.TestAlinhamento.test_iou) ... ok
+test_iou_vazias_zero_e_nao_um (testes.test_cor.TestAlinhamento.test_iou_vazias_zero_e_nao_um) ... ok
+test_aplicar_alinhamento_desloca (testes.test_cor.TestAlinhamentoOtimizado.test_aplicar_alinhamento_desloca) ... ok
+test_bbox_robusta_percentil_zero_igual_bbox (testes.test_cor.TestAlinhamentoOtimizado.test_bbox_robusta_percentil_zero_igual_bbox) ... ok
+test_determinismo (testes.test_cor.TestAlinhamentoOtimizado.test_determinismo) ... ok
+test_entradas_malformadas_recusadas (testes.test_cor.TestAlinhamentoOtimizado.test_entradas_malformadas_recusadas) ... ok
+test_identico_nao_busca (testes.test_cor.TestAlinhamentoOtimizado.test_identico_nao_busca) ... ok
+test_ponta_fina_recupera_iou (testes.test_cor.TestAlinhamentoOtimizado.test_ponta_fina_recupera_iou) ... ok
+test_trava_de_aspecto_respeitada (testes.test_cor.TestAlinhamentoOtimizado.test_trava_de_aspecto_respeitada) ... ok
+test_amostragem_usa_centro_faixas (testes.test_cor.TestBake.test_amostragem_usa_centro_faixas) ... ok
+test_dilatacao_nao_atravessa_borda (testes.test_cor.TestBake.test_dilatacao_nao_atravessa_borda) ... ok
+test_dilatacao_preenche_e_para (testes.test_cor.TestBake.test_dilatacao_preenche_e_para) ... ok
+test_empate_mantem_primeira_fonte (testes.test_cor.TestBake.test_empate_mantem_primeira_fonte) ... ok
+test_face_oculta_nao_pinta (testes.test_cor.TestBake.test_face_oculta_nao_pinta) ... ok
+test_facing_de_raspao_nao_pinta (testes.test_cor.TestBake.test_facing_de_raspao_nao_pinta) ... ok
+test_maior_facing_vence_entre_vistas (testes.test_cor.TestBake.test_maior_facing_vence_entre_vistas) ... ok
+test_mascara_rejeita_amostra (testes.test_cor.TestBake.test_mascara_rejeita_amostra) ... ok
+test_override_de_alinhamento_e_usado (testes.test_cor.TestBake.test_override_de_alinhamento_e_usado) ... ok
+test_triangulo_vermelho (testes.test_cor.TestBake.test_triangulo_vermelho) ... ok
+test_uv_degenerada_pula_sem_quebrar (testes.test_cor.TestBake.test_uv_degenerada_pula_sem_quebrar) ... ok
+test_centro_vai_para_o_centro_da_imagem (testes.test_cor.TestCameras.test_centro_vai_para_o_centro_da_imagem) ... ok
+test_direcao_igual_a_previa (testes.test_cor.TestCameras.test_direcao_igual_a_previa) ... ok
+test_facing (testes.test_cor.TestCameras.test_facing) ... ok
+test_frente_ve_o_lado_esquerdo_a_direita (testes.test_cor.TestCameras.test_frente_ve_o_lado_esquerdo_a_direita) ... ok
+test_vista_invalida_erro (testes.test_cor.TestCameras.test_vista_invalida_erro) ... ok
+test_distorcao_diferente_de_zero (testes.test_cor.TestMetricasUV.test_distorcao_diferente_de_zero) ... ok
+test_quadrado_sem_distorcao_uma_ilha (testes.test_cor.TestMetricasUV.test_quadrado_sem_distorcao_uma_ilha) ... ok
+test_quadrados_separados_duas_ilhas (testes.test_cor.TestMetricasUV.test_quadrados_separados_duas_ilhas) ... ok
+test_standard_antes_do_save_render_em_main (testes.test_cor.TestSaveRenderStandard.test_standard_antes_do_save_render_em_main) ... ok
+test_um_unico_save_render_no_app (testes.test_cor.TestSaveRenderStandard.test_um_unico_save_render_no_app) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 75.108s
+
+OK
