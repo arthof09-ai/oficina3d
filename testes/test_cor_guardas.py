@@ -47,6 +47,31 @@ class TestDefesaColor0(unittest.TestCase):
         self.assertFalse(res['ok']);self.assertEqual(res['primitivos_sem_cor'],2)
         self.assertEqual(res['color_0_vertices'],res['posicao_vertices'])
 
+    def test_troca_de_acessores_entre_primitivos(self):
+        # Partes validas 3/3 e 5/5: so troca as referencias COLOR_0.
+        for i in (2,3):
+            self.doc['accessors'][i]['count']=5
+        self.assertTrue(self.verify()['ok'])
+        a,b=self.doc['meshes'][0]['primitives']
+        a['attributes']['COLOR_0'],b['attributes']['COLOR_0']=3,1
+        result=self.verify()
+        self.assertEqual(result['color_0_vertices'],8)
+        self.assertEqual(result['posicao_vertices'],8)
+        self.assertFalse(result['ok'])
+        self.assertEqual(result['primitivos_sem_cor'],2)
+
+    def test_reordenacao_valida_e_contagem_deslocada(self):
+        for i in (2,3):
+            self.doc['accessors'][i]['count']=5
+        self.doc['meshes'][0]['primitives'].reverse()
+        self.assertTrue(self.verify()['ok'])  # ordem da lista nao e identidade
+        self.doc['accessors'][1]['count']=4
+        self.doc['accessors'][3]['count']=4
+        result=self.verify()
+        self.assertEqual(result['color_0_vertices'],result['posicao_vertices'])
+        self.assertFalse(result['ok'])
+        self.assertEqual(result['primitivos_sem_cor'],2)
+
     def test_indices_negativos_bool_e_fora_da_lista(self):
         for index in [-1,True,999,1.0,None]:
             with self.subTest(index=index):
