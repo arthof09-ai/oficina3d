@@ -1,13 +1,14 @@
-"""Testes-guarda do C-GUARD01 (Frente D, passo 2): sabotagens cruzadas
-re-miradas ao verificador actual ``verificar_glb_vertice`` de
-``oficina3d/cor/_blender_vertice.py`` (linha 314).
+"""Testes-guarda do C-GUARD01 (Frente D, passo 2; re-mirados na
+tranche 2b): sabotagens cruzadas contra o verificador
+``verificar_glb_vertice``, agora importado do modulo puro
+``oficina3d.cor.validacao_vertice`` (extraido na tranche 2b pelo
+mecanismo de import do proprio script do Blender).
 
-O script do Blender nao e importavel fora dele (importa ``bpy`` e
-executa ``main()`` na importacao, linha 588), por isso a funcao e
-carregada por extraccao AST do fonte real: parse do ficheiro e
-compilacao so do ``FunctionDef`` do verificador, com ``json``/``struct``
-no namespace. O que corre aqui e o codigo exacto publicado, sem
-executar o script e sem tocar em codigo de producao.
+Historico: no passo 2 esta bateria carregava a funcao por extraccao
+AST de ``_blender_vertice.py`` (o script do Blender nao e importavel
+fora dele: importa ``bpy`` e executa ``main()`` na importacao). Com a
+extraccao do verificador para o modulo puro, a bateria importa-o
+directamente - contagem inalterada (4 testes).
 
 Cobertura desta bateria (desenho julgado do passo 2):
 - controlo: GLB valido de 2 primitivos e aceite;
@@ -16,14 +17,18 @@ Cobertura desta bateria (desenho julgado do passo 2):
   POSITION ausente) -> reprova SEM excepcao;
 - (iii) COLOR_0 com contagem diferente de POSITION -> reprova.
 
-Fronteira declarada: a igualdade de contagens POR primitivo
-(compensacao entre primitivos, troca de acessores, contagem deslocada)
-NAO esta nesta bateria; corre como sonda registada do passo 2 (ver
-REGISTRO da Frente D) porque o verificador actual so impoe igualdade
-AGREGADA - a sonda e o veiculo da escalacao desse defeito, sem deixar
-testes vermelhos permanentes a corromper a regua D-1.
+Nota da re-miragem (tranche 2b, tabela CD-1 clausula 11): no
+verificador extraido, ``primitivos_sem_cor`` conta QUALQUER violacao
+por primitivo - incluindo a divergencia de contagem de (iii), que no
+verificador agregado antigo contava 0 (so primitivos ilegiveis
+contavam) e reprovava so pela soma. A assercao de (iii) acompanha a
+semantica julgada: 1.
+
+Fronteira: a igualdade de contagens POR primitivo (compensacao entre
+primitivos, troca de acessores, contagem deslocada) corre na bateria
+irma ``test_cor_guardas.py`` (tranche 2b), que nasceu da sonda
+registada do passo 2 e da contraprova CD-2.
 """
-import ast
 import json
 import struct
 import sys
@@ -35,23 +40,7 @@ APP = Path(__file__).resolve().parents[1]
 if str(APP) not in sys.path:
     sys.path.insert(0, str(APP))
 
-FONTE_VERIFICADOR = APP / "oficina3d" / "cor" / "_blender_vertice.py"
-
-
-def carregar_verificador(caminho_fonte):
-    """Extrai e compila ``verificar_glb_vertice`` do fonte dado."""
-    arvore = ast.parse(Path(caminho_fonte).read_text(encoding="utf-8"))
-    for no in arvore.body:
-        if isinstance(no, ast.FunctionDef) and no.name == "verificar_glb_vertice":
-            modulo = ast.Module(body=[no], type_ignores=[])
-            namespace = {"json": json, "struct": struct}
-            exec(compile(modulo, str(caminho_fonte), "exec"), namespace)
-            return namespace["verificar_glb_vertice"]
-    raise AssertionError(
-        f"verificar_glb_vertice nao encontrado em {caminho_fonte}")
-
-
-verificar_glb_vertice = carregar_verificador(FONTE_VERIFICADOR)
+from oficina3d.cor.validacao_vertice import verificar_glb_vertice
 
 
 def doc_base():
@@ -128,7 +117,10 @@ class TestVerificarGlbVerticeGuard(unittest.TestCase):
                 doc["accessors"][3]["count"] = contagem
                 res = self.verificar(doc)
                 self.assertFalse(res["ok"])
-                self.assertEqual(res["primitivos_sem_cor"], 0)
+                # Clausula 11 da tabela CD-1 (tranche 2b): a divergencia
+                # de contagem por primitivo CONTA em primitivos_sem_cor
+                # no verificador extraido (no agregado antigo contava 0).
+                self.assertEqual(res["primitivos_sem_cor"], 1)
 
 
 if __name__ == "__main__":
