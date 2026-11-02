@@ -227,6 +227,10 @@ MODOS = ("livre", "corpo-base", "multivista", "so-refinar")
 # (padrao); vertice = cor de vertice, rascunho/rede de seguranca.
 MODOS_COR = ("projecao", "vertice")
 
+# Perfis da etapa validar (Fase 2 item 1; regras em oficina3d/validar/__init__.py):
+# oficina = estrutura (padrao); jogo = + aceite EXP-01 (< 20 mil tris, 1 material, albedo <= 1024 px, <= 5 MB).
+PERFIS_VALIDACAO = ("oficina", "jogo")
+
 # Motores aceitos em opcoes.motor (plano 6.3; o hunyuan-full ficou de fora na v2).
 MOTORES = ("hunyuan-mini", "hunyuan-mini-turbo", "hunyuan-mv", "hunyuan-mv-turbo", "triposr")
 MOTORES_MULTIVISTA = ("hunyuan-mv", "hunyuan-mv-turbo")
@@ -240,6 +244,8 @@ OPCOES_PADRAO = {
     "qualidade": None,        # None = sem perfil; slugs em oficina3d/qualidades.py (QUAL-01)
     "cor": False,          # False = etapa cor desligada (COR-05; True = UV xatlas + bake pos-refino)
     "cor_modo": "projecao",  # modo da etapa cor (COR-07): ver MODOS_COR
+    "validar": True,         # etapa validar (GLB + Godot headless); reprovar vira aviso, nunca erro do job
+    "validar_perfil": "oficina",  # ver PERFIS_VALIDACAO
     "passos": None,          # None = padrão do motor
     "octree": 256,
     "seed": 1234,

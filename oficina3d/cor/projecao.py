@@ -20,6 +20,21 @@ afinidade (escala + translacao, sem rotacao) sobre a caixa da silhueta da
 malha projetada na mesma vista. O IoU residual entre as duas mascaras e
 medido e reportado: ele diz o quanto o alinhamento v1 conseguiu aproximar.
 
+Alinhamento otimizado (COR-08/A1): o IoU v1 e apenas REPORTADO, nunca
+otimizado. ``otimizar_alinhamento`` parte do alinhamento por caixas
+robustas (percentis, sem outliers) e busca em grade deterministica
+grossa -> fina (escala uniforme, depois afim com trava de aspecto) o
+transform que MAXIMIZA o IoU entre as mascaras. O bake usa o transform
+otimizado quando o pedido o pede (``_blender_cor``: ``alinhamento``);
+sem override, usa o alinhamento v1 por caixas.
+COR-08/A0 (fix anterior a busca, sem o qual ela nao transferiria para o
+bake): a amostragem por texel subtrai o centro (``rel = p3d - centro``),
+como ``projetar``; antes, o centro z = 0,5 do Orc deslocava a amostra
+vertical em ~0,45 * altura da imagem. A partir da A0, a ancora da COR-05
+(textura ebd744a9...) esta SUPERADA como baseline: o bake corrigido tem
+de diferir dela, e a comparacao passa a ser contra a nova baseline
+(fix + bbox), nao contra a ancora.
+
 Regras anti-defeito (do ESTUDO_MELHORIAS, secao T1):
 - peso por angulo de facing: texel pintado pela vista de maior facing;
   facing <= 0.05 nao pinta (evita o "esticamento" das vistas de raspao);
@@ -163,6 +178,211 @@ def iou(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.logical_and(a, b).sum() / np.logical_or(a, b).sum())
 
 
+def bbox_robusta_mascara(mascara: np.ndarray, percentil: float = 0.5) -> tuple[int, int, int, int] | None:
+    """(x0, y0, x1, y1) exclusivo a partir dos percentis dos pixels True.
+
+    A caixa por extremos e refem de pontas finas: um machado fora de pose,
+    uma mecha de pelo ou um pe deslocado esticam a caixa inteira, e o
+    alinhamento v1 herda o erro. O percentil corta as caudas: com 0,5, cada
+    lado descarta os 0,5% externos da distribuicao de pixels (nao 0,5% da
+    largura), o que remove pontas de 1 px de largura sem tocar no corpo.
+    percentil = 0 reproduz exatamente ``bbox_mascara``. Mascara vazia -> None.
+    A caixa nunca sai degenerada: se o percentil colapsar um eixo (mascara
+    de 1 px de largura, por exemplo), o lado colapsado ganha 1 px.
+    """
+    ys, xs = np.nonzero(mascara)
+    if len(xs) == 0:
+        return None
+    if not 0.0 <= percentil < 50.0:
+        raise ValueError(f"percentil fora de [0, 50): {percentil}")
+    x0 = int(np.percentile(xs, percentil))
+    x1 = int(np.percentile(xs, 100.0 - percentil)) + 1
+    y0 = int(np.percentile(ys, percentil))
+    y1 = int(np.percentile(ys, 100.0 - percentil)) + 1
+    x1 = max(x1, x0 + 1)
+    y1 = max(y1, y0 + 1)
+    return (x0, y0, x1, y1)
+
+
+def aplicar_alinhamento(mascara_malha: np.ndarray, ax: float, bx: float,
+                        ay: float, by: float) -> np.ndarray:
+    """Mascara da malha deformada pela afinidade para o espaco da arte.
+
+    Pixel da arte (x, y) amostra a malha em ((x - bx) / ax, (y - by) / ay),
+    com o MESMO mapeamento inverso do IoU v1 (``_blender_cor``): truncamento
+    para int (nao floor), e fora da grade = False. O truncamento e um
+    artefato de 1 px na borda, herdado de proposito: o IoU otimizado e o
+    IoU v1 tem de ser comparaveis numero a numero, e mudar o mapeamento
+    aqui mudaria o v1 junto. Escalas zero levantam erro (divisao).
+    """
+    if ax == 0 or ay == 0:
+        raise ValueError(f"escala zero no alinhamento: ax={ax} ay={ay}")
+    h, w = mascara_malha.shape
+    xs, ys = np.meshgrid(np.arange(w), np.arange(h))
+    mx = ((xs - bx) / ax).astype(int)
+    my = ((ys - by) / ay).astype(int)
+    dentro = (mx >= 0) & (mx < w) & (my >= 0) & (my < h)
+    alinhada = np.zeros((h, w), dtype=bool)
+    alinhada[dentro] = mascara_malha[my[dentro], mx[dentro]]
+    return alinhada
+
+
+def iou_alinhado(mascara_malha: np.ndarray, mascara_arte: np.ndarray,
+                 ax: float, bx: float, ay: float, by: float) -> float:
+    """IoU entre a mascara da malha deformada pela afinidade e a da arte."""
+    return iou(aplicar_alinhamento(mascara_malha, ax, bx, ay, by), mascara_arte)
+
+
+def deformar_mascara(mascara: np.ndarray, ax: float, bx: float,
+                     ay: float, by: float) -> np.ndarray:
+    """Alias legivel de ``aplicar_alinhamento`` (COR-08/A1).
+
+    Deforma a mascara pela afinidade (ax, bx, ay, by) com o mesmo
+    mapeamento inverso do IoU v1: o pixel (x, y) do destino amostra a
+    origem em ((x - bx) / ax, (y - by) / ay), com truncamento para int.
+    """
+    return aplicar_alinhamento(mascara, ax, bx, ay, by)
+
+
+def alinhamento_otimizado(mascara_malha: np.ndarray,
+                          mascara_arte: np.ndarray):
+    """(ax, bx, ay, by, iou_inicial, iou_final) ou None (COR-08/A1).
+
+    Conveniencia sobre ``otimizar_alinhamento``: parte do alinhamento
+    por caixas ROBUSTAS (percentis) e devolve direto o transform
+    otimizado com os IoUs antes/depois. Mascara vazia (malha ou arte)
+    -> None (o chamador cai para o bbox, nunca falha o bake por isso);
+    formatos diferentes -> ValueError (entrada malformada e recusada).
+    """
+    if mascara_malha.shape != mascara_arte.shape:
+        raise ValueError(f"mascaras de formatos diferentes: {mascara_malha.shape} x {mascara_arte.shape}")
+    if not mascara_malha.any() or not mascara_arte.any():
+        return None
+    bbox_m = bbox_robusta_mascara(mascara_malha)
+    bbox_a = bbox_robusta_mascara(mascara_arte)
+    if bbox_m is None or bbox_a is None:
+        return None
+    inicial = alinhamento_silhueta(bbox_a, bbox_m)
+    ax, bx, ay, by, info = otimizar_alinhamento(
+        mascara_malha, mascara_arte, inicial)
+    return (ax, bx, ay, by, info["iou_inicial"], info["iou_final"])
+
+
+def otimizar_alinhamento(mascara_malha: np.ndarray, mascara_arte: np.ndarray,
+                         alinhamento_inicial: tuple[float, float, float, float]
+                         ) -> tuple[float, float, float, float, dict]:
+    """Busca deterministica do alinhamento que maximiza o IoU (COR-08/A1).
+
+    ``alinhamento_inicial`` = (ax, bx, ay, by) do alinhamento por caixas
+    (o chamador usa as caixas robustas; a busca parte dali). Tres estagios,
+    em grade FIXA, na mesma ordem sempre; empate mantem o primeiro
+    candidato (``>`` estrito), logo o resultado e deterministico:
+
+    1. escala uniforme grossa: s em 0,80..1,25 passo 0,05, dx/dy em
+       -24..24 passo 4 (grade da mascara de trabalho, em px);
+    2. escala uniforme fina ao redor do melhor: s +-0,04 passo 0,01,
+       dx/dy +-3 passo 1;
+    3. afim com trava de aspecto: sx/sy independentes em +-0,06 passo
+       0,02 ao redor do melhor corrente, com |sx/sy - 1| <= 0,15 (a trava
+       do estudo: sem ela, uma vista genuinamente anisotropica seria
+       "corrigida" por um esticamento que destroi as proporcoes internas),
+       dx/dy +-2. Nos estagios 2 e 3, o centro da busca acompanha o melhor
+       corrente (hill-climbing em grade fixa, ainda deterministico).
+
+    Em cada estagio, o candidato e o inicial composto com (s, dx, dy) ao
+    redor do centro da caixa da arte: ax' = s*ax0, bx' = s*bx0 + (1-s)*cx
+    + dx (idem y, com sy no estagio afim). Se o IoU inicial ja for >=
+    0,999, retorna o inicial sem buscar (nada a ganhar; 0 candidatos).
+
+    Devolve (ax, bx, ay, by, info), com info = iou_inicial, iou_final,
+    modo ("inicial" | "uniforme" | "afim": o estagio que produziu o melhor
+    final), escala_x, escala_y (relativas ao inicial), deslocamento_px
+    (dx, dy finais, na grade de trabalho) e candidatos_avaliados.
+    Mascaras de formatos diferentes ou vazias levantam ValueError (a
+    entrada malformada e recusada, nunca alinhada em silencio).
+    """
+    if mascara_malha.shape != mascara_arte.shape:
+        raise ValueError(f"mascaras de formatos diferentes: {mascara_malha.shape} x {mascara_arte.shape}")
+    if not mascara_malha.any() or not mascara_arte.any():
+        raise ValueError("otimizar_alinhamento: mascara vazia (malha ou arte)")
+    ax0, bx0, ay0, by0 = (float(v) for v in alinhamento_inicial)
+    if ax0 == 0 or ay0 == 0:
+        raise ValueError(f"escala zero no alinhamento inicial: ax={ax0} ay={ay0}")
+    bbox_a = bbox_mascara(mascara_arte)
+    cx = (bbox_a[0] + bbox_a[2]) / 2.0
+    cy = (bbox_a[1] + bbox_a[3]) / 2.0
+    h, w = mascara_malha.shape
+    xs, ys = np.meshgrid(np.arange(w), np.arange(h))
+
+    def _iou_de(ax, bx, ay, by):
+        mx = ((xs - bx) / ax).astype(int)
+        my = ((ys - by) / ay).astype(int)
+        dentro = (mx >= 0) & (mx < w) & (my >= 0) & (my < h)
+        alinhada = np.zeros((h, w), dtype=bool)
+        alinhada[dentro] = mascara_malha[my[dentro], mx[dentro]]
+        return iou(alinhada, mascara_arte)
+
+    def _composto(sx, sy, dx, dy):
+        return (sx * ax0, sx * bx0 + (1.0 - sx) * cx + dx,
+                sy * ay0, sy * by0 + (1.0 - sy) * cy + dy)
+
+    iou_ini = _iou_de(ax0, bx0, ay0, by0)
+    info_base = {"iou_inicial": round(float(iou_ini), 4)}
+    if iou_ini >= 0.999:
+        return (ax0, bx0, ay0, by0,
+                {**info_base, "iou_final": round(float(iou_ini), 4), "modo": "inicial",
+                 "escala_x": 1.0, "escala_y": 1.0, "deslocamento_px": [0, 0],
+                 "candidatos_avaliados": 0})
+    melhor = (ax0, bx0, ay0, by0)
+    melhor_iou = iou_ini
+    modo = "inicial"
+    bs, bdx, bdy = 1.0, 0, 0
+    n = 0
+    # Estagio 1: escala uniforme grossa.
+    for s in [0.80 + 0.05 * i for i in range(10)]:
+        for dx in range(-24, 25, 4):
+            for dy in range(-24, 25, 4):
+                cand = _composto(s, s, dx, dy)
+                v = _iou_de(*cand)
+                n += 1
+                if v > melhor_iou:
+                    melhor, melhor_iou, modo = cand, v, "uniforme"
+                    bs, bdx, bdy = s, dx, dy
+    # Estagio 2: escala uniforme fina ao redor do melhor.
+    for ds in [-0.04 + 0.01 * i for i in range(9)]:
+        s = bs + ds
+        if s <= 0:
+            continue
+        for dx in range(bdx - 3, bdx + 4):
+            for dy in range(bdy - 3, bdy + 4):
+                cand = _composto(s, s, dx, dy)
+                v = _iou_de(*cand)
+                n += 1
+                if v > melhor_iou:
+                    melhor, melhor_iou, modo = cand, v, "uniforme"
+                    bs, bdx, bdy = s, dx, dy
+    # Estagio 3: afim com trava de aspecto, ao redor do melhor uniforme.
+    bsx, bsy = bs, bs
+    for dsx in [-0.06 + 0.02 * i for i in range(7)]:
+        for dsy in [-0.06 + 0.02 * i for i in range(7)]:
+            sx, sy = bsx + dsx, bsy + dsy
+            if sx <= 0 or sy <= 0 or abs(sx / sy - 1.0) > 0.15:
+                continue
+            for dx in range(bdx - 2, bdx + 3):
+                for dy in range(bdy - 2, bdy + 3):
+                    cand = _composto(sx, sy, dx, dy)
+                    v = _iou_de(*cand)
+                    n += 1
+                    if v > melhor_iou:
+                        melhor, melhor_iou, modo = cand, v, "afim"
+                        bsx, bsy, bdx, bdy = sx, sy, dx, dy
+    ax, bx, ay, by = melhor
+    return (ax, bx, ay, by,
+            {**info_base, "iou_final": round(float(melhor_iou), 4), "modo": modo,
+             "escala_x": round(float(ax / ax0), 4), "escala_y": round(float(ay / ay0), 4),
+             "deslocamento_px": [int(bdx), int(bdy)], "candidatos_avaliados": int(n)})
+
+
 def rasterizar_mascara_2d(pontos2d: np.ndarray, faces: np.ndarray,
                           largura: int, altura: int) -> np.ndarray:
     """Mascara bool (altura, largura) coberta pelos triangulos 2D dados."""
@@ -208,13 +428,18 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
 
     ``vistas``: lista de dicts com ``vista`` (nome), ``imagem`` (HxWx3 float
     0..1, linha 0 = topo), ``mascara`` (HxW bool), ``visivel`` (F,) bool e
-    ``peso_face`` (F,) float (facing por face, pre-calculado).
+    ``peso_face`` (F,) float (facing por face, pre-calculado). Uma vista
+    pode trazer ``alinhamento`` = (ax, bx, ay, by) ja calculado (COR-08/A1,
+    pelo ``_blender_cor``): nesse caso o override SUBSTITUI o alinhamento
+    por caixas dessa vista, e ``info["alinhamento_usado"][nome]`` registra
+    "otimizado"; sem a chave, o caminho v1 e mantido byte a byte.
     Retorna (textura TxTx3, pintado TxT bool, melhor_peso TxT float, info).
     """
     tex = np.zeros((tamanho, tamanho, 3), dtype=np.float64)
     pintado = np.zeros((tamanho, tamanho), dtype=bool)
     melhor = np.zeros((tamanho, tamanho), dtype=np.float64)
-    info = {"faces_pintadas_por_vista": {}, "texels_por_vista": {}}
+    info = {"faces_pintadas_por_vista": {}, "texels_por_vista": {},
+            "alinhamento_usado": {}}
     for v in vistas:
         nome = v["vista"]
         imagem = v["imagem"]
@@ -222,16 +447,22 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
         visivel = v["visivel"]
         peso_face = v["peso_face"]
         hi, wi = mascara.shape
-        # Caixa da malha projetada nesta vista, em pixels da imagem.
-        px_all, py_all = projetar(verts, centro, nome, ortho_scale, wi, hi)
-        bbox_m = (int(math.floor(px_all.min())), int(math.floor(py_all.min())),
-                  int(math.ceil(px_all.max())), int(math.ceil(py_all.max())))
         bbox_a = bbox_mascara(mascara)
         if bbox_a is None:
             info["faces_pintadas_por_vista"][nome] = 0
             info["texels_por_vista"][nome] = 0
+            info["alinhamento_usado"][nome] = "nenhum (mascara vazia)"
             continue
-        ax, bx, ay, by = alinhamento_silhueta(bbox_a, bbox_m)
+        if v.get("alinhamento") is not None:
+            ax, bx, ay, by = (float(c) for c in v["alinhamento"])
+            info["alinhamento_usado"][nome] = "otimizado"
+        else:
+            # Caixa da malha projetada nesta vista, em pixels da imagem.
+            px_all, py_all = projetar(verts, centro, nome, ortho_scale, wi, hi)
+            bbox_m = (int(math.floor(px_all.min())), int(math.floor(py_all.min())),
+                      int(math.ceil(px_all.max())), int(math.ceil(py_all.max())))
+            ax, bx, ay, by = alinhamento_silhueta(bbox_a, bbox_m)
+            info["alinhamento_usado"][nome] = "bbox"
         direita, cima, _ = base_camera(nome)
         dcam = np.array(direcao_camera(nome), dtype=np.float64)
         texels = 0
@@ -269,8 +500,16 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
             nn = np.linalg.norm(nrm, axis=1, keepdims=True)
             nn[nn == 0] = 1.0
             facing = np.maximum(0.0, (nrm / nn) @ dcam)
-            qx = p3d @ direita
-            qy = p3d @ cima
+            # COR-08/A0: a amostragem subtrai o centro, como ``projetar``
+            # faz. Antes, p3d absoluto era projetado direto: com o centro
+            # real do Orc (z = 0,5, ortho 1,1), a amostra vertical caia
+            # ~0,45 * altura da imagem acima do ponto certo - a base
+            # amostrando o meio, o topo amostrando o fundo. O teste de
+            # cor solida do T1 nao via o deslocamento (cor uniforme); o
+            # teste de faixas (test_amostragem_usa_centro_faixas) o trava.
+            rel = p3d - np.asarray(centro, dtype=np.float64)
+            qx = rel @ direita
+            qy = rel @ cima
             ext_h = ortho_scale * (wi / hi)
             spx = (qx / ext_h + 0.5) * wi
             spy = (0.5 - qy / ortho_scale) * hi
@@ -296,11 +535,18 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
     return tex, pintado, melhor, info
 
 
-def dilatar(textura: np.ndarray, pintado: np.ndarray, iteracoes: int) -> tuple[np.ndarray, np.ndarray, int]:
+def dilatar(textura: np.ndarray, pintado: np.ndarray, iteracoes: int,
+            dominio: np.ndarray | None = None) -> tuple[np.ndarray, np.ndarray, int]:
     """Preenche texels sem fonte com a cor vizinha mais proxima, 1 px por passe.
 
     Retorna (textura, pintado_final, n_preenchidos). Ordem de vizinhos fixa
     (cima, baixo, esquerda, direita) para determinismo.
+
+    COR-08/A3: ``dominio`` (bool, mesmo formato) restringe ONDE a dilatacao
+    pode pintar; sem ele, o comportamento v1 (tudo) e mantido. A dilatacao
+    restrita e o ultimo recurso anti-halo da A3: o preenchimento das zonas
+    cegas e 3D (``preenchimento``), e a dilatacao so cobre a faixa em
+    torno da UV que o dominio delimita.
     """
     tex = textura.copy()
     pin = pintado.copy()
@@ -324,6 +570,8 @@ def dilatar(textura: np.ndarray, pintado: np.ndarray, iteracoes: int) -> tuple[n
             elif dx == 1:
                 desloc[:, 0] = False
             alvo = falta & desloc & ~novo
+            if dominio is not None:
+                alvo &= dominio
             if alvo.any():
                 nova_cor[alvo] = cor_desloc[alvo]
                 novo[alvo] = True

@@ -74,6 +74,17 @@ Antes de convocar o Critico, o executor confere e resolve CADA item. A ideia (AP
 - [ ] Lateralizacao do PAR medida, nao so de cada imagem isolada: um par dir/esq so e aceito se cumprir OS TRES criterios de N2 (IoU entre as silhuetas < 0,85; assimetria da faixa inferior INVERTIDA entre elas, > 1,4 de um lado e < 0,7 do outro; pe em perfil em lados opostos). Cada traseira isolada passava nas ancoras de costas; o defeito era do par. [licao L-38]
 - [ ] Pureza do 3/4 traseiro (N1) conferida antes de submeter: rosto SO em perfil parcial, capa dominando o dorso abaixo da cintura, pes apontando para longe do observador. [licao L-38]
 - [ ] Tom medido por amostragem anatomica (N3), nao a olho: mesma caixa anatomica na fonte e no lote, filtro oliva, mediana RGB + saturacao, com o saiote vermelho como controle interno (delta <= 3). [licao L-38]
+- [ ] Caminho de salvamento de textura no Blender: `view_transform` fixo em `Standard` antes de `save_render`; nunca julgar cor pelo `textura.png` salvo sob o default AgX (branco 255 vira 197) — amostrar o GLB ate o fix. [licao L-39]
+- [ ] IoU medido a 256 px e invariante ao tamanho da textura: nunca usa-lo para provar efeito de resolucao; e campo de metrica com nome que nao corresponde ao conteudo (dilatacao total sob o nome 'restrita') e defeito, nao detalhe. [licao L-40]
+- [ ] Status de prova regenerado apos qualquer correcao: artefato que guarda corrida velha (suite FAILED pre-correcao) contradiz o log final e mente no registro — reescrever/anotar antes do commit, com o original preservado. [licao L-41]
+- [ ] Ancora conferida por SHA/tamanho antes de comparar: diretorio de job pode guardar bake antigo (1024) e nao a reproducao COR-08 (2048, cor08rep) — comparar contra a ancora errada diverge sem ser defeito. [licao L-42]
+
+- [ ] Lateralizacao por vista cruzada (N4) antes de escrever qualquer item de especificacao de lado: para cada item fixo ao corpo, registrar o lado em imagem em TODAS as vistas aprovadas/canonicas; exigir da vista nova a coerencia com a sua familia (traseiras com traseiras, frontais com frontais), nunca um espelho postulado. [licao L-43]
+- [ ] Novidade angular medida (N5) antes de instalar qualquer vista nova: IoU bbox-alinhado contra TODAS as vistas ja aprovadas do mesmo personagem; IoU > 0,90 contra vista aprovada do mesmo lado = angulo duplicado, reprova como adicao, qualquer que seja a qualidade do render. [licao L-43]
+- [ ] Leitura obrigatoria dos vereditos anteriores (N6): antes de julgar um retrabalho, o Critico le TODOS os relatorios anteriores sobre as mesmas imagens/personagem e, para cada afirmacao decisiva anterior, ou a reproduz com medicao propria ou a refuta explicitamente com medicao propria. Julgar sem ler invalida o veredito, mesmo quando o checklist local passa. [licao L-43]
+- [ ] Regra nova nao retroage seletivamente (N7): toda regra nova e executada contra TODAS as vistas ja aprovadas da familia ANTES de ser aplicada a candidata; se a regra reprova uma autoridade aprovada, quem volta para revisao e a regra, nao a autoridade; um mesmo traco jamais recebe severidades diferentes em imagens diferentes sem diferenca medida entre elas. [licao L-43]
+- [ ] Coordenada decisiva exige grade e referencial (N8): toda coordenada x/y usada como evidencia decisiva e lida em recorte com grade impressa (ou computada por script) e declara o referencial (imagem x bbox) e a convencao de qualquer razao (dir/esq x esq/dir). Coordenada "a olho" sem grade nao e medicao. [licao L-43]
+- [ ] REGRA FINAL do Orc (familia das vistas): kit fixo ao corpo exatamente como nas vistas aprovadas da mesma familia — caveira grande sempre a DIREITA do losango e alca sempre na diagonal superior-esquerda → inferior-direita em coordenadas de imagem; mudam de lado apenas os sinais da camera (lobo, ombreira, perfil do rosto, pe em perfil). Fisica de corpo rigido NAO governa este arsenal (o canone viola a faixa continua e o anel rigido) — quem governa e o canone. [licao L-43]
 
 ---
 
@@ -328,6 +339,47 @@ flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
 - **Custo:** um lote parcial reprovado (metade do que o par prometia) + uma rodada de retrabalho com especificacao numerica; e um arquivo reprovado que permanece no arsenal ate a substituicao, com risco de uso por engano se o registro falhasse.
 - **Regra:** (a) pedir diagonais opostas nunca se valida imagem por imagem — a lateralizacao do PAR tem que ser medida (N2: IoU < 0,85, assimetria da faixa inferior invertida > 1,4 / < 0,7, pe em perfil em lados opostos, os tres); (b) pedido de diagonal frontal carrega instrucao anti-espelho explicita (lado de cada acessorio em coordenadas de quem olha + "NAO espelhar"); (c) retrabalho de lado NUNCA e espelho no editor (falso esquerdo com textura invertida) — gera-se de novo do lado oposto; (d) arquivo reprovado substituido, nunca mantido ao lado da refeita. (Checklist pre-Critico, itens novos; verificacoes N1/N2/N3 do Critico.)
 
+### L-39 - Save do Blender sob AgX falsifica o textura.png: fixar Standard antes de salvar (01/11/2026)
+- **Caso:** na COR-08, o Critico mediu a cadeia completa: a arte e lida sem decodificacao sRGB, as medias sao tiradas em espaco sRGB, e o `save_render` sob o default AgX mapeia branco 255 -> 197. O `textura.png` entregue era AgX(textura do GLB); o GLB, fiel aos bytes da arte. Quem seguisse a D10 no arquivo media cores AgX, nao as entregues.
+- **Custo:** uma pendencia S2 pre-existente (v1) que atingia em cheio a afirmacao de "fidelidade" da tranche; nenhuma prova anterior tinha sondado o caminho de salvamento com valores conhecidos.
+- **Regra:** todo caminho que salva textura fixa `view_transform = "Standard"` antes do `save_render` e prova com valores conhecidos (Standard = identidade byte a byte); "Raw" nao e correcao (curva de potencia 2.2). (Checklist pre-Critico: item do caminho de salvamento.)
+
+### L-40 - IoU@256 nao prova efeito de resolucao; nome de campo que mente e defeito (01/11/2026)
+- **Caso:** na COR-08, o argumento "IoUs identicos aos da baseline @2048" era vazio: o IoU@256 e invariante ao tamanho da textura por construcao. A evidencia valida era a cobertura direta (19,44% -> 48,12%). No mesmo veredito: o campo `texels_por_dilatacao_restrita` carregava o total irrestrito no modo `uv`.
+- **Custo:** nenhum bloqueio ao mecanismo, mas uma citacao sem lastro (IoUs da ancora) e um campo com nome falso teriam virado "prova" nas proximas tranches.
+- **Regra:** antes de usar uma metrica como argumento, perguntar "o que faria este numero mudar?" — se a variavel testada nao o move, o argumento e vazio; e campo de relatorio com nome que nao corresponde ao conteudo se renomeia, nao se documenta em volta. (Checklist pre-Critico: item do IoU invariante.)
+
+### L-41 - Prova destacada morre com a sessao SSH; status velho mente (01/11/2026)
+- **Caso:** na S2-COR08-1, o driver de prova lancado via Start-Process destacado morreu junto com a sessao SSH (sem status, sem stderr); relancado via tarefa agendada pythonw (invisivel), funcionou. No mesmo episodio, o `status.json` guardou a corrida da suite ANTERIOR a correcao do Path e ficou contraditorio com o log final (FAILED vs 343 OK) — o Critico cobrou como S3-1.
+- **Custo:** uma prova perdida sem rastro + um artefato de registro que, lido sozinho, concluiria suite vermelha.
+- **Regra:** trabalho longo so via tarefa agendada com arquivo de status (nunca processo destacado de sessao SSH); e o status de prova e regenerado/anotado apos qualquer correcao, antes do commit — corrida velha guardada vira contradicao no registro. (Checklist pre-Critico: itens de tarefa agendada e de status regenerado.)
+
+### L-42 - Diretorio de job nao e ancora (01/11/2026)
+- **Caso:** o Critico da S2 comparou primeiro contra `jobs/20261101-101528-corint-orc-s7/cor/` como se fosse a COR-08 e divergiu muito (1024 vs 2048, 211.268 vs 845.063 texels) — aquele diretorio guarda um bake ANTIGO a 1024; a baseline correta era `jobs_teste/cor08-critico/cor08rep/` (2048). Contra a ancora certa, tudo fechou (diff de resultado vazio, previas 100%).
+- **Custo:** uma rodada de comparacao invalida; sem a checagem de ancora, viraria "defeito" falso.
+- **Regra:** antes de comparar, conferir a ancora por SHA/tamanho (o que o diretorio guarda, nao o que o nome sugere) e registrar qual diretorio e a ancora. (Checklist pre-Critico: item da ancora conferida.)
+
+### L-43 - Kit fixo ao corpo não é sinal de câmera; regra nova não retroage; coordenada sem grade não é medição (01/11/2026)
+
+- **O que aconteceu:** no retrabalho do lote 4, a especificação exigia alça e
+  caveira espelhadas na traseira esquerda; a imagem certa foi quase reprovada
+  por dois itens errados. Um segundo Crítico reprovou-a pela regra nova NV-1
+  e aprovou a frontal duplicada sem medir novidade. O terceiro Crítico
+  (reconciliação, ordem do Mestre) re-mediu tudo: a refeita estava certa, a
+  frontal era duplicata, a NV-1 reprovaria o próprio cânone.
+- **Regra:** (a) item fixo ao corpo (cinto, alça) não se trata como sinal de
+  lado da câmera — antes de escrever o item, auditar o lado dele em TODAS as
+  vistas (N4); (b) novidade angular se mede contra TODAS as aprovadas (N5:
+  IoU > 0,90 = duplicata); (c) Crítico lê os vereditos anteriores antes de
+  julgar (N6); (d) regra nova se testa contra TODAS as aprovadas antes de
+  valer para a candidata (N7); (e) coordenada decisiva exige grade e
+  referencial declarado (N8); (f) no Orc, kit fixo segue a família das
+  vistas aprovadas e só os sinais da câmera mudam de lado — física de corpo
+  rígido não governa um arsenal cujo cânone já a viola.
+- **Custo evitado:** uma refeita certa refeita com o cinto espelhado (a única
+  traseira inconsistente do arsenal) e uma frontal duplicada instalada como
+  "nova" ao lado da vista que ela copia.
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:
@@ -351,7 +403,11 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Bateria D-COR05 (pendencias da integracao) | Comparacao byte a byte de TODOS os artefatos do determinismo contra a prova (inclui uv.npz, modelo_uv.glb e as 9 previas, com decomposicao de chunks PNG e comparacao pixel a pixel) + proveniencia do worker nos 3 jobs e fila vazia ao fim + tentativa do validador glTF independente + recontagem da cadeia de vertices incluindo o .npz | D-COR05 FECHADA (D1 segue ABERTA e ortogonal); achado da escalada: previas pixel-identicas com bytes divergentes so em metadado tEXt do Blender (licao L-32); ressalvas S4: docstring 97 s vs nativa 84 s, modelo.glb do refino em job em erro, cancelamento vivo nao exercido, validador glTF pendente; suite 263+4 = 267 reconciliada |
 | 01/11/2026 | Fechamento REF-01 lote 3 (Caprileo) | Verificacao de rotulo pos-renomeacao (SHA por nome nos dois lados + checklist C1 nos arquivos renomeados) + consistencia de rotulos no conjunto (busca por referencias textuais ao rotulo pre-troca) | C1 FECHADO por medida (3/3 itens nos dois arquivos, hashes PC = local); lote 3 FECHADO; pendencias C2/C3/C4 (S3) e C5 (S4) nomeadas; zooms renomeados para acompanhar a troca |
 | 01/11/2026 | Bateria REF-01 lote 4 parcial (Orc, traseiras) | Diversidade angular MEDIDA do par (N2: IoU + assimetria invertida + pe em perfil oposto) + pureza do 3/4 traseiro (N1) + tom medido por amostragem anatomica (N3) | SYM-4.1 S2 (tras_esq = direita duplicada, IoU 0,915); lote parcial REPROVADO; tras_dir APROVADA; frontais reprovadas antes pelo executor (espelho) |
+| 01/11/2026 | Bateria REF-01 lote 4 retrabalho (Critico 1) | Auditoria de lateralizacao por vista cruzada (N4) + auditoria de novidade angular (N5: IoU contra TODAS as aprovadas) | ESP-4.1/ESP-4.2 (2 itens da especificacao provados errados); DUP-4.3 S2 (frente_esq = tresquartos_v2, IoU 0,960); refeita APROVADA (N2 nos tres) |
+| 01/11/2026 | Bateria REF-01 lote 4 v2 (Critico 2) | Lateralizacao do cinto por vista (NV-1) + linha do solo/pes plantados (NV-2) + uniformidade do fundo/margens (NV-3) | NV-1 achou SYM-5.1/5.2 — mas a regra foi REFUTADA na reconciliacao (reprovaria o proprio canone); NV-2/NV-3 validas como medicao, sem forca de reprovacao aqui |
+| 01/11/2026 | Reconciliacao REF-01 lote 4 (terceiro Critico, ordem do Mestre) | Re-medicao propria com 3 limiares + grade impressa de 0,1 + kit como objeto 3D unico (anel rigido e faixa continua) + meta-auditoria dos dois Criticos (N6/N7/N8) | Critico 1 certo nos vereditos (justificativa do ESP-4.1 errada); Critico 2 certo nos fatos, errado em todas as decisoes; REGRA FINAL do Orc; par traseiro FECHADO; frente_esq rejeitada |
 | 01/11/2026 | Bateria D-T2 (fechamento das pendencias do T2) | Reproducao propria da sabotagem + sabotagem em Y e Z + caso misto vistas + forma recusada + arestas do verificador (3o primitivo sem cor, sem meshes) + D-T2-2 fora do mock (passo de projecao real) + suite conferida arquivo a arquivo | X2/Y2/Y0,5/Z2 recusadas; misto conclui pelas vistas com forma 0%; S4-1/S4-2 de robustez; D-T2-1 FECHADA |
+| 01/11/2026 | Bateria COR-08 (ataque a D1) | Auditoria sRGB completa do caminho de salvamento (sondas Blender com valores conhecidos) + auditoria de proveniencia v2 com parse proprio do GLB + casos-limite adversariais proprios do codigo novo (14 checagens) + confrontacao da autoauditoria do executor ponto a ponto | S2-COR08-1 (AgX falsifica o textura.png; GLB fiel); S3-COR08-2/3/4; S4-COR08-5/6; D1 confirmada ABERTA |
 
 ---
 
@@ -388,7 +444,7 @@ O executor conferiu as imagens ANTES do Critico (protocolo de antecipacao) e ja 
 
 1. **Besta Cristalina (monstro)** - arte dourada instalada no PC: `testes/dourado/imagens/besta_{frente,costas,esquerda,direita}.png` (768x512); kit completo de 8 vistas recuperavel do Drive pelo indice da auditoria do Codex (relatorio de continuidade v002). Pose: a mais adequada a modelagem de uma criatura serpentina de cristal - sem T-pose.
 2. **Caprileo (monstro)** - arte dourada instalada: `testes/dourado/imagens/caprileo_{frente,costas,esquerda,direita}.png`; 8 vistas no mesmo indice do Drive. Pose adequada de quadrupede.
-3. **Orc - vistas diagonais** - o kit original tem 8 angulos; alem dos 4 cardeais instalados, as diagonais sao recuperaveis do Drive pelo mesmo indice (completar o conjunto de entrada multivista). (Lote 4 parcial 01/11: tras_dir APROVADA; tras_esq REPROVADA SYM-4.1 — retrabalho pendente + frontal esquerda; a tresquartos_v2 ja cobre a frontal direita.)
+3. **Orc - vistas diagonais** - o kit original tem 8 angulos; alem dos 4 cardeais instalados, as diagonais sao recuperaveis do Drive pelo mesmo indice (completar o conjunto de entrada multivista). (Lote 4 FECHADO nas traseiras 01/11: tras_dir + tras_esq refeita, apos reconciliacao de tres Criticos; tresquartos_v2 = diagonal frontal ESQUERDA — correcao da nota anterior; vaga aberta = diagonal frontal DIREITA, especificacao no §7 da reconciliacao, 7 tentativas reprovadas em autoauditoria por vies do gerador — nao repetir fraseado, decidir a rota antes de gerar de novo. Rodada 3 (20:54): rota decidida = ancora nas traseiras; r3-t2 melhor em 11 (rosto/pes/kit/N5 ok, so o lobo S2); consulta de processo aceita edicao controlada sob 6 condicoes; N9 ADOTADA; proximo passo = tentativa unica de edicao da t2 + Critico independente; se falhar, decisao do Mestre.)
 4. **Bestas novas de 31/10 (Drive)** - 5 referencias em `05 - Imagens e referencias/Referencias visuais/2026-10-31_RPG_besta-*.jpg` ("besta lendaria" / "besta do vazio"), localizadas pela sessao do Claude no PC e registradas no REGISTRO; nao foram usadas na Prova C (nao sao o kit nomeado). Classificar: se forem seres vivos com arte aproveitavel, entram na fila REF-01.
 
 
@@ -396,6 +452,10 @@ O executor conferiu as imagens ANTES do Critico (protocolo de antecipacao) e ja 
 
 - Regra permanente (ver DECISOES, APR-02): o Critico atua como inimigo profissional do trabalho - a missao dele e tentar reprovar; o executor se autoaudita antes de submeter para nao dar motivo.
 - **L-33:** reportar aprovacao do Critico sem dizer O QUE foi aprovado (mecanismo x visual) induz o Mestre a erro - separar sempre os dois escopos. Origem: COR-05, 01/11/2026 (o Mestre viu as previas da prova e julgou a pintura horrivel; o veredito do Critico era so de integracao/mecanismo, com a D1 aberta).
+- **N9 (adotada pela consulta de processo REF-01, 01/11/2026):** N5 exige IoU bbox-alinhado < 0,85 no MAXIMO dos tres limiares de fundo (25/35/45), contra TODAS as vistas aprovadas. Contraexemplo que prova o furo da regra antiga: r3-t4 mede 0,856/0,848/0,840 contra `tresquartos_v2` — passaria so no limiar 35 sendo composicao da familia da diagonal esquerda. Teste N7 cumprido: nenhuma vista aprovada e reprovada pela N9 (par aprovado mais proximo, `tras_dir` x `costas_v2`, 0,832-0,841 na faixa).
+- **N10 (proposta pela consulta, a decidir pelo Critico da rodada da edicao):** todo candidato oriundo de edicao entrega (i) a regiao tocada, (ii) a comparacao antes/depois fora da regiao e (iii) a re-medicao total do §7; sem (i) e (ii), o editado e julgado como geracao nova integral.
+- **L-44:** ancora nas traseiras QUEBRA o vies de rosto e pes do gerador (0/7 nas familias frontal/T-pose, 1/4 com traseiras+frente) — mas o lobo e o residuo mais fixo da composicao (proeminente a direita em 11/11 tentativas). Quando o vies parcializa, atacar o elemento residual isolado (edicao regional) em vez de regenerar a figura inteira.
+
 
 ### L-CODEX-01 — Primarias nao testam gamma (2026-11-01, linha paralela)
 

@@ -858,3 +858,276 @@ Relatorio integral: docs/CRITICO-dt2-relatorio.md (SHA-256 05527A062D7076E72485F
 - **Decisão do Mestre (01/11, 14:19), literal:** "Não precisa se preocupar com nenhuma licença, pode deixar que depois eu vou resolver isso." Registrada como **LIC-01** em DECISOES.md.
 - **Efeito:** os fatos de licença do estudo de reuso × recriação (`docs/ESTUDO_REUSO_RECRIACAO.md`, copiado nesta rodada) — FLUX.2 sob BFL não-comercial, LoRAs/decoder do UltraTex com concessão não estabelecida, UltraTex/StableGen GPL-3.0, adaptador do SUPRA-Tex sob licença de pesquisa, Eyek/Comfy BlenderTools sem licença publicada — passam a ser INFORMAÇÃO registrada, não bloqueador: spikes, testes e estudos seguem sem trava de licença.
 - **Limites da decisão:** adoção comercial de qualquer peça fica para quando o Mestre resolver as licenças; os fatos continuam registrados no estudo e no Gate 0 do T7; a DONO-01 (independência técnica) permanece valendo por mérito próprio.
+
+## [2026-11-01 17:10-17:45 -03] Claude: Fase 2 item 1, etapa `validar` (Godot headless)
+- Mestre: "Pode" (resposta ao pedido de começar a Fase 2). O Muse já estava na Etapa COR (COR-08 em voo, sem commit); escolhi a frente **validar**, que não toca `oficina3d/cor`. Pedido do Muse (17:40): commitar separado, sem os arquivos de cor. Feito: `git add` só dos caminhos da validação.
+- **Novo pacote `oficina3d/validar/`**: `glb.py` (régua 1: leitor de GLB em Python puro, magic/versão/comprimento/chunks, triângulos pelos accessors, imagens embutidas conferidas por magic bytes), `_godot_validar.gd` + `godot.py` (régua 2: Godot 4.7.2 `--headless` carregando por `GLTFDocument`, o caminho do jogo; sem janela), `__init__.py` (regras e perfis `oficina`/`jogo`; o `jogo` é o aceite EXP-01: <20 mil tris, 1 material, albedo <=1024 px, <=5 MB), `__main__.py` (`python -m oficina3d.validar arq.glb [--perfil jogo]`; saída 0/1/2).
+- **Ligado ao worker** como etapa 3c (depois de refino/cor, antes de exportar): opções novas `validar` (True) e `validar_perfil` ("oficina") em `config.OPCOES_PADRAO`, regra em `job._validar_opcao`. Reprovado ou validador quebrado = **aviso**, nunca erro do job. Grava `saida/validacao.json` e `resultado.validacao`.
+- **Dois achados ao vivo** (ver ERROS): (1) no `--headless` a malha vem como `ImporterMeshInstance3D` (o script conta as duas formas e tira a caixa dos vértices); (2) o modo padrão de imagem do `GLTFState` (1, extrair texturas) **derruba o Godot 4.7.2** (0xC0000005) num GLB com textura; o validador usa o modo 3 (embutir sem compressão).
+- **Testes:** `testes/test_validar.py`, 18 testes (GLBs montados byte a byte, com e sem PNG). Prova de mutação: voltando o modo de imagem para 1, `test_textura_nao_derruba_o_godot` dá ERROR; restaurado. **Suíte inteira no `.venv_app`: 341 testes, OK (skipped=1)**, incluindo os testes de cor ainda sem commit do Muse.
+- **Validação manual** (CLI) em GLBs reais: modelo sem cor de 24.874 tris → `oficina` APROVADO, `jogo` REPROVADO (tris, albedo); `jobs_teste\cor08\cor08\modelo_cor.glb` → `jogo` REPROVADO (49.750 tris; 5,979 MB; albedo 2048 px), resto ok.
+- **Prova viva pelo worker** (fila de TESTE, sem GPU): job `20261101-173915-prova-validar-jogo` em `jobs_teste\prova_validar` (`so-refinar` sobre `jobs\20261031-225432-provac-orc-s7\forma\forma.glb`, `validar_perfil=jogo`) → **concluído**; refino 23,9 s, validar 1,91 s; réguas batem (49.750 = 49.750), pivô y=0,0, 2,173 MB; reprovado em `max_triangulos` e `textura_albedo` (correto: sem `--cor`), virou aviso. SHA-256: `validacao.json` A9F5532F…2C124A92, `modelo.glb` 88C30236…E310E12514.
+- **PENDENTE:** as 8 capturas de tela do plano (o `--headless` não renderiza; renderizar abre janela e disputa a tela do dono do PC); a etapa ainda não aparece nas opções da web/MCP/CLI (só via `opcoes`); o worker em serviço (do Muse) só passa a validar depois de ser reiniciado. Não reiniciei: é processo do Muse.
+- SHA-256 (16 primeiros) dos arquivos novos: glb.py D1832E105AED7241, godot.py 55248F3DC5B30896, _godot_validar.gd 25C1E505800586D0, __init__.py D8F6F21B7C5247E4, __main__.py 5307F9414503F53E, test_validar.py EF0FBB22B715DA0A.
+
+
+## 2026-11-01 — COR-08 FECHADA (Etapa COR, ataque a D1: A0+A1+A2+A3) — veredito do Critico senior
+
+- **Reconciliacao desta rodada (REG-01 / anti-colisao):** esta execucao encontrou a arvore suja com DUAS tranches (COR-08 do Muse + validar do Claude) e NAO duplicou nenhuma delas. Durante a rodada, o Claude commitou o validar sozinho (29ebaa9, VAL-01, a pedido do Muse as 17:40: commitar separado, sem os arquivos de cor); a partir dai a arvore suja passou a conter SOMENTE a COR-08, e esta rodada fechou o registro dela. O codigo da COR-08 nao foi reescrito aqui: ele ja estava pronto e criticado; o trabalho desta rodada foi conferir, registrar e commitar.
+- **O que a COR-08 muda (estudo docs/ESTUDO_D1_FIDELIDADE.md, alavancas A0-A3):** A0 — caixa robusta a partir da mascara rasterizada (nao dos vertices; o machado fora de pose nao manda nos extremos); A1 — `otimizar_alinhamento` em `oficina3d/cor/projecao.py`: busca deterministica (grade grossa->fina) maximizando o IoU a 256 px, escala uniforme primeiro e afim com trava de aspecto |ax/ay-1| <= 0,15; A2 — bake em 2048 (TAMANHO_TEXTURA 1024 -> 2048), casado com o gutter da D-T5-1; A3 — `oficina3d/cor/preenchimento.py`: preenchimento 3D das zonas cegas por difusao BFS sobre o grafo dual com solda por posicao (a dilatacao UV sobrevive so como halo fora da UV, 8 px). `passo.py` nao fixa os controles (S3-COR08-4, abaixo).
+- **Numeros (re-medidos pelo Critico, docs/CRITICO-cor08-relatorio.md; nao re-medidos por esta rodada de registro):** IoUs bake COR-08 frente 0,8177 / costas 0,7774 / esquerda 0,8065 / direita 0,7957, contra baseline bbox 0,7941 / 0,7232 / 0,7925 / 0,7892; cobertura direta 420.713/845.063 = 49,79% (baseline 48,08%); ablacao A0 a 1024: 19,44% -> 48,12% (prova de que a A0, nao a resolucao, explica o salto — o diff do caminho de projecao entre a COR-05 e a base da COR-08 e vazio); textura SHA-256 c7302ee16f41a8f12577546223d509a906986fada1d3f39b61af1a35f4af989a; GLB a8e793b267db27c2a06669dbb925c91b8863a99ec4f43f558c880a1d10a09b9a; determinismo PROVADO em 3 bakes (det do executor + reproducao independente do Critico, mesmos SHAs); faces com fonte 24.590, preenchidas 25.160, sem fonte alcancavel 0, anel medio 3,18 (max 21); proveniencia v2: 845.063 texels UV recomputados, diff 0; halo 2.709.638, diff 0; nenhum texel DENTRO da UV recebeu cor de dilatacao UV no modo 3d.
+- **Suite:** o Critico re-executou o discovery no .venv_app: **323 testes OK, skipped=1** (test_cor 31, test_cor_alinhamento 10, test_cor_preenchimento 8, resto reconciliado por modulo). Com o validar do Claude, a suite combinada e **341 OK, skipped=1** (323 + 18), medida no commit 29ebaa9.
+- **AUTOAUDITORIA (APR-02, confrontada pelo Critico, secao 8 do relatorio):** nao havia documento de autoauditoria no repo na hora da critica (a tranche ainda nao tinha atualizado REGISTRO/ESTADO — esperado pre-commit; este registro supre a lacuna). Os 3 defeitos alegados pelo executor foram CONFIRMADOS pelo Critico: (1) `dilatar` sem o parametro `dominio` (corrigido; teste novo o exerce); (2) A3 existia mas nao estava ligada ao bake (hoje ligada, controle `preenchimento` com default "3d"); (3) limiar +0,08 insatisfazivel em `test_recupera_protrusao` (prova analitica propria do Critico: maximo exato 0,93632959 = 2500/2670; o teste hoje afirma o que o caso realmente prova). Correcao honesta, nao mascara.
+- **VEREDITO — MECANISMO: APROVADO 8,5/10.** A0-A3 funcionam como alegado. Desconto: o S2 do caminho de salvamento (pre-existente, nao regressao da COR-08) + S3 de nomenclatura/documentacao.
+- **VEREDITO — QUALIDADE VISUAL: APROVADA 7,0/10, COM RESSALVA EXPLICITA.** Nenhum gatilho do padrao do olho do Mestre disparou: sem confete generalizado, rosto legivel nas 4 vistas em que aparece, regioes de cor se sustentam (pele verde, pano vermelho, pelo, armadura, osso); a COR-08 e um pouco mais limpa que a baseline. **A ressalva faz parte do veredito e nao pode ser omitida ao cita-lo: esta aprovacao visual NAO e aprovacao de fidelidade a arte** — o modelo continua longe da arte canonica em detalhe fino, e o gap e de pose/geometria, nao so de alinhamento. Nunca citar esta secao como "a cor foi aprovada" sem a ressalva (L-33).
+- **D1: ABERTA (confirmado, nao refutado).** Nenhuma vista atinge a regua >= 0,88 do estudo D1; maximo medido: frente 0,8177. O proximo ataque precisa mirar o que o IoU nao alcanca: a diferenca de pose/proporcao entre arte e malha (A8 segue estacionada como contingencia; nenhuma afinidade fecha proporcao divergente).
+- **Pendencias abertas nomeadas (do veredito; nenhuma bloqueia o commit do mecanismo, todas bloqueiam alguma afirmacao futura):**
+  - **S2-COR08-1 (sRGB x LINEAR — PROXIMO PASSO, antes de qualquer afirmacao de fidelidade via `textura.png`):** a arte e lida sem decodificacao sRGB (bytes crus tratados como lineares), as medias sao tiradas em espaco sRGB, e o `save_render` sob o default AgX mapeia branco 255 -> 197 (-23%): o `textura.png` entregue e AgX(textura do GLB), nao a textura entregue (diff media global 5,57/255 na COR-08; so 15,5% dos texels UV identicos entre os dois arquivos). O GLB entregue e fiel aos bytes da arte nos texels diretos. **Correcao provada pelo Critico: fixar `cena.view_settings.view_transform = "Standard"` antes do `save_render` em `_blender_cor.py` (sonda: Standard = identidade byte a byte) + teste de regressao. NAO usar "Raw": a sonda mediu Raw = curva de potencia 2.2 (0,5 -> 55), ou seja, escurece.** Ate o fix, quem seguir a D10 ("amostrar a textura") deve amostrar o GLB, nao o `textura.png`.
+  - S3-COR08-2: campo `texels_por_dilatacao_restrita` mente no modo `uv` (carrega o total da dilatacao irrestrita); renomear/separar.
+  - S3-COR08-3: argumento da ablacao via IoU e vazio (IoU@256 e invariante ao tamanho da textura); e os IoUs da ancora "0,7237-0,7929" nao tem lastro no `resultado_cor.json` da ancora (la, `iou_bake_256 = None`) — a citacao fica corrigida neste registro: os IoUs da ancora sao do diagnostico de silhueta do estudo D1, nao de um IoU de bake medido.
+  - S3-COR08-4: `passo.py` nao fixa `alinhamento` nem `preenchimento` no `pedido_cor` (a fila depende dos defaults de `_blender_cor.py`); fixar as chaves.
+  - S4-COR08-5: `margem_min_px` medida numa grade 512 e escalada (4 @1024 e 8 @2048 sao A MESMA margem); reportar normalizado ou renomear.
+  - S4-COR08-6: `dominio_dilatacao_restrita` exclui os texels das faces inalcancaveis, mas NAO a faixa de 8 px ao redor delas (o halo continua pintado; sem impacto visual direto, pois esta fora de qualquer triangulo) — documentar com essas palavras.
+- **Limites registrados pelo Critico (nao inventados):** renders flat/unlit independentes falharam 3x (quirk do harness de importacao no Blender 5.2, nao defeito da tranche; evidencia visual = previas do proprio bake + analise numerica direta); verificacao per-texel da fonte BFS coberta indiretamente (recomendacao: o bake passar a salvar o mapa texel-face e a mascara de proveniencia como artefatos do job); tempos de bake variam (47,8 s na reproducao do Critico vs 54,35 s do executor) — os SHAs nao variam.
+- **Licoes novas:** L-39 (sRGB/AgX no salvamento), L-40 (IoU invariante a resolucao + nome de campo que mente) — ver APRENDIZADO_E_FLUXO.md.
+- **Espelho no Drive (fechamento COR-08):** ESTADO_ATUAL, REGISTRO, DECISOES, APRENDIZADO_E_FLUXO e CRITICO-cor08-relatorio atualizados em `Oficina3D_v2\REGISTRO` via G: e conferidos por SHA-256 na volta (Drive = PC; 5/5).
+
+## 2026-11-01 — S2-COR08-1 DESDOBRADO (salvamento FECHADO; pipeline linear ABERTA) — veredito do Critico senior
+
+- **Reconciliacao desta rodada (REG-01 / anti-colisao):** a execucao comecou com a leitura inicial do executor dizendo HEAD 29ebaa9 — leitura ERRADA, corrigida aqui: o topo ja era 27704b1 (COR-08, 18:13) desde antes da execucao. A brief do Critico repetiu o 29ebaa9 (e o Critico citou 26b6a13, registrado por ele como S4-3, sem impacto). Durante a execucao, o topo de main avancou para 26b6a13 (docs: observacao do Mestre 18:59, hipotese de raiz da D1, H1/H2/H3), que so toca docs/ESTADO_ATUAL.md (+12) e nao toca o codigo desta tranche. O commit desta tranche vai sobre 26b6a13; o push publica os dois (26b6a13 estava ahead of origin by 1). Nenhuma duplicacao: a tranche S2 nao foi reescrita por ninguem.
+- **O fix:** `oficina3d/cor/_blender_cor.py:546` — `bpy.context.scene.view_settings.view_transform = "Standard"` na linha imediatamente anterior ao `img.save_render` (547), dentro de `main()`, sem try/except de proposito (se a cena nao aceitar Standard, o bake falha alto em vez de entregar textura falsificada). `testes/test_cor.py`: classe `TestSaveRenderStandard` (2 testes: ordem Standard→save dentro de main() + caminho unico de save_render no app).
+- **Provas do executor (jobs_teste/s2cor08-1, via tarefa agendada pythonw, invisivel):** a primeira tentativa com processo destacado via Start-Process morreu com a sessao SSH (sem status, sem stderr) — relancada via tarefa agendada, que foi removida apos o uso (L-41). Bake sintetico (cubo, cores puras): textura vs PNG do GLB 100% identicos, diff 0; cores puras exatas (vermelho 8084, verde 11645, azul 10965, amarelo 15130). Reproducao COR-08 (Orc Prata, ancora COR-05, 2048, otimizado, 3d): GLB SHA-256 IDENTICO ao da COR-08 (`a8e793b2...`, exportacao verbatim, nao tocada pelo fix); textura SHA-256 MUDOU (`c7302ee1...` -> `e4056741...`); textura vs GLB 100% identicos, diff 0 (na COR-08 eram 15,5%). Suite: **343 testes OK, skipped=1, 28,42 s** no .venv_app (a primeira corrida guardada no status.json era pre-correcao do Path e dizia FAILED — ver S3-1).
+- **AUTOAUDITORIA (APR-02, confrontada pelo Critico — os 4 itens procedentes):** (i) `main()` nao tem variavel `cena` — fix ingenuo daria NameError; o fix usa `bpy.context.scene` (padrao de `renderizar_previas`); (ii) teste inicial comparava string com `/` e falhava no Windows (`\`) — corrigido para objetos Path, `test_cor.py` 33/33; (iii) prova destacada morta com a sessao SSH — relancada via tarefa pythonw; (iv) driver da prova lia chaves erradas (`iou_bake_256` no topo, `texels_diretos`) e gravava nulls — os nomes reais sao `por_vista.<vista>.iou_bake_256` e `cobertura.texels_pintados_direto`; nenhuma alegacao de SHA/pixel dependia deles.
+- **VEREDITO — MECANISMO: APROVADO 9,0/10** (docs/CRITICO-s2cor08-1-relatorio.md). **QUALIDADE VISUAL: NAO julgada nesta tranche** (nenhuma alegacao nova; as previas do bake novo sao pixel-identicas as da COR-08 — prova AUSENCIA DE MUDANCA visual, nao aprovacao de qualidade; o visual 7,0/10 com ressalva da COR-08 segue inalterado).
+- **VEREDITO — S2-COR08-1: DESDOBRADO (decisao do Critico, registrada aqui).** O S2 como escrito e "caminho de salvamento + medias em espaco sRGB" (carga sem decodificacao sRGB + `cores_diretas_por_face` tirando media de bytes sRGB). O fix corrige SO o salvamento — e a propria COR-08 prescreve o fix do salvamento + regressao como "correcao provada", classificando o erro das medias como "parte do S2" mas "nao quantificado como bloqueador isolado". Logo: **S2-salvamento FECHADO** (falsificacao 255->197 eliminada e provada); **S2-pipeline-linear ABERTA como pendencia nova nomeada** (afeta os VALORES pintados; erro pequeno para cores proximas, maior para alto contraste, ainda nao quantificado). Fechar o S2 integral aqui enterraria a metade das medias em silencio. Consequencia: nenhuma publicacao pode dizer "fidelidade de cor resolvida", nem a D1 pode ser dada como fechada em fidelidade de cor, ate essa pendencia ser quantificada ou decidida pelo Mestre.
+- **Verificacoes NOVAS do Critico (alem da bateria da COR-08):** N1 controle negativo pre-fix (GLB identico, textura vs GLB so 30,08%, diff_max 110, ZERO cores puras — a prova discrimina); N2 mutacao do teste (5 variantes: base OK, 4 falsas FALHAM — nao e tautologico quanto a local, ordem e sobrescrita); N3 diff vazio de `resultado_cor.json` novo vs `cor08rep` (IoUs, cobertura 420713/845063, dilatacao 2709638, tudo identico; so a textura mudou); N4 previas 4/4 pixel-identicas, IDAT igual (o fix nao tocou as previas); N5 varredura do app (unico save_render e o do fix; nenhum codigo le textura.png esperando AgX); N6 suite re-executada (343 OK, 28,26 s); N7 proveniencia das ancoras (SHAs conferem com `cor08rep`); N8 curva AgX re-medida no par antigo (15,554%, diff_max 64, media RGB 5,58 — igual a COR-08).
+- **Armadilha desarmada (L-42):** a primeira comparacao do Critico usou `jobs/20261101-101528-corint-orc-s7/cor/` como "COR-08" e divergiu — aquele diretorio guarda um bake ANTIGO a 1024 (o proprio codigo o chama de baseline superada, `textura ebd744a9...`). A baseline correta da COR-08 e `jobs_teste/cor08-critico/cor08rep/` (2048). Quem re-checar deve usar `cor08rep`, nao o diretorio do job.
+- **Defeitos do Critico e correcoes (condicoes, nao reprovacao):** S3-1 status.json contraditorio (bloco suite velho) — ANOTADO com a corrida final, original preservado; S3-2 driver com chaves erradas — CORRIGIDO para os nomes reais (+ docstring em raw, fim do SyntaxWarning); S4-1/S4-2 rigidez do teste (grafia exata; fatia ate o EOF) — DOCUMENTADA na docstring do teste (opcao "documentar"). Nenhum defeito S1/S2 no fix, no teste ou no mecanismo.
+- **Limites registrados pelo Critico (nao inventados):** a figura "15,5%" da COR-08 foi re-medida como 15,554% sobre a imagem inteira do par antigo (o relatorio a descreve sobre texels UV — ressalva de dominio, nao divergencia); contagens da suite por arquivo nao re-extraidas (total 343 conferido).
+- **Pendencias apos o fechamento:** S2-pipeline-linear ABERTA (nova); S3-COR08-2/3/4; S4-COR08-5/6. **PROXIMO PASSO (ordem do Mestre 18:59, secao Observacao do ESTADO): diagnostico de raiz da D1 (H1/H2/H3) ANTES de novas tranches de cor; o diagnostico reordena o ataque.** S3/S4 seguem nomeados para apos o diagnostico.
+- **Espelho no Drive (fechamento S2-COR08-1):** ESTADO_ATUAL, REGISTRO, APRENDIZADO_E_FLUXO, ESTUDO_MELHORIAS e CRITICO-s2cor08-1-relatorio atualizados em `Oficina3D_v2\REGISTRO` via G: e conferidos por SHA-256 na volta (Drive = PC; 5/5; prefixos de 12 hex: ESTADO_ATUAL 266992A854C3, REGISTRO 24882232768D, APRENDIZADO_E_FLUXO 871ADCB56347, ESTUDO_MELHORIAS B324126D4EB9, CRITICO-s2cor08-1-relatorio 0B469D2A3F44; DECISOES.md ja identica, sem alteracao nesta tranche). O REGISTRO commitado difere do espelhado so por esta linha de espelho.
+
+## 2026-11-01 — REF-01 lote 4 FECHADO nas traseiras (reconciliação de três Críticos) + frontal direita aberta
+
+- **Histórico do atraso (anti-colisão, 3 adiamentos):** o retrabalho foi julgado
+  em 01/11 ~15:2x (Crítico 1), o conflito entre Críticos em ~16:07 (Crítico 2) e
+  a reconciliação por ordem do Mestre em ~16:41 (terceiro Crítico) — e em todas
+  as rodadas seguintes a árvore do PC estava suja pela frente principal
+  (tranche COR-08, HEAD `0e8746e`; depois `27704b1` com a tranche S2-COR08-1 em
+  curso em 01/11 ~19:0x, o que adiou a aplicação mais uma vez). Pela regra
+  anti-colisão da frente REF-01, NENHUMA escrita foi feita no repo nessas
+  rodadas. [Aplicacao: rodada REF-01 agendada 01/11/2026 19:54, arvore limpa confirmada antes de qualquer escrita (git status vazio), HEAD f4942ae; S2-COR08-1 ja fechado no commit 22b9d5c.]
+- **Instalação (testes/referencias/, gitignored — arte do RPG nunca entra no
+  git, conferido com `git check-ignore`):** `orc_diag_tras_esq.png` SUBSTITUÍDA
+  pela refeita aprovada — SHA-256 PC após a cópia =
+  `ad57447a31c9743b9d40967a0824d0fee3d85848c84d3b2665d6ce59c95c618e`
+  (2.274.898 B), idêntico ao local e ao da reconciliação. A reprovada
+  `6D0B0B35…37A6CA26413` NÃO existe mais no PC como referência (não há duas
+  "esquerdas"); o conteúdo reprovado segue preservado só no bruto local do
+  executor. `orc_diag_tras_dir.png` conferida intacta após a troca:
+  `ACB515D2…B7372250B`. **NÃO instalada** `orc_diag_frente_esq.png`
+  (reprovada por duplicidade; fica só local, como registro do erro).
+- **Vereditos finais (relatórios integrais em docs/, sem apagar nenhum):**
+  `docs/CRITICO-ref01-lote4-retrabalho.md` (Crítico 1),
+  `docs/CRITICO-ref01-lote4-v2.md` (Crítico 2 — registro-resumo fiel; o texto
+  integral do handoff ~16:07 não ficou preservado em arquivo, e isso está
+  declarado no cabeçalho do próprio documento, sem tabelas recriadas) e
+  `docs/CRITICO-ref01-lote4-reconciliacao.md` (terceiro Crítico, ordem do
+  Mestre) — este último PREVALECE.
+- **Crítico 1 (retrabalho):** refeita APROVADA — N2 nos três critérios por
+  medição independente (IoU com `tras_dir` 0,732 < 0,85; faixa 0,521 contra
+  1,774 da direita, sentidos invertidos; pé em perfil em lados opostos);
+  N1 passa; N3 passa (saiote Δ=(1,4,3) contra a frente canônica). **ESP-4.1 /
+  ESP-4.2 — dois itens da especificação anterior provados ERRADOS contra as
+  fontes (corrigir o item, não a imagem):** item 5 (alça descendo para o
+  quadril viewer-esquerdo) — nas costas a diagonal é superior-esquerda →
+  inferior-direita, descendo para o quadril viewer-direito, como em
+  `costas_v2`/`tras_dir`; item 6 (caveira grande à esquerda) — o conjunto
+  caveira+argolas+pingente está à DIREITA em TODAS as cinco vistas existentes.
+  **Frente esquerda REPROVADA como entrada nova — DUP-4.3 S2:** é a
+  `tresquartos_v2` re-renderizada (IoU 0,960, todas as âncoras iguais).
+  Verificações novas: N4 (lateralização por vista cruzada) e N5 (novidade
+  angular: IoU > 0,90 contra vista aprovada = duplicata).
+- **Crítico 2 (v2):** refeita REPROVADA (SYM-5.1 alça não espelhada + SYM-5.2
+  caveira à direita, regra nova NV-1 "exigir inversão entre frente e
+  costas"); frente esquerda APROVADA (S3 giro fraco ~20°) sem mencionar a
+  duplicidade; `tras_dir` mantida "com o desvio anotado" pelo mesmo traço —
+  incoerência interna. Verificações novas dele: NV-1, NV-2 (solos, > 0,04 =
+  pé fora do solo), NV-3 (fundo + margens).
+- **Reconciliação (terceiro Crítico, re-medição própria com 3 limiares de
+  fundo + grade impressa de 0,1):** Crítico 1 acertou os DOIS vereditos; Crítico
+  2 acertou os FATOS e errou todas as decisões. Números do reconciliador:
+  IoU refeita × `tras_dir` 0,734 (0,730–0,738); faixa 0,580 × 1,601 (invertida);
+  grade da caveira: frente 0,57 / costas 0,56 / refeita 0,64 — sempre à direita
+  (o 0,76 do Crítico 2 erra por +0,12); IoU frente_esq × `tresquartos_v2`
+  0,962 (DUP-4.3 confirmado). **REGRA FINAL (§5 da reconciliação, uma frase):**
+  em qualquer vista nova do Orc, o kit fixo ao corpo se desenha exatamente
+  como nas vistas aprovadas da mesma família — caveira grande sempre à
+  DIREITA do losango em coordenadas de imagem e alça sempre na diagonal
+  superior-esquerda → inferior-direita — mudando de lado apenas os sinais da
+  câmera (lobo, ombreira, perfil do rosto, pé em perfil). Fundamento corrigido
+  do ESP-4.1: a física NÃO governa este arsenal (cinto como anel rígido
+  exigiria a caveira em φ≈+50° na frente e φ≈220° nas costas — impossível;
+  faixa contínua exigiria diagonais opostas frente×costas, que o próprio
+  cânone viola); quem governa é o cânone. NV-1 RETIRADA (substituída por N7);
+  POS-5.1 reclassificado S4 (Δ sola 0,054 = profundidade da postura; a
+  `tras_dir` aprovada tem 0,039); CAP-5.1 confirmado S4. **LOTE 4: traseiras
+  FECHADAS; frontal permanece aberta só na vaga direita.**
+- **Correção de nomenclatura (vale sobre a nota do lote 4 parcial):** a
+  `tresquartos_v2` É a diagonal frontal ESQUERDA do arsenal (lobo à direita de
+  quem olha, lado esquerdo próximo) — a nota anterior a chamava de frontal
+  direita, o que estava errado. A vaga aberta no par frontal é a diagonal
+  frontal DIREITA, com especificação exata no §7 da reconciliação (câmera na
+  frente-direita; ombreira proeminente à esquerda de quem olha; rosto em 3/4
+  para a esquerda; pé viewer-esquerdo em perfil para a esquerda; kit PELA
+  REGRA, sem espelhar; aceite N5 < 0,85 contra `tresquartos_v2` E contra a
+  frente).
+- **AUTOAUDITORIA do executor nesta rodada de aplicação (APR-02):** conferi
+  com os meus olhos a refeita antes de instalar — lobo proeminente à
+  esquerda, rosto em perfil para a esquerda, pé viewer-esquerdo em perfil
+  para a esquerda, pé viewer-direito traseiro com sola visível e um pouco
+  mais alto (S4 de profundidade, não flutuação), capa proeminente à esquerda
+  abaixo da cintura, losango central, caveira grande à direita do losango,
+  alça na diagonal superior-esquerda → inferior-direita, zero bolsinhas,
+  zero machado, corpo inteiro, fundo cinza-claro liso, tom oliva. Nenhum
+  defeito novo achado por mim; os restantes são os S4 já registrados
+  (POS-5.1, CAP-5.1, saturação de um braço) e a vaga da frontal direita.
+  Não autoaprovei nada: a instalação executa o veredito final da
+  reconciliação, não um juízo meu.
+- **Frontal direita — situação ao fechar esta rodada (NÃO é lote concluído,
+  NÃO vai ao Mestre como entrega):** 7 tentativas geradas em duas rodadas
+  anteriores (3 + 4), TODAS reprovadas na autoauditoria adversarial do
+  executor, nenhuma submetida ao Crítico nem instalada — viés sistemático do
+  gerador 7/7 (rosto à direita, lobo proeminente à direita, pé em perfil à
+  direita, quando a vaga exige o oposto). Próxima rodada REF-01: NÃO repetir
+  variação de fraseado sobre frente/T-pose (espaço varrido); decidir entre
+  edição controlada, âncora nas traseiras, consulta de processo ao Crítico,
+  ou decisão do Mestre — ver as autoauditorias
+  `autoauditoria-orc-diag-frente-dir.md` e `autoauditoria-orc-diag-frente-dir-r2.md`.
+  Depois da frontal direita: classificação das 5 bestas novas de 31/10.
+- **Commit desta rodada (só documentos):** instalar os 3 relatórios em
+  `docs/` + esta entrada + ESTADO_ATUAL + APRENDIZADO_E_FLUXO (L-43, N4–N8).
+  A imagem instalada é gitignored e não entra no commit — como manda a regra
+  da frente (arte do RPG nunca no git).
+
+## Adocao das pesquisas - P0 CONCLUIDO e pacotes P1-P5 preparados (01/11/2026, noite)
+
+Por ordem do Mestre (01/11 20:01, bloco ADOCAO DAS PESQUISAS no ESTADO), 10 agentes trabalharam em paralelo na producao local dos pacotes da fila P0-P5, a partir de docs/ESTUDO-RAIZ-D1-SOLUCOES.md e docs/ESTUDO-ROTAS-MODELAGEM-PINTURA.md (com as correcoes de docs/CRITICO-estudo-raiz-d1.md). Producao local na VM do Muse em ~/workspace/oficina-audit/adocao/, indice INDICE-ADOCAO.md. TODAS as 10 frentes ENTREGUES; cada pacote so vira tranche executavel com o seu Critico senior proprio.
+
+P0 - DIAGNOSTICO COMPLETO (laudos entregues, medicoes proprias):
+- D-H0 (d-h0-concordancia.md, 8.575 B, SHA-256 6F0F804A...): as 4 referencias concordam no tronco e no kit (regra do kit 4/4); a discordancia mora na postura das pernas e na capa (compromisso conhecido); enquadramento varia 5,7%. Rota A liberada sem regenerar referencias.
+- H2 residual (h2-residual.md, 7.088 B, SHA-256 3AD5B900...): duplicacao REFUTADA por medicao completa (1 componente, 0 duplicadas, 0 degeneradas, watertight); autointersecao residual CONFIRMADA em escala pequena (37 pares, 71 faces = 0,14%, pernas/tronco/cintura); 2 faces internas persistentes. Conduta: nao tocar na ancora; mitigar na pintura; eliminar por construcao na retopologia.
+- D-H4 (d-h4-instrumentos.md, 8.838 B, SHA-256 655CF1EB...): salto de cor por classe de aresta - interna 50,73; fronteira de vista 71,19; costura UV 106,00; fronteira PURA de vista 49,07, igual a interna (a borda dominante e a costura do atlas, nao a vista). Disputa de pintura: 114.370 texels (27,18% dos diretos), discordancia media 109,46, uniforme entre pares - a H4 mora DENTRO das zonas de sobreposicao, nao nas bordas entre faces.
+- Territorios, base da P1 (p1-territorios.md, 13.385 B, SHA-256 96ACF143...): replica do bake validada exata (IoU das 4 vistas identico; -1 texel em 845.063); 53,0% das faces com autoridade de vista; 47,01% cegas; fronteira = 39,94% da area; preenchimento com barreiras custa media 3,24 (livre 3,18), teto 21, e cria 254 faces orfas que exigem politica explicita (proposta registrada: onda livre com proveniencia contada, nunca silenciosa). Mapa em adocao/p1/territorios_orc.npz - consumir por hash, nao recalcular por job.
+
+P1: pacote de territorios PRONTO (acima). A execucao (pesos territoriais mirando os texels em disputa + preenchimento com barreiras + politica das orfas) e a PROXIMA tranche, com Critico senior proprio.
+P2: DESENHO PRONTO (p2-waechter-desenho.md, 23.509 B, SHA-256 21F22C87...): rotulagem v0 deterministica + ICM (v1 MRF condicional), nivelamento global, Poisson em faixa sobre a malha; fatias P2.0-P2.4 atras de flags; aguarda a forma-ancora definitiva (C-11) e o seu Critico.
+P3: painel PRONTO e TESTADO com o braco 0 = COR-08 (p3-painel.md, 11.522 B, SHA-256 372E3E88...): regua validada (IoU medido do render repete o pipeline com diferenca <= 0,003); cobertura direta 49,78%; proveniencia anel medio 3,18, max 21; placar de assinatura do braco 0 = 5/12 PARCIAL (validacao do instrumento, nao-cego). Achado de procedimento: os renders salvos do Critico da COR-08 sao clay (sem cor) - o SSIM oficial de cada braco exige o render flat do harness (renderizar_flat.py). Identidade do braco A CONFIRMADA (identidade-mv-turbo.md, 5.484 B, SHA-256 0B0DEA03...): mv-turbo = Hunyuan3D-2mv Turbo oficial, slots nomeados ja existem no codigo. Braco B PRONTO para executar (braco-b-pacote.md, 16.963 B, SHA-256 8ED4CF02...): o TripoSG NAO estava instalado nem baixado (correcao ao estudo de rotas); checklist de instalacao em 5 passos; VRAM ">8 GB" no limite dos 8.188 MB da 4060 - a primeira execucao e a medicao decisiva.
+P4: sem artefato dedicado nesta leva (depende de P0/P3) - desenho no bloco ADOCAO do ESTADO.
+P5: prontidao do T7 PRONTA (t7-prontidao.md, 15.496 B, SHA-256 40466FCB...): rotulo corrigido (pacote ComfyUI de comunidade, nao o framework oficial; numeros previos = alegacao a medir); checklist executavel de 8 fases com SHA-256 dos 7 pesos como portao; roda em paralelo sob a trava de GPU. Braco T3 (Paint 2.0 via fork 2GP) sem artefato novo nesta leva.
+
+Proximo passo: executar a P1 a partir do pacote de territorios, com autoauditoria adversarial registrada antes de submeter e Critico senior proprio (mecanismo x qualidade visual separados, L-33); painel de metricas do Mestre em toda tranche de modelagem/pintura.
+
+## 2026-11-01 — REF-01 rodada 3 da frontal direita do Orc + consulta de processo ao Crítico (NÃO é lote concluído, NÃO vai ao Mestre)
+
+- **Anti-colisão:** árvore do PC conferida LIMPA antes de qualquer escrita
+  (HEAD `6d93280`, `git status --porcelain` vazio). A aplicação do Adendo 3
+  (lote 4) já estava feita na rodada 19:54; esta rodada trata SÓ da vaga da
+  diagonal frontal DIREITA.
+- **Decisão de rota (cumprindo a autoauditoria r2):** NÃO foi variação de
+  fraseado — foi a hipótese (b) da r2, âncora nas TRASEIRAS. As 7 tentativas
+  anteriores usaram frente/tresquartos/T-pose (família frontal, onde mora o
+  viés); nesta rodada a fonte principal é a traseira aprovada
+  `orc_diag_tras_esq_refeita.png` (SHA `ad57447a…c95c618e`, conferido igual
+  ao da reconciliação e ao instalado no PC), sozinha (t1, t3) ou com a frente
+  canônica como autoridade do kit (t2, t4). Teto da rodada: 4 imagens.
+- **Tentativas (autoauditoria adversarial registrada em
+  `autoauditoria-orc-diag-frente-dir-r3.md`, local do executor; nenhuma
+  instalada no PC, nenhuma submetida como candidata):**
+
+  | # | SHA-256 integral | IoU × tresquartos_v2 (25/35/45) | IoU × frente (25/35/45) | Julgamento |
+  |---|---|---|---|---|
+  | r3-t1 | `74ecb708…f9b418` | 0,780 / 0,773 / 0,767 ✓ | 0,646 / 0,622 / 0,598 ✓ | REPROVADA: passa N5, falha rosto (direita), pés (esq. frontal / dir. perfil direita) e lobo (proeminente à direita) |
+  | r3-t2 | `42510537…f9fa2355285eca` | 0,756 / 0,749 / 0,743 ✓ | 0,699 / 0,673 / 0,647 ✓ | REPROVADA como candidata — MELHOR EM 11: passa rosto (3/4 esquerda), pés (esq. perfil esquerda, dir. frontal), kit §5 e N5 completo (6/6 vistas, 3/3 limiares, máx. 0,756); falha SÓ metade do item 1: lobo à direita mas grande e proeminente, 0% de oclusão, em vez de recuado atrás da linha do ombro |
+  | r3-t3 | `80f5f1d09bf85279edf522004ff19abd50dddf4d24af8b988aa286b3365355e4` | 0,765 / 0,757 / 0,750 ✓ | 0,647 / 0,621 / 0,596 ✓ | REPROVADA: passa N5, falha rosto, pés e lobo como a t1 |
+  | r3-t4 | `ec9a52ae…ac1a034caf23c8` | 0,856 / 0,848 / 0,840 ✗ instável | 0,672 / 0,646 / 0,619 ✓ | REPROVADA: falha rosto, pés, lobo e N5 instável (cruza 0,85 entre limiares) |
+
+  r3-t2 contra as demais vistas aprovadas (25/35/45): costas_v2
+  0,755/0,749/0,745 ✓; tras_dir 0,722/0,714/0,710 ✓; tras_esq_refeita
+  0,731/0,724/0,720 ✓; tpose_v2 0,422/0,420/0,416 ✓. Método: script
+  `iou_ref01.py` (máscara por distância ao fundo, bbox, grade 500×500
+  NEAREST), guardado com a autoauditoria. Zooms de conferência da t2:
+  lobo grande à frente da capa, focinho para a direita; pé esquerdo em
+  perfil para a esquerda com sola visível; pé direito frontal.
+- **Verificação nova N9 (APR-01, proposta do executor, ADOTADA pela
+  consulta — ver abaixo):** N5 exige IoU < 0,85 no MÁXIMO dos três limiares
+  (25/35/45), contra TODAS as vistas aprovadas. A r3-t4 é a prova do furo
+  da regra antiga: passaria só no limiar 35 (0,848) sendo composição da
+  família da diagonal esquerda.
+- **Consulta de processo ao Crítico Visual sênior independente
+  (docs/CONSULTA-ref01-frente-dir-r3.md, integral no repo; NÃO é veredito
+  de candidatura, NÃO instala nada, NÃO reporta ao Mestre):** primeira
+  tentativa da consulta perdida por reinício do daemon (sem resultado);
+  reemitida integralmente e concluída com relatório gravado. O Crítico
+  releu a reconciliação (§5/§7/§8, N6), as autoauditorias r2/r3, viu as
+  imagens com os próprios olhos e re-mediu tudo com o mesmo script:
+  - Q1 — leitura do executor sobre a t2 CONFIRMADA nos 4 subitens (rosto,
+    pés, kit §5, N5 18/18 medições, máx. 0,756, diferença 0,000 em todas as
+    células publicadas pelo executor); rivais t1/t3 também conferidas
+    (N5 passa, rosto/pés falham).
+  - Q2 — lobo da t2: FALHA do item 1 do §7, segunda metade, **S2**
+    (impede a entrada como está, exige retrabalho; não é S1 porque é
+    localizado e remediável, nem S3/S4 porque viola item explícito e o
+    sinal de câmera que justifica a vista). Oclusão medida: 0% — nenhuma
+    parte cortada pela linha do ombro/capa; nas referências de "recuado"
+    (`costas_v2`, `tras_dir`) só focinho e uma orelha espiam. Item 5
+    confirmado na t2 (tubo de osso no quadril esquerdo NÃO é bolsinha);
+    ombreira esquerda passa; olhar do lobo para a direita (orc para a
+    esquerda) registrado como S4 de coerência a re-checar, não como falha
+    autônoma.
+  - Q3 — edição controlada da t2: **SIM, com 6 condições exatas** (região
+    só x > 0,65, y < 0,35; original preservado, editado com nome/hash
+    novos; oclusão parcial REAL do lobo + fusão com tronco/capa + lobo
+    preservado como lobo; re-verificação TOTAL do §7 por Crítico
+    independente; N5/N9 no editado contra as 6 vistas; nenhum defeito
+    novo na região; UMA única tentativa de edição, sem loop de remendo).
+    Vetados: flip puro, só reduzir a cabeça sem oclusão, tocar rosto/pés/
+    cinto para "compensar". O editado será NOVO candidato, julgado do
+    zero — nada do que a t2 passou é herdado se a ferramenta re-renderizar
+    a imagem inteira.
+  - Q4 (condicional) — se a edição falhar: declarar a vaga intratável por
+    geração/edição e pedir decisão do Mestre (a: aceitar a lacuna; b:
+    edição manual externa sob as mesmas condições; c: exceção documentada
+    — DESACONSELHADA pelo Crítico). Vetado: mais uma variação de prompt,
+    usar t1/t4 como base, gerar sem lobo para "adicionar depois".
+  - Q5 — N9: **ADOTADA** (redação: "máximo dos três limiares"), com teste
+    N7 cumprido (par aprovado mais próximo do limiar, `tras_dir` ×
+    `costas_v2`, 0,832–0,841 na faixa — nenhuma aprovada reprovada pela
+    regra nova). N10 proposta (auditoria de região da edição) fica para o
+    Crítico da rodada da edição decidir.
+- **Achado incidental de higiene (consulta, §0; corrigido aqui):** no
+  diretório local do executor, `orc_diag_tras_esq.png` tem o MESMO hash da
+  refeita (`ad57447a…`) — sob esse nome já não se distingue a original
+  reprovada. A original NÃO está perdida: sobrevive como bruto do gerador
+  (`media-generation-orc-diag-tras-esq-0-dd1f2a94…png`, SHA
+  `6D0B0B35…37A6CA26413`). Sem efeito nas conclusões (a autoridade vigente
+  é a refeita, e foi contra ela que se mediu).
+- **AUTOAUDITORIA do executor nesta rodada (APR-02):** conferi as 4 com os
+  meus olhos (inteiras + zooms da t2) antes de qualquer submissão; a t2
+  foi reprovada por mim como candidata apesar de ser a melhor em 11 —
+  parcial não vai ao Crítico como candidata, pela regra das rodadas
+  anteriores. Defeito achado por mim e NÃO corrigido aqui (de propósito,
+  por ser decisão de processo): o lobo da t2 — levado à consulta em vez
+  de "ajeitado" por conta própria. Nenhum defeito novo nas demais; a t4
+  quase-duplicata foi pega pela N9, não pelo olho.
+- **Próximo passo (ordem de processo, não lote concluído):** tentativa
+  ÚNICA de edição controlada da t2 sob as 6 condições da consulta, com
+  autoauditoria adversarial + Crítico Visual independente julgando o
+  editado do zero (N10 a decidir por ele). Se a edição falhar, o pedido
+  de decisão vai ao Mestre nos termos do §4 da consulta. Depois da
+  frontal direita: classificação das 5 bestas novas de 31/10.
+- **Commit desta rodada (só documentos):** esta entrada + ESTADO_ATUAL +
+  APRENDIZADO_E_FLUXO (N9, N10 proposta, L-44) + relatório integral da
+  consulta em `docs/CONSULTA-ref01-frente-dir-r3.md`. Nenhuma imagem
+  instalada no PC nesta rodada (a t2 segue só local; a arte do RPG nunca
+  entra no git).

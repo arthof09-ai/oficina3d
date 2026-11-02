@@ -3,6 +3,8 @@ de UV + cor de vertice (rascunho/rede de seguranca).
 
 - ``projecao``: matematica pura (cameras, facing, rasterizacao, dilatacao,
   metricas de UV) - testavel sem Blender.
+- ``preenchimento``: preenchimento 3D das zonas cegas (COR-08/A3) -
+  difusao por adjacencia da malha com solda, no lugar da dilatacao UV.
 - ``vertice``: matematica pura do T2 (amostragem das vistas nos vertices,
   mescla da cor da forma, propagacao pela malha) - testavel sem Blender.
 - ``_blender_cor``: script headless do Blender (mesmo padrao de

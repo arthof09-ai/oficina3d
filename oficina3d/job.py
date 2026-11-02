@@ -508,6 +508,10 @@ def _validar_opcao(k: str, v):
         if v not in config.MODOS_COR:
             raise ValueError(f"cor_modo desconhecido: {v!r} (use {', '.join(config.MODOS_COR)})")
         return v
+    if k == "validar_perfil":
+        if v not in config.PERFIS_VALIDACAO:
+            raise ValueError(f"validar_perfil desconhecido: {v!r} (use {', '.join(config.PERFIS_VALIDACAO)})")
+        return v
     if k == "qualidade":
         if v not in qualidades.PERFIS:
             raise ValueError(f"qualidade desconhecida: {v!r} (use {', '.join(qualidades.PERFIS)})")

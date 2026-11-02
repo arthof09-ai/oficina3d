@@ -40,7 +40,8 @@ from pathlib import Path
 from . import config, job, motores
 from .motores import base
 
-FAIXAS = {"entrada": (0, 10), "forma": (10, 80), "refino": (80, 95), "cor": (95, 98), "exportar": (98, 100), "arquivar": (100, 100)}
+FAIXAS = {"entrada": (0, 10), "forma": (10, 80), "refino": (80, 95), "cor": (95, 98), "validar": (98, 98),
+          "exportar": (98, 100), "arquivar": (100, 100)}
 INTERVALO_CANCEL_S = 3.0
 INTERVALO_SALVAR_S = 2.0
 INTERVALO_HISTORICO_S = 30.0
@@ -265,6 +266,20 @@ def _etapa_cor(job_dir: Path, glb_refinado: Path, imagens: list[dict], progresso
 
 # --------------------------------------------------------------------------- processamento
 
+def _etapa_validar(job_dir: Path, glb: Path, perfil: str) -> dict:
+    """Etapa `validar`: grava saida/validacao.json. Qualquer falha do validador volta
+    como dict reprovado com `erro_validador` (a validação nunca derruba um job pronto)."""
+    try:
+        from oficina3d import validar
+        res = validar.validar(glb, job_dir / "saida", {"perfil": perfil})
+    except Exception as e:  # noqa: BLE001
+        _log(job_dir, f"validar: o validador falhou: {type(e).__name__}: {e}")
+        return {"aprovado": False, "perfil": perfil, "regras": [],
+                "erro_validador": f"{type(e).__name__}: {str(e).splitlines()[0] if str(e) else ''}"[:300]}
+    return {"aprovado": res["aprovado"], "perfil": res["perfil"], "regras": res["regras"],
+            "relatorio": "saida/validacao.json", "pendente": res["pendente"], "tempo_s": res["tempo_s"]}
+
+
 def processar_job(job_id: str) -> dict:
     """Processa um job do começo ao fim. Devolve o job final (estado concluido/erro/cancelado).
 
@@ -398,6 +413,23 @@ def processar_job(job_id: str) -> dict:
                 _registrar(jb, "cor", f"cor pronta: textura {res_cor['arquivos']['textura']}",
                            progresso=FAIXAS["cor"][1])
 
+        # 3c. validar (Fase 2 item 1; reprovado ou validador quebrado = aviso, nunca erro do job)
+        if op.get("validar", True):
+            etapa_atual = "validar"
+            _verificar_cancelado(jb)
+            t = time.time()
+            etapas["validar"] = _etapa_validar(job_dir, modelo_final, op.get("validar_perfil") or "oficina")
+            tempos["validar"] = round(time.time() - t, 2)
+            v = etapas["validar"]
+            if v.get("aprovado"):
+                _registrar(jb, "validar", f"validação {v['perfil']}: aprovado", progresso=FAIXAS["validar"][1])
+            else:
+                motivo = v.get("erro_validador") or ", ".join(
+                    r["id"] for r in v.get("regras", []) if not r["ok"] and r["severidade"] == "erro")
+                jb["avisos"].append(f"validar ({v.get('perfil')}): reprovado: {motivo}")
+                _registrar(jb, "validar", f"validação {v.get('perfil')}: reprovado ({motivo})",
+                           progresso=FAIXAS["validar"][1])
+
         # 4. exportar --------------------------------------------------------
         etapa_atual = "exportar"
         t = time.time()
@@ -413,6 +445,8 @@ def processar_job(job_id: str) -> dict:
         }
         if op.get("cor"):
             jb["resultado"]["glb_sem_cor"] = "saida/modelo_sem_cor.glb"
+        if (etapas.get("validar") or {}).get("relatorio"):
+            jb["resultado"]["validacao"] = etapas["validar"]["relatorio"]
         jb["progresso"] = 100
         jb["estado"] = "concluido"
         jb["concluido_em"] = job.agora()

@@ -41,7 +41,10 @@ SCRIPT_UV = AQUI / "_blender_uv_xatlas.py"
 
 VISTAS_COR = ("frente", "costas", "esquerda", "direita")
 TOLERANCIA_OCUPACAO = 0.02
-TAMANHO_TEXTURA = 1024
+# COR-08/A2: o bake assa em 2048, casado com o gutter da D-T5-1 (a UV e
+# parametrizada com padding 8 em 2048). A 1024, o mesmo gutter comia o
+# dobro da area e a prova caia para 4,247 texels/face (causa C4 da D1).
+TAMANHO_TEXTURA = 2048
 DILATACAO = 256
 TIMEOUT_UV_S = 900
 TIMEOUT_BAKE_S = 1800
