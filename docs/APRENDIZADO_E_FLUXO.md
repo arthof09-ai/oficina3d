@@ -86,6 +86,10 @@ Antes de convocar o Critico, o executor confere e resolve CADA item. A ideia (AP
 - [ ] Coordenada decisiva exige grade e referencial (N8): toda coordenada x/y usada como evidencia decisiva e lida em recorte com grade impressa (ou computada por script) e declara o referencial (imagem x bbox) e a convencao de qualquer razao (dir/esq x esq/dir). Coordenada "a olho" sem grade nao e medicao. [licao L-43]
 - [ ] REGRA FINAL do Orc (familia das vistas): kit fixo ao corpo exatamente como nas vistas aprovadas da mesma familia — caveira grande sempre a DIREITA do losango e alca sempre na diagonal superior-esquerda → inferior-direita em coordenadas de imagem; mudam de lado apenas os sinais da camera (lobo, ombreira, perfil do rosto, pe em perfil). Fisica de corpo rigido NAO governa este arsenal (o canone viola a faixa continua e o anel rigido) — quem governa e o canone. [licao L-43]
 
+- [ ] Editado/candidato de edicao entrega auditoria de regiao (N10): regiao tocada + comparacao antes/depois fora da regiao + re-medicao total; sem isso, julgado como geracao nova integral. [licoes L-REC-03]
+- [ ] Lobo recuado julgado primeiro pelo contorno FRONTAL (focinho/mandibula, N11/N12): cobrir a traseira nao recua a cabeca; cadeia facial completa = reprova. [licao L-REC-01]
+- [ ] Tamanho de cabeca de candidato recuado MEDIDO por caixa (mesmo metodo), nunca estimado a olho. [licao L-REC-02]
+
 ---
 
 ## 4. Diario de licoes
@@ -380,6 +384,21 @@ flip, 2 nao aplica; o docstring de uv_xatlas.py documenta os dois casos.
   traseira inconsistente do arsenal) e uma frontal duplicada instalada como
   "nova" ao lado da vista que ela copia.
 
+### L-REC-01 - Cobrir a traseira nao recua a cabeca (02/11/2026)
+
+- **Caso:** a edicao unica da r3-t2 cobriu a traseira da cabeca do lobo (orelhas 2 -> 1) mas deixou o perfil completo livre contra o fundo (olho, focinho, nariz, mandibula).
+- **Regra:** o teste do paragrafo 3(ii) e da N11(b) se le sobre o contorno FRONTAL (focinho/mandibula), nao sobre o superior/traseiro: e o contorno frontal livre que faz a leitura de sujeito. Futuras edicoes de lobo se julgam primeiro pelo focinho, nao pela orelha. (Checklist pre-Critico: item de lobo recuado.)
+
+### L-REC-02 - Caixa igual, cabeca igual (02/11/2026)
+
+- **Caso:** a impressao de "cabeca menor" no editado foi desmontada pela comparacao de caixas pelo mesmo metodo (editado x t2: areas 0,0240 x 0,0240).
+- **Regra:** tamanho de cabeca de candidato recuado se MEDE por caixa (mesmo metodo), nunca se estima a olho; sem medicao, "recuou" vira sinonimo de "mudou um pouco". (Checklist pre-Critico: item de caixa medida.)
+
+### L-REC-03 - A N10 paga o seu custo (02/11/2026)
+
+- **Caso:** a auditoria de regiao revelou a re-renderizacao total do editado (fora da regiao: media 10,0; 8,34% dos pixels com diferenca > 30) que a leitura visual nao revelaria ("parece a mesma" fora da regiao).
+- **Regra:** sem (ii) da N10, o editado teria herdado a t2 por presuncao. Auditoria de regiao e agora obrigatoria, nao opcional, para editados. (Checklist pre-Critico: item de auditoria de regiao.)
+
 ## 5. Regra de escalada do Critico (APR-01)
 
 O executor melhora antecipando; o Critico responde subindo a regua. E assim para sempre:
@@ -406,6 +425,7 @@ O executor melhora antecipando; o Critico responde subindo a regua. E assim para
 | 01/11/2026 | Bateria REF-01 lote 4 retrabalho (Critico 1) | Auditoria de lateralizacao por vista cruzada (N4) + auditoria de novidade angular (N5: IoU contra TODAS as aprovadas) | ESP-4.1/ESP-4.2 (2 itens da especificacao provados errados); DUP-4.3 S2 (frente_esq = tresquartos_v2, IoU 0,960); refeita APROVADA (N2 nos tres) |
 | 01/11/2026 | Bateria REF-01 lote 4 v2 (Critico 2) | Lateralizacao do cinto por vista (NV-1) + linha do solo/pes plantados (NV-2) + uniformidade do fundo/margens (NV-3) | NV-1 achou SYM-5.1/5.2 — mas a regra foi REFUTADA na reconciliacao (reprovaria o proprio canone); NV-2/NV-3 validas como medicao, sem forca de reprovacao aqui |
 | 01/11/2026 | Reconciliacao REF-01 lote 4 (terceiro Critico, ordem do Mestre) | Re-medicao propria com 3 limiares + grade impressa de 0,1 + kit como objeto 3D unico (anel rigido e faixa continua) + meta-auditoria dos dois Criticos (N6/N7/N8) | Critico 1 certo nos vereditos (justificativa do ESP-4.1 errada); Critico 2 certo nos fatos, errado em todas as decisoes; REGRA FINAL do Orc; par traseiro FECHADO; frente_esq rejeitada |
+| 02/11/2026 | Bateria REF-01 frente-dir editada (Critico Visual independente do ciclo) | Auditoria de regiao (N10, ADOTADA) + oclusao em dois planos (N11, ADOTADA) + teste do perfil completo (N12, APLICADA) | REPROVADO: D1 S2 (lobo nao fundido, subcriterio (ii) do paragrafo 3); D2 S3 processual (re-renderizacao total); licoes L-REC-01 a L-REC-03 |
 | 01/11/2026 | Bateria D-T2 (fechamento das pendencias do T2) | Reproducao propria da sabotagem + sabotagem em Y e Z + caso misto vistas + forma recusada + arestas do verificador (3o primitivo sem cor, sem meshes) + D-T2-2 fora do mock (passo de projecao real) + suite conferida arquivo a arquivo | X2/Y2/Y0,5/Z2 recusadas; misto conclui pelas vistas com forma 0%; S4-1/S4-2 de robustez; D-T2-1 FECHADA |
 | 01/11/2026 | Bateria COR-08 (ataque a D1) | Auditoria sRGB completa do caminho de salvamento (sondas Blender com valores conhecidos) + auditoria de proveniencia v2 com parse proprio do GLB + casos-limite adversariais proprios do codigo novo (14 checagens) + confrontacao da autoauditoria do executor ponto a ponto | S2-COR08-1 (AgX falsifica o textura.png; GLB fiel); S3-COR08-2/3/4; S4-COR08-5/6; D1 confirmada ABERTA |
 
@@ -444,7 +464,7 @@ O executor conferiu as imagens ANTES do Critico (protocolo de antecipacao) e ja 
 
 1. **Besta Cristalina (monstro)** - arte dourada instalada no PC: `testes/dourado/imagens/besta_{frente,costas,esquerda,direita}.png` (768x512); kit completo de 8 vistas recuperavel do Drive pelo indice da auditoria do Codex (relatorio de continuidade v002). Pose: a mais adequada a modelagem de uma criatura serpentina de cristal - sem T-pose.
 2. **Caprileo (monstro)** - arte dourada instalada: `testes/dourado/imagens/caprileo_{frente,costas,esquerda,direita}.png`; 8 vistas no mesmo indice do Drive. Pose adequada de quadrupede.
-3. **Orc - vistas diagonais** - o kit original tem 8 angulos; alem dos 4 cardeais instalados, as diagonais sao recuperaveis do Drive pelo mesmo indice (completar o conjunto de entrada multivista). (Lote 4 FECHADO nas traseiras 01/11: tras_dir + tras_esq refeita, apos reconciliacao de tres Criticos; tresquartos_v2 = diagonal frontal ESQUERDA — correcao da nota anterior; vaga aberta = diagonal frontal DIREITA, especificacao no §7 da reconciliacao, 7 tentativas reprovadas em autoauditoria por vies do gerador — nao repetir fraseado, decidir a rota antes de gerar de novo. Rodada 3 (20:54): rota decidida = ancora nas traseiras; r3-t2 melhor em 11 (rosto/pes/kit/N5 ok, so o lobo S2); consulta de processo aceita edicao controlada sob 6 condicoes; N9 ADOTADA; proximo passo = tentativa unica de edicao da t2 + Critico independente; se falhar, decisao do Mestre.)
+3. **Orc - vistas diagonais** - o kit original tem 8 angulos; alem dos 4 cardeais instalados, as diagonais sao recuperaveis do Drive pelo mesmo indice (completar o conjunto de entrada multivista). (Lote 4 FECHADO nas traseiras 01/11: tras_dir + tras_esq refeita, apos reconciliacao de tres Criticos; tresquartos_v2 = diagonal frontal ESQUERDA — correcao da nota anterior; vaga aberta = diagonal frontal DIREITA, especificacao no §7 da reconciliacao, 7 tentativas reprovadas em autoauditoria por vies do gerador — nao repetir fraseado, decidir a rota antes de gerar de novo. Rodada 3 (20:54): rota decidida = ancora nas traseiras; r3-t2 melhor em 11 (rosto/pes/kit/N5 ok, so o lobo S2); consulta de processo aceita edicao controlada sob 6 condicoes; N9 ADOTADA; proximo passo = tentativa unica de edicao da t2 + Critico independente; se falhar, decisao do Mestre.) Desfecho 02/11/2026: edicao REPROVADA (S2, subcriterio (ii) do paragrafo 3); decisao delegada do Critico CM-000009-I0003 (opcao 2: retoque manual humano so na regiao do lobo, sobre copia da t2, sob C-D1 a C-D9); vaga ABERTA com destino decidido - aguarda o retoque (ato de contratar do Mestre); a fila NAO espera: proximos sujeitos = classificacao das 5 bestas de 31/10 (Tartaruga-Mundo, Demonio de Lava, Dragao-Serpente do Raio, Besta do Vazio, Sombra da Tempestade).
 4. **Bestas novas de 31/10 (Drive)** - 5 referencias em `05 - Imagens e referencias/Referencias visuais/2026-10-31_RPG_besta-*.jpg` ("besta lendaria" / "besta do vazio"), localizadas pela sessao do Claude no PC e registradas no REGISTRO; nao foram usadas na Prova C (nao sao o kit nomeado). Classificar: se forem seres vivos com arte aproveitavel, entram na fila REF-01.
 
 
@@ -453,5 +473,7 @@ O executor conferiu as imagens ANTES do Critico (protocolo de antecipacao) e ja 
 - Regra permanente (ver DECISOES, APR-02): o Critico atua como inimigo profissional do trabalho - a missao dele e tentar reprovar; o executor se autoaudita antes de submeter para nao dar motivo.
 - **L-33:** reportar aprovacao do Critico sem dizer O QUE foi aprovado (mecanismo x visual) induz o Mestre a erro - separar sempre os dois escopos. Origem: COR-05, 01/11/2026 (o Mestre viu as previas da prova e julgou a pintura horrivel; o veredito do Critico era so de integracao/mecanismo, com a D1 aberta).
 - **N9 (adotada pela consulta de processo REF-01, 01/11/2026):** N5 exige IoU bbox-alinhado < 0,85 no MAXIMO dos tres limiares de fundo (25/35/45), contra TODAS as vistas aprovadas. Contraexemplo que prova o furo da regra antiga: r3-t4 mede 0,856/0,848/0,840 contra `tresquartos_v2` — passaria so no limiar 35 sendo composicao da familia da diagonal esquerda. Teste N7 cumprido: nenhuma vista aprovada e reprovada pela N9 (par aprovado mais proximo, `tras_dir` x `costas_v2`, 0,832-0,841 na faixa).
-- **N10 (proposta pela consulta, a decidir pelo Critico da rodada da edicao):** todo candidato oriundo de edicao entrega (i) a regiao tocada, (ii) a comparacao antes/depois fora da regiao e (iii) a re-medicao total do §7; sem (i) e (ii), o editado e julgado como geracao nova integral.
+- **N10 (ADOTADA pelo Critico Visual da rodada da edicao, 02/11/2026):** todo candidato oriundo de edicao entrega (i) a regiao tocada, (ii) a comparacao antes/depois fora da regiao e (iii) a re-medicao total do §7; sem (i) e (ii), o editado e julgado como geracao nova integral. Auditoria de regiao obrigatoria para editados (L-REC-03).
+- **N11 (ADOTADA pelo Critico Visual da rodada da edicao, 02/11/2026):** oclusao de sujeito recuado se julga em DOIS planos: (a) cobertura posterior real; (b) continuidade de silhueta (sem cadeia facial completa legivel em primeiro plano). O editado passou (a) e falhou (b) - falha na N11.
+- **N12 (APLICADA pelo Critico Visual da rodada da edicao, 02/11/2026):** teste do perfil completo - focinho espiando = 1-2 marcos; cadeia facial completa (olho + focinho + nariz + mandibula) = cabeca em primeiro plano, reprova. As autoridades tras_dir e costas_v2 PASSAM na N12.
 - **L-44:** ancora nas traseiras QUEBRA o vies de rosto e pes do gerador (0/7 nas familias frontal/T-pose, 1/4 com traseiras+frente) — mas o lobo e o residuo mais fixo da composicao (proeminente a direita em 11/11 tentativas). Quando o vies parcializa, atacar o elemento residual isolado (edicao regional) em vez de regenerar a figura inteira.
