@@ -155,3 +155,34 @@ A nota D-T2-4 da Entrega 2 foi superada pelo commit **53e845c**, anterior a esta
 - Contraprova automatica no verificador de **7511a68**, antes de C-GUARD01: os mesmos dois testes produzem **2 falhas de assercao esperadas, 0 erros de infraestrutura**; os controles positivos passam antes das sabotagens. No codigo atual ambos passam.
 - **Suite completa: 316 executados, 0 falhas, 0 erros, 1 skip, 26,678 s**. Testes em test_cor_guardas.py; contraprova reproduzivel em testes/codex/contraprova_primitivos.py; logs em ../evidencias/frente_c/.
 - **APR-02:** igualdade global de somas nao basta; ordem legitima nao deve ser recusada. Trocar cores entre partes com contagens IGUAIS e estruturalmente valido e NAO e detectavel por contagem: esta guarda nao promete identidade semantica nem validar payload binario. Esse limite permanece explicito. **Mecanismo validado; nenhuma mudanca visual nesta frente.** Qualidade artistica nao julgada por estes testes.
+## Frente D — PRONTO PARA INTEGRAR
+
+Pacote de integracao C-COR01/C-GUARD01 publicado na branch codex/melhoria-paralela. Integracao na principal pertence ao Muse, apos liberar a COR-08; nada aplicado na arvore oficial por esta linha.
+
+### Ordem e escopo exato
+
+1. **7511a682a7160144bc24b8da0d8e16fe2763c634** — C-COR01, decodifica imagens byte sRGB para COLOR_0 linear.
+   - Producao: oficina3d/cor/vertice.py e oficina3d/cor/_blender_vertice.py.
+   - Testes: testes/test_cor_colorimetria.py.
+   - Executores em testes/codex/: auditar_dt2.py, auditar_t2.py, contraprova_gamma.py, glb_evidencia.py, medir_cor.py, probe_gamma_blender.py, render_flat_blender.py, reproduzir_outros.py.
+   - Documentacao: docs/APRENDIZADO_E_FLUXO.md, DECISOES.md, ESTADO_ATUAL.md, REGISTRO-CODEX.md.
+2. **53e845c470a31322705d02f8c791960fe7fb3bd2** — C-GUARD01, defesa numerica e validacao por primitivo. Aplicar DEPOIS do anterior: extrai o verificador de _blender_vertice e depende da versao desse arquivo.
+   - Producao: oficina3d/cor/vertice.py, _blender_vertice.py e novo validacao_vertice.py.
+   - Testes: testes/test_cor_guardas.py.
+   - Executores: testes/codex/auditar_t2.py e gate0_paint.py.
+   - Documentacao: os mesmos quatro documentos acima.
+
+Sequencia sugerida na copia de integracao do Muse: cherry-pick 7511a68 e depois 53e845c; executar suite completa com OFICINA3D_BASE/JOBS e TEMP/TMP apontados para essa copia. Ambos sao posteriores a base main 0e8746e; 7511a68 tem como pai a entrega documental Gate 0 cbca11f. O patch do app nao depende do Gate 0, mas os hunks documentais/pequeno ajuste do script de Gate 0 em 53e845c podem exigir contexto das entregas anteriores. Se integrar so o codigo, levar tambem os testes e o resumo de prova; nao aplicar cegamente hunks de ESTADO_ATUAL sobre o estado novo da principal.
+
+### Contratos e provas que precisam sobreviver
+
+- C-COR01: so imagens byte sao decodificadas; alpha/mascara calculados ANTES, imagens float e forma glTF ja linear preservadas; nao converter cor duas vezes. _blender_vertice ganhou guarda __main__ para ser importavel pelos testes.
+- Testes de curva/oliva conhecido, PNG real -> GLB real e forma GLB sem segunda conversao. Contraprova: teste PNG falha numericamente no exportador antigo. Atol 1/255 no teste de transferencia GLB cobre quantizacao BYTE_COLOR do importador, nao autoriza tolerancia de gamma.
+- Baseline -> C-COR01, MESMO Orc Prata: rosto DeltaE **28,377653 -> 17,100706**, SSIM **0,103590 -> 0,137458**; peito DeltaE **27,830549 -> 14,864229**; pernas **26,789014 -> 13,170665**. Geometria/cobertura/3.180.412 bytes intactos; SHA corrigido **eed4cdf74205a692f4659622ebdcf3b38bc53477345a3526e71b2149c1534111** repetido duas vezes.
+- Suite apos C-COR01: 300, zero falhas/erros, um skip; apos C-GUARD01: 310, zero falhas/erros, um skip. C-GUARD01 reexecutou o Orc com MESMO SHA, recusa somas compensadas/indices invalidos/NaN sem alterar pintura legitima. Sua extracao exige levar validacao_vertice.py junto.
+- Custo C-COR01 observado +0,2–0,3 s/Orc; C-GUARD01 verificador ~0,2–0,3 ms/GLB (observacoes locais, nao benchmark).
+- **Dependencias posteriores opcionais:** C-COR02 **4836e6f** altera o default para bilinear; por isso seus SHAs/metricas novos NAO devem ser exigidos ao testar somente os dois commits deste pacote. **80c48d0** acrescenta os dois ataques cruzados da Frente C, sem mudar producao. Auditoria A **2cc5ff9** acrescenta scripts/documentacao; nenhum patch de projecao foi aplicado.
+- **Aviso concreto da A:** nao estender a conversao de C-COR01 a _blender_cor por analogia. O GLB T1 ja preserva sRGB; o PNG externo usa AgX e ha discordancia espacial no centro. Tratar os dois achados separadamente apos COR-08.
+- Os quatro arquivos reservados NAO constam do diff desses dois commits. Nenhuma dependencia Python nova do app: numpy/bpy ja existentes. Arte, pesos, ambientes e logs nao acompanham o commit; executores de prova pressupõem as entradas privadas documentadas, testes unitarios geram suas proprias fixtures.
+
+**APR-02:** lista conferida contra git show --stat dos SHAs completos; ordem, dependencia documental do pai, arquivo novo obrigatorio e mudanca posterior de default explicitados. Nao fiz cherry-pick na principal e nao prometo ausencia de conflitos com commits da COR-08 ainda nao integrados nesta copia. Veredito: pacote de codigo/testes/provas pronto para revisao/integracao; qualidade visual continua NAO aprovada. Suite atual segue **316 / 0 falhas / 0 erros / 1 skip**, nenhuma mudanca executavel nesta entrega documental.
