@@ -90,3 +90,13 @@ O Mestre ordenou: pegar as pesquisas/analises e ADOTAR o que melhora o aplicativ
 - P5 - Competicao gerativa EM PARALELO (sem bloquear P0-P3): spike T7 (rotulo corrigido: pacote ComfyUI de comunidade, numeros = alegacao de fornecedor; reguas pre-registradas continuam) e T3 (Paint 2.0 via fork 2GP; o 2.1 oficial esta fora por VRAM - 21 GB); candidato a hibrido oficial: projecao travada em keep + difusao so no complemento (composicao que nao existe pronta em nenhuma fonte primaria - espaco aberto do projeto).
 
 Cada tranche: autoauditoria adversarial registrada ANTES de submeter, Critico senior com bateria escalada, veredito com escopo explicito (mecanismo x qualidade visual, L-33) e painel de metricas do Mestre no registro e no relato.
+
+
+## ADENDO ADOCAO - estado dos pacotes (01/11/2026, noite)
+
+- P0 CONCLUIDO: D-H0, H2 residual, D-H4 e territorios medidos e registrados (entrada "Adocao das pesquisas - P0 CONCLUIDO" no REGISTRO, com hashes). Diagnostico da D1 fechado: raiz = desencaixe forma x referencia (H1), com pernas/capa como regiao de compromisso das referencias; amplificador = disputa interna das vistas (H4 medido: 27,18% dos texels diretos) + costura UV dominante nas bordas (106 x interna 50,73); H2 (duplicacao) REFUTADA.
+- P1: pacote PRONTO (territorios + mapa territorios_orc.npz por hash) - EXECUTAR a seguir, com autoauditoria e Critico senior proprio.
+- P2: desenho pronto (Waechter); aguarda a forma-ancora definitiva (C-11) e o seu Critico.
+- P3: painel pronto e testado (braco 0 = COR-08, assinatura 5/12); bracos A (mv-turbo confirmado) e B (TripoSG, pacote pronto) desenhados; a decisao de rota e do Mestre, com o painel na mesa.
+- P4: depende de P0/P3.
+- P5: T7 pronto para o dia do spike (paralelo, sob a trava de GPU); T3 via fork 2GP sem artefato novo.
