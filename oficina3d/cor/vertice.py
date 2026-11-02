@@ -18,6 +18,16 @@ secao T2; desenho em docs/DECISOES.md, COR-07):
 Fontes (``fonte`` por vertice): 0 = nenhuma, 1 = vista, 2 = forma,
 3 = propagacao. Prioridade estrita: vista > forma > propagacao.
 
+Espaco de cor (C-COR01; portao D-3 medido no passo 3 da Frente D): as
+imagens das vistas chegam CODIFICADAS em sRGB (``ler_imagem`` entrega
+byte/255, sem linearizar na carga) e a amostragem converte cada cor de
+vista para luz linear (``srgb_para_linear``); tudo o que sai deste
+modulo vive em luz linear, como o COLOR_0 do glTF pede. A cor da FORMA
+ja chega linear (e o COLOR_0 do GLB de origem) e NUNCA e convertida -
+converter os dois lados criaria o defeito simetrico. A propagacao
+media valores ja no mesmo espaco (linear). Nenhuma conversao acontece
+na carga: converter la quebraria o bake T1, que e sRGB ponta a ponta.
+
 Diferenca registrada contra o bake T1: la o pixel amostrado e limitado
 por clip a borda da imagem; aqui, vertice projetado FORA do quadro da
 vista nao pinta por ela (clip pintaria a cor da borda esticada sobre a
@@ -38,15 +48,31 @@ FONTE_FORMA = 2
 FONTE_PROPAGACAO = 3
 
 
+def srgb_para_linear(rgb):
+    """Decodifica RGB sRGB 0..1 para luz linear (nao recebe alfa).
+
+    EOTF sRGB exacta: segmento linear em ``c <= 0.04045`` (``c/12.92``)
+    e potencia 2,4 acima. Aceita escalar ou array e devolve float64 da
+    mesma forma. Aplicada SO a fonte imagem (vista): a cor da forma ja
+    chega linear pelo importador glTF. Mascara, facing e alinhamento
+    nao dependem desta curva.
+    """
+    rgb = np.asarray(rgb, dtype=np.float64)
+    return np.where(rgb <= 0.04045, rgb / 12.92,
+                    ((rgb + 0.055) / 1.055) ** 2.4)
+
+
 def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict],
                       centro: np.ndarray, ortho_scale: float):
     """Pinta vertices por projecao das vistas. Retorna (cores, fonte, melhor, info).
 
     ``vistas``: lista de dicts com ``vista`` (nome), ``imagem`` (HxWx3 float
-    0..1, linha 0 = topo), ``mascara`` (HxW bool) e ``visivel`` (N,) bool
-    (oclusao pre-calculada por quem chama - no Blender, via BVH). A ordem
-    da lista e a ordem de desempate (a primeira vista vence facing igual),
-    como em ``projecao.rasterizar_textura``.
+    0..1 CODIFICADO sRGB, linha 0 = topo), ``mascara`` (HxW bool) e
+    ``visivel`` (N,) bool (oclusao pre-calculada por quem chama - no
+    Blender, via BVH). A ordem da lista e a ordem de desempate (a
+    primeira vista vence facing igual), como em
+    ``projecao.rasterizar_textura``. As cores devolvidas estao em LUZ
+    LINEAR (a conversao da vista acontece na amostragem - C-COR01).
     """
     verts = np.asarray(verts, dtype=np.float64)
     normais = np.asarray(normais, dtype=np.float64)
@@ -86,7 +112,7 @@ def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict]
             sel = idx[ganha]
             if len(sel):
                 melhor[sel] = facing[sel]
-                cores[sel] = imagem[ipy[sel], ipx[sel]]
+                cores[sel] = srgb_para_linear(imagem[ipy[sel], ipx[sel]])
                 fonte[sel] = FONTE_VISTA
             info["vertices_por_vista"][nome] = int(len(sel))
         else:
