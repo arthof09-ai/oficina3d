@@ -466,3 +466,28 @@ CPU/RAM agregados da retomada e dos filhos rg: nao medidos; acima medicoes por p
 
 
 Suite propria apos a retomada: **363 testes, 0 falhas/erros, 1 skip**, 30,468 s; suite.log. Manifesto SHA-256 de todos os arquivos privados em parte1_retomada_v2/manifesto.json. Parte 1 medicao fechada/publicavel; decisao de portao nao tomada.
+
+## Missao 1 hora — Parte 2 retomada: contraprova completa da bateria, bake ainda VERMELHO
+
+Parte 1 inventariada/registrada/publicada em 504bbc7 antes desta retomada. Sem novos achados de producao alem do defeito ja registrado: completei apenas a validacao dos TESTES. Novo instrumento testes/codex/contraprova_bake_gama.py. Nenhum arquivo de producao alterado.
+
+| Caminho exercitado | Testes | Falhas de assercao | Erros de infraestrutura |
+|---|---|---|---|
+| Bake de producao (media por face + preenchimento) | 2 | 2 | 0 |
+| Bake com adaptador experimental de TESTE linear | 2 | 0 | 0 |
+| Bake experimental com decodificacao identidade | 2 | 2 | 0 |
+| Bake mutante de media em sRGB | 2 | 2 | 0 |
+| Vertice de producao | 2 | 0 | 0 |
+| Vertice com decodificacao identidade | 2 | 2 | 0 |
+| Vertice com mistura em sRGB e re-decodificacao | 2 | 2 | 0 |
+
+Adaptador de teste decodifica a entrada, usa a funcao REAL cores_diretas_por_face para calcular media/contagens e recodifica a media para o contrato byte/sRGB da textura; aplicar_preenchimento real permanece exercitado. So existe sob mock no processo de teste. Esperados literais independentes permanecem congelados: .2866988210699744/.40461018751918326 linear e .5718735140718357/.6686320581212071 sRGB. Os dois pesos sao ponto medio e 25% escuro/75% claro; no bake multiplicidade 1:3 de texels da face, nao interpolacao baricentrica inventada.
+
+APR-02: os esperados nao sao gerados pelo adaptador nem pela funcao sob teste; controles mostram que ambos os erros de espaco de cor reprovam ambos os casos. Resultados por retorno REAL: producao bake .5/.625, adaptador linear .5718735140718357/.6686320581212071, identidade no adaptador .7353569830524495/.8123661451624896, media sRGB .5/.625. Mascara, contagem e preservacao de texels diretos tambem verificadas. Sao testes float de caminho puro, NAO end-to-end de PNG/GLB/renderer; nao aprovam fidelidade artistica. O adaptador e demonstracao de que a bateria aceita a mistura correta, NAO patch de producao pronto para integrar.
+
+Situacao: bateria diagnostica tem controles positivos/negativos completos; tranche de cor permanece INCOMPLETA porque o bake real continua reprovado. Correcao de producao depende de nova decisao fora da missao de testes apenas. Nao promovidos testes vermelhos ao discover padrao nem usados skip/expectedFailure. Execucao direta bateria_mistura_gama.py continua falhando explicitamente; auditor retorna sucesso apenas ao comprovar a matriz acima.
+
+Evidencias privadas em ../evidencias/missao_1h_20261102/parte2_retomada: resultado.json, sete logs dirigidos, suite.log e manifesto.json. Ficheiros versionados tocados nesta parte: contraprova_bake_gama.py e REGISTRO-CODEX.md. GPU: nao usada. Tokens gastos: **nao medido**. CPU/RAM agregados da parte/suite: nao medidos; medicoes do processo da contraprova abaixo (CPU cronometrada depois dos imports; pico RAM do processo inclui imports):
+{"duracao_s": 0.05969499999991967, "cpu_usuario_s": 0.0, "cpu_sistema_s": 0.046875, "pico_ram_bytes": 37568512, "gpu": "nao usada", "tokens_gastos": "nao medido"}
+
+Suite padrao desta retomada: **363 testes / 0 falhas / 0 erros / 1 skip**, 29,323 s; nao inclui a bateria diagnostica vermelha explicitada acima. Estado exato em 2026-11-02T20:53:28.057511-03:00: Parte 1 medicao/inventario concluido e publicado, portao proposto sem decisao minha; Parte 2 bateria adversarial comprovada, defeito de bake nao corrigido e tranche incompleta. Limite original 21:26:23 nao prorrogado; nenhum processo deixado rodando. Fim do trabalho autorizado de medicao/testes desta retomada antes do limite. Tokens gastos: nao medido. Main, seus nove arquivos extraviados e verificadores nao alterados; git diff de oficina3d desde da81aad vazio.
