@@ -1592,3 +1592,18 @@ Painel (bakes da tranche): tempo 41,47–43,04 s por bake; VRAM pico 762 MiB e R
 ## 2026-11-03 — P1: veredicto visual do Mestre sobre o par A0×A3 (fecho integral da frente)
 
 **Veredicto visual do Mestre sobre o par A0×A3 (2026-11-03):** apresentado o par (frente e costas aproximado, antes A0 × depois A3), o Mestre declarou **não ter percebido diferença ao seu olho** («não vi diferença») e **aceitou o fecho** porque os Críticos aprovaram e mediram a melhoria («já que os críticos aprovaram e viram que realmente ficou melhor e progrediu, beleza, tranquilo»). Regista-se como **ACEITE por confiança na medição** — não como aprovação visual de melhoria percebida. Com este acto, a Frente P1 está **integralmente fechada** (mecanismo julgado PRONTO COM RESSALVAS + veredicto do Mestre inscrito).
+
+
+---
+
+## 2026-11-03 — T-COR: abertura da tranche de correcção da cor do Orc (T-COR-0) e diagnóstico medido (T-COR-1) entregue, a julgamento
+
+Executor I0004 sob CM-000009, pacote citável «DESENHO-CORRECCAO-COR-ORC + ERRATA-CORRECCAO-COR-ORC». Relatório integral: `oficina-audit/tcor/RELATORIO-T-COR-1.md` no workspace do Muse (21.764 B, SHA-256 `16e73c2e…`); acto gémeo no índice do tribunal, §23 (assento E-R1).
+
+**T-COR-0 (abertura, camada invisível):** pré-voo — HEAD `af2dc969…`, árvore limpa, C: livre 26.305.806.336 B, PC ocioso há ~17,7 h, `gpu.lock` pela trava da casa. **A0 reproduzido byte a byte**: textura `f198a2a7…` e GLB `9dd67084…` (baseline da Frente D), contadores do laudo todos iguais; painel do bake 45,52 s · VRAM de pico 800 MiB. Facto lido: o `pedido_cor.json` do job âncora é o bake v1 de 1024 (`ebd744a9…`), não a configuração da baseline (2048). Árvore principal limpa no fim; nenhum byte da pipeline alterado.
+
+**Fila (declaração E-R1, inscrita também no índice §23.2):** a ordem anterior («o próximo na fila de placa é P-02 ≡ MP-T1») lê-se como ordem entre braços do tribunal; a T-COR é trabalho da linha principal sob o mesmo `gpu.lock`, e os seus blocos curtos de placa (T-COR-4) correm antes da corrida completa da MP-T1.
+
+**T-COR-1 (diagnóstico medido, só medição):** adenda pré-diagnóstico selada antes dos números (`62540655…`); veredictos pelos limiares pré-registados: **H-A CAI · H-B CAI · H-C ENFRAQUECE · H-D CAI · H-E CONFIRMA · H-F ENFRAQUECE** (ressalva: o modo de média da produção é indecidível pela réplica — a proveniência por face da produção difere da réplica nas bordas; a exigência `proveniencia_v3` viaja para T-COR-2). Achado central: o salto de cor mora entre ilhas do atlas (0,2248 ≈ 5,5× o controlo). Baselines do portão inscritas (M-DET; M-LISO 50,22%; M-COST). Estado: relatório **a julgamento dedicado** (Método + Regras/Fila); T-COR-2 não existe até ao julgamento; nenhuma correcção foi escolhida nem implementada.
+
+- I0007 (CM-000009), 2026-11-03.
