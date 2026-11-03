@@ -5,6 +5,11 @@ de UV + cor de vertice (rascunho/rede de seguranca).
   metricas de UV) - testavel sem Blender.
 - ``preenchimento``: preenchimento 3D das zonas cegas (COR-08/A3) -
   difusao por adjacencia da malha com solda, no lugar da dilatacao UV.
+- ``mapa_territorios``: carga validada do mapa de territorios da P1
+  (.npz por hash da malha) + matriz de fatores de peso (P1.1). O modulo
+  apenas CONSOME o mapa; nunca o recalcula. ``preenchimento`` ganha na
+  P1.2 ``difundir_barreira`` (barreiras territoriais + orfas rotuladas,
+  nunca silenciosas).
 - ``vertice``: matematica pura do T2 (amostragem das vistas nos vertices,
   mescla da cor da forma, propagacao pela malha) - testavel sem Blender.
 - ``_blender_cor``: script headless do Blender (mesmo padrao de

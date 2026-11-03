@@ -110,15 +110,12 @@ def adjacencia_faces(faces: np.ndarray, verts: np.ndarray) -> list:
     return [np.array(sorted(v), dtype=int) for v in viz]
 
 
-def difundir(adjacencia: list, cores: np.ndarray, tem_cor: np.ndarray):
-    """BFS multi-fonte: faces cegas herdam a cor da fonte mais perto.
+def difundir_com_fonte(adjacencia: list, cores: np.ndarray, tem_cor: np.ndarray):
+    """BFS multi-fonte com a fonte exposta (P1: evita duplicar a BFS).
 
-    Retorna (cores_final (F,3), anel (F,) int, alcancavel (F,) bool).
-    Fontes (tem_cor) tem anel 0 e sao sua propria fonte. A ordem da fila
-    e a dos indices crescentes e os vizinhos sao visitados em ordem
-    crescente: a primeira descoberta vence - resultado deterministico.
-    Face fora de qualquer componente com fonte: alcancavel False,
-    anel -1, cor 0 (o chamador decide o recurso - dilatacao UV).
+    Retorna (cores_final (F,3), anel (F,) int, alcancavel (F,) bool,
+    fonte (F,) int). ``difundir`` delega para ca e descarta a fonte,
+    mantendo o contrato antigo byte a byte.
     """
     n = len(adjacencia)
     cores = np.asarray(cores, dtype=np.float64)
@@ -141,7 +138,115 @@ def difundir(adjacencia: list, cores: np.ndarray, tem_cor: np.ndarray):
     alcancavel = anel >= 0
     cores_final = np.zeros((n, 3), dtype=np.float64)
     cores_final[alcancavel] = cores[fonte[alcancavel]]
+    return cores_final, anel, alcancavel, fonte
+
+
+def difundir(adjacencia: list, cores: np.ndarray, tem_cor: np.ndarray):
+    """BFS multi-fonte: faces cegas herdam a cor da fonte mais perto.
+
+    Retorna (cores_final (F,3), anel (F,) int, alcancavel (F,) bool).
+    Fontes (tem_cor) tem anel 0 e sao sua propria fonte. A ordem da fila
+    e a dos indices crescentes e os vizinhos sao visitados em ordem
+    crescente: a primeira descoberta vence - resultado deterministico.
+    Face fora de qualquer componente com fonte: alcancavel False,
+    anel -1, cor 0 (o chamador decide o recurso - dilatacao UV).
+    """
+    cores_final, anel, alcancavel, _fonte = difundir_com_fonte(
+        adjacencia, cores, tem_cor)
     return cores_final, anel, alcancavel
+
+
+# Classes de proveniencia por face da P1.2 (``difundir_barreira``).
+FONTE, BARREIRA, ORFA, SEM_FONTE = 0, 1, 2, 3
+# Onda sem territorio (orfa preenchida pela onda livre): marca interna
+# no array ``onda``; a classe e que nomeia a orfa na proveniencia.
+ONDA_LIVRE = -2
+
+
+def difundir_barreira(adjacencia: list, cores: np.ndarray, tem_cor: np.ndarray,
+                      territorio_face: np.ndarray):
+    """Preenchimento com barreiras territoriais (P1.2) + orfas rotuladas.
+
+    Porta FIEL do ``bfs_barreira`` do laudo P1 §4 (nao "melhorar" a
+    semantica sem remedir - autoauditoria do desenho, D4):
+
+    Onda 1 (barreira): a fonte f propaga com o rotulo territorio[f]
+    (que pode ser -1: fonte geometricamente cega). A onda de rotulo t
+    so atravessa/entrega faces com territorio -1 ou == t. Territorio
+    alheio (>= 0, != t) e PAREDE. Fontes sao anel 0 com o proprio
+    rotulo - inclusive fontes com territorio alheio a face onde estao:
+    a fonte e sempre alcancavel (anel 0); a parede vale para a
+    PROPAGACAO, como no bfs_barreira de referencia.
+
+    Onda 2 (orfas): faces nao alcancadas pela onda 1 recebem a
+    ``difundir`` LIVRE atual (todas as fontes, sem parede) e sao
+    classificadas ORFA - a cor e EXATAMENTE a que o pipeline atual
+    daria (zero regressao de cor nas orfas); o que muda e que a
+    proveniencia as nomeia e conta. NUNCA preenchimento silencioso.
+
+    Inalcancavel nas duas ondas (componente sem fonte): alcancavel
+    False, classe SEM_FONTE - cai na dilatacao UV, como hoje.
+
+    Retorna (cores_final (F,3), anel (F,) int, alcancavel (F,) bool,
+    fonte (F,) int, onda (F,) int, classe (F,) int8). O anel da orfa
+    e o da onda livre que a preencheu (numero honesto: corresponde a
+    uma onda real; somar "anel de barreira + resto" seria ficticio,
+    autoauditoria D5). Paridade guardiao (teste U20): com as fontes do
+    bake-ancora e o territorio_face do .npz, (anel, onda) da onda 1
+    reproduzem anel_bake_barreira/onda_bake_barreira do .npz EXATAMENTE
+    e a onda 2 conta 254 orfas no ancora.
+    """
+    n = len(adjacencia)
+    cores = np.asarray(cores, dtype=np.float64)
+    terr = np.asarray(territorio_face)
+    if len(terr) != n:
+        raise ValueError(f"territorio_face tem {len(terr)} faces, grafo tem {n}")
+
+    # ---------- onda 1: BFS com barreiras (porta fiel do laudo) ----------
+    anel = np.full(n, -1, dtype=int)
+    fonte = np.full(n, -1, dtype=int)
+    onda = np.full(n, -1, dtype=int)
+    fila = deque()
+    for f in range(n):
+        if tem_cor[f]:
+            anel[f] = 0
+            fonte[f] = f
+            onda[f] = terr[f]
+            fila.append(f)
+    while fila:
+        atual = fila.popleft()
+        t = onda[atual]
+        for viz in adjacencia[atual]:
+            v = int(viz)
+            if anel[v] != -1:
+                continue
+            if terr[v] >= 0 and terr[v] != t:
+                continue  # parede territorial
+            anel[v] = anel[atual] + 1
+            fonte[v] = fonte[atual]
+            onda[v] = t
+            fila.append(v)
+
+    classe = np.full(n, SEM_FONTE, dtype=np.int8)
+    classe[tem_cor] = FONTE
+    alcancavel = anel >= 0
+    classe[alcancavel & ~tem_cor] = BARREIRA
+
+    # ---------- onda 2: orfas pela BFS livre atual (reuso literal) ----------
+    orfas = ~alcancavel & ~tem_cor
+    if orfas.any():
+        _c, anel_livre, alc_livre, fonte_livre = difundir_com_fonte(
+            adjacencia, cores, tem_cor)
+        pegar = orfas & alc_livre
+        anel[pegar] = anel_livre[pegar]
+        fonte[pegar] = fonte_livre[pegar]
+        onda[pegar] = ONDA_LIVRE
+        classe[pegar] = ORFA
+        alcancavel = anel >= 0
+
+    cores_final = np.zeros((n, 3), dtype=np.float64)
+    cores_final[alcancavel] = cores[fonte[alcancavel]]
+    return cores_final, anel, alcancavel, fonte, onda, classe
 
 
 def aplicar_preenchimento(textura: np.ndarray, pintado: np.ndarray,

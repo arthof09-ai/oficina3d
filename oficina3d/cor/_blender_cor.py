@@ -11,6 +11,17 @@ pedido.json:
     tamanho (px da textura, padrao 1024), dilatacao (passes max, padrao 256),
     alinhamento: "otimizado" (padrao, COR-08/A1) | "bbox" (v1, controle),
     preenchimento: "3d" (padrao, COR-08/A3) | "uv" (v1, controle),
+    territorios (P1, opcional): {"ativo": bool, "mapa": "<.npz>",
+        "pesos": {"piso": 0.6, "d_ref": 0.03}, "barreiras": bool}.
+        Ausente ou ativo=false = pipeline atual, bit a bit, em todas as
+        fatias. Mapa INEXISTENTE com a tranche pedida = tranche
+        desligada com motivo registrado e o job segue (cache por malha).
+        Mapa EXISTENTE e incompativel (SHA/faces/vistas) = erro
+        explicito e o bake PARA antes de pintar (nunca "sem mapa"
+        silencioso). Pesos e barreiras sao fatias independentes: cada
+        uma so liga quando pedida explicitamente; os controles efetivos
+        (piso, d_ref) sao sempre registrados no resultado, nunca
+        herdados em silencio.
     previas: ["frente", "direita", ...] (render Workbench com textura)
 
 Modo "sintetico": cubo com Smart UV + 4 vistas de cor solida (frente=vermelho,
@@ -49,6 +60,7 @@ if APP not in sys.path:
 
 from oficina3d.cor import projecao as P  # noqa: E402
 from oficina3d.cor import preenchimento as PF  # noqa: E402
+from oficina3d.cor import mapa_territorios as MT  # noqa: E402
 
 ANGULOS = P.ANGULOS
 CORES_SINTETICO = {"frente": (1.0, 0.0, 0.0), "costas": (0.0, 0.0, 1.0),
@@ -439,10 +451,64 @@ def main():
                                 "alinhamento": bloco_alinh}
             progresso(45, f"Blender COR: vista {vista} pronta ({int(visivel.sum())} faces visiveis)")
 
+        # P1 - territorios: carga/validacao ANTES de pintar. Mapa
+        # inexistente = tranche desligada com motivo (job segue);
+        # mapa existente e incompativel = erro explicito, bake para.
+        terr_pedido = pedido.get("territorios") or {}
+        terr_ativo_pedido = bool(terr_pedido.get("ativo"))
+        mapa = None
+        fator_pedido = None
+        pesos_ativos = False
+        barreiras_ativas = False
+        piso_ef = None
+        d_ref_ef = None
+        terr_diag = {"aplicado": False, "motivo": "tranche nao pedida",
+                     "pesos_ativos": False, "barreiras_ativas": False}
+        if terr_ativo_pedido:
+            if pedido.get("modo") == "sintetico":
+                raise ValueError("territorios: mapa exige GLB (modo sintetico sem GLB)")
+            caminho_mapa = terr_pedido.get("mapa")
+            if not caminho_mapa or not os.path.isfile(caminho_mapa):
+                terr_diag = {"aplicado": False,
+                             "motivo": "sem mapa para esta malha",
+                             "pesos_ativos": False, "barreiras_ativas": False}
+            else:
+                pesos_pedido = terr_pedido.get("pesos")
+                pesos_ativos = pesos_pedido is not None
+                if pesos_ativos:
+                    piso_ef = float(pesos_pedido.get("piso", 0.6))
+                    d_ref_ef = float(pesos_pedido.get("d_ref", 0.03))
+                    MT.validar_parametros_pesos(piso_ef, d_ref_ef)
+                barreiras_ativas = bool(terr_pedido.get("barreiras"))
+                t_carga = time.perf_counter()
+                with open(pedido["glb"], "rb") as f_glb:
+                    glb_bytes = f_glb.read()
+                try:
+                    mapa = MT.carregar_mapa(caminho_mapa, glb_bytes, len(faces))
+                except MT.MapaIncompativel as e:
+                    raise ValueError(f"territorios: mapa incompativel: {e}")
+                tempo_carga = round(time.perf_counter() - t_carga, 3)
+                terr_diag = {"aplicado": True, "motivo": None,
+                             "sha_npz": mapa.sha_npz,
+                             "glb_sha256": mapa.glb_sha256,
+                             "piso": piso_ef, "d_ref": d_ref_ef,
+                             "pesos_ativos": bool(pesos_ativos),
+                             "barreiras_ativas": bool(barreiras_ativas),
+                             "tempo_carga_mapa_s": tempo_carga}
+                if mapa.texel_vencedor is not None and mapa.texel_territorio is not None:
+                    tv = mapa.texel_vencedor
+                    tt = mapa.texel_territorio
+                    terr_diag["texels_disputa_antes_npz"] = int(
+                        ((tv >= 0) & (tt >= 0) & (tv != tt)).sum())
+                    terr_diag["texels_fieis_antes_npz"] = int(
+                        ((tv >= 0) & (tt >= 0) & (tv == tt)).sum())
+        res["territorios"] = terr_diag
+
         progresso(55, "Blender COR: rasterizando a textura por projecao")
         tex, pintado, _melhor, info_bake = P.rasterizar_textura(
             verts, faces, normais, faces_uv, vistas_prontas, tamanho,
             np.array(centro), dim, ortho)
+        pintado_direto = pintado.copy()
         # Cobertura: fracao da AREA UV pintada (texels dentro de triangulos UV).
         masc_uv = P.rasterizar_mascara_2d(
             P._uv_para_pixels(faces_uv, tamanho).reshape(-1, 2),
@@ -450,6 +516,7 @@ def main():
         area_uv_texels = int(masc_uv.sum())
         pintados_uv = int((pintado & masc_uv).sum())
         cegos_antes = area_uv_texels - pintados_uv
+        prov_v3_local = None
         if modo_preenchimento == "3d":
             # COR-08/A3: zonas cegas herdam a cor da face vizinha NO CORPO
             # (difusao por adjacencia soldada), nao do texel vizinho na UV.
@@ -461,9 +528,17 @@ def main():
             cores_face, tem_cor, _cont = PF.cores_diretas_por_face(
                 tex, pintado, texel_face, len(faces))
             adj = PF.adjacencia_faces(faces, verts)
-            cores_final, anel, alcancavel = PF.difundir(adj, cores_face, tem_cor)
+            classe_face = None
+            if barreiras_ativas and mapa is not None:
+                # P1.2: difusao com barreiras territoriais + orfas rotuladas.
+                cores_final, anel, alcancavel, _fonte, _onda, classe_face = (
+                    PF.difundir_barreira(adj, cores_face, tem_cor,
+                                         mapa.territorio_face))
+            else:
+                cores_final, anel, alcancavel = PF.difundir(adj, cores_face, tem_cor)
             tex, pintado, masc_3d = PF.aplicar_preenchimento(
                 tex, pintado, texel_face, cores_final, alcancavel)
+            pintado_3d = pintado.copy()
             dominio = PF.dominio_dilatacao_restrita(
                 masc_uv, texel_face, alcancavel, passes=8)
             progresso(78, "Blender COR: dilatacao restrita anti-halo (A3)")
@@ -479,6 +554,72 @@ def main():
                 "anel_medio": round(float(anel[preenchidas].mean()), 2) if preenchidas.any() else 0.0,
                 "anel_max": int(anel[preenchidas].max()) if preenchidas.any() else 0,
             }
+            if classe_face is not None:
+                # Anel da onda de barreiras (sem as orfas, cujo anel e o
+                # da onda livre): e a regua R1/R2 do plano de testes
+                # (esperado 3,24 / 21 no ancora); o anel_medio acima e o
+                # final (inclui as orfas) e fica registrado ao lado.
+                barreira_preench = (classe_face == PF.BARREIRA)
+                info_preench.update({
+                    "barreiras": True,
+                    "orfas": int((classe_face == PF.ORFA).sum()),
+                    "faces_por_classe": {
+                        "fonte": int((classe_face == PF.FONTE).sum()),
+                        "barreira": int(barreira_preench.sum()),
+                        "orfa_livre": int((classe_face == PF.ORFA).sum()),
+                        "sem_fonte": int((classe_face == PF.SEM_FONTE).sum()),
+                    },
+                    "anel_medio_barreira": round(
+                        float(anel[barreira_preench].mean()), 2) if barreira_preench.any() else 0.0,
+                    "anel_max_barreira": int(anel[barreira_preench].max()) if barreira_preench.any() else 0,
+                })
+            # Proveniencia v3 (P1): ao lado da v2, nunca no lugar dela.
+            # Territorio do texel = territorio_face[texel_face] (mapa
+            # texel->face do proprio pipeline, nao os arrays texel_* do
+            # .npz - autoauditoria D3). Sem vencedor (P1.1 desligada) ou
+            # sem classe (P1.2 desligada), a v3 nasce incompleta e o
+            # motivo fica registrado (duas camadas, desenho §4.3).
+            if mapa is not None:
+                seguro = np.where(texel_face >= 0, texel_face, 0)
+                terr_tex = np.where(texel_face >= 0,
+                                    mapa.territorio_face[seguro], -2)
+                direto_mask = pintado_direto & masc_uv
+                vencedor = info_bake.get("vencedor")
+                if vencedor is not None:
+                    fiel = direto_mask & (texel_face >= 0) & (vencedor == terr_tex)
+                    disputa = direto_mask & (texel_face >= 0) & (vencedor != terr_tex)
+                    n_fiel, n_disputa = int(fiel.sum()), int(disputa.sum())
+                else:
+                    n_fiel, n_disputa = None, None
+                if classe_face is not None:
+                    cls_tex = classe_face[seguro]
+                    n_barr = int((masc_3d & (cls_tex == PF.BARREIRA)).sum())
+                    n_livre = int((masc_3d & (cls_tex == PF.ORFA)).sum())
+                else:
+                    n_barr, n_livre = None, None
+                n_dilat_tex = int(((~pintado_3d) & pintado_final & masc_uv).sum())
+                n_sem = int((masc_uv & ~pintado_final).sum())
+                prov_v3 = {
+                    "direto_fiel": n_fiel, "direto_disputa": n_disputa,
+                    "preenchimento_barreira": n_barr,
+                    "preenchimento_livre": n_livre,
+                    "dilatacao": n_dilat_tex, "sem_cor": n_sem,
+                    "completa": bool(vencedor is not None and classe_face is not None),
+                }
+                if not prov_v3["completa"]:
+                    faltam = []
+                    if vencedor is None:
+                        faltam.append("fatia de pesos desligada")
+                    if classe_face is None:
+                        faltam.append("fatia de barreiras desligada")
+                    prov_v3["motivo_incompleta"] = "; ".join(faltam)
+                # Guardado em variavel: res["cobertura"] so e montado
+                # abaixo e sobrescreveria um setdefault feito aqui.
+                prov_v3_local = prov_v3
+                terr_diag.update({"proveniencia_v3": prov_v3,
+                                  "texels_disputa_depois": n_disputa,
+                                  "texels_fieis_depois": n_fiel})
+                res["territorios"] = terr_diag
         else:
             progresso(75, "Blender COR: dilatando costuras e zonas cegas (v1)")
             tex, pintado_final, n_dilat = P.dilatar(tex, pintado, dilatacao)
@@ -501,6 +642,8 @@ def main():
             "preenchimento_3d": info_preench,
             "texels_uv_sem_cor_apos_dilatacao": sem_cor,
         }
+        if prov_v3_local is not None:
+            res["cobertura"]["proveniencia_v3"] = prov_v3_local
 
         # Checagem do sintetico: cor no centroide UV de cada face lateral.
         if pedido.get("modo") == "sintetico":

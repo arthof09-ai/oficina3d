@@ -99,7 +99,8 @@ def selecionar_vistas(imagens, job_dir=None):
     return vistas, ausentes, ignoradas
 
 
-def rodar_passo_cor(job_dir, glb_refinado, imagens, pasta_cor=None, progresso=None):
+def rodar_passo_cor(job_dir, glb_refinado, imagens, pasta_cor=None, progresso=None,
+                    territorios=None):
     """Roda UV xatlas + bake COR; devolve o resumo da etapa (JSONavel).
 
     ``progresso`` segue o contrato ``progresso(pct, msg)`` do worker
@@ -157,6 +158,11 @@ def rodar_passo_cor(job_dir, glb_refinado, imagens, pasta_cor=None, progresso=No
                   "saida_glb": str(modelo_cor), "saida_textura": str(textura),
                   "pasta_previas": str(pasta_previas),
                   "previas": [v["vista"] for v in vistas]}
+    # P1: repasse opcional do campo "territorios" (pesos + barreiras).
+    # Default desligado ate o Critico aprovar cada fatia (adocao por
+    # fatias); o worker nao passa o campo, logo jobs da fila nao mudam.
+    if territorios is not None:
+        pedido_cor["territorios"] = territorios
     res_cor = rodar_cor(pedido_cor, pasta_cor, progresso=progresso, timeout_s=TIMEOUT_BAKE_S)
     if not modelo_cor.is_file() or not textura.is_file():
         raise RuntimeError("etapa cor: bake nao entregou modelo_cor.glb + textura.png")
