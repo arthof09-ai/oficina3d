@@ -128,23 +128,42 @@ def propostas_e2(texel_face: np.ndarray, faces: np.ndarray,
     (A, B) - e cada texel t de f: baricentricas (a_A, a_B, a_C) de t no
     triangulo UV de f (rotinas registadas de ``projecao``:
     ``_uv_para_pixels``/``_baricentricas``, no centro do texel); o
-    ponto reflectido em g tem baricentricas (a_A, a_B, -a_C); a
-    proposta de t e o texel de g cujo centro esta mais perto desse
-    ponto (euclidiana em pixeis; desempate: menor (linha, coluna) - a
-    ordem raster da lista de texeis de g, que ``np.argmin`` respeita
-    ao devolver a primeira ocorrencia). A proposta e dirigida; o
-    conjunto devolvido e o de pares nao dirigidos (uniao dos dois
-    sentidos fica a cargo de quem monta o grafo).
+    ponto reflectido em g e a continuacao geometrica de t atraves da
+    aresta - a rotacao do ponto 3D de t em torno do eixo (A, B) que
+    desdobra f sobre o plano de g - avaliada pela formula fechada da
+    EMENDA-T-COR-3-REFLEXAO SS2.3: com xi/delta as coordenadas ao
+    longo do eixo e as distancias perpendiculares a ele de C_f e de
+    C_g (as copias proprias de cada face; o eixo, pelas copias da
+    face de origem) e L o comprimento do eixo,
+    gama = a_C*delta_f/delta_g,
+    beta = a_B + (a_C*xi_f - gama*xi_g)/L e alfa = 1 - beta - gama;
+    o ponto e alfa*A_g + beta*B_g + gama*C_g nas coordenadas de
+    pixeis de g - os pesos somam exactamente 1 e nenhum facto sobre
+    a origem da textura entra na definicao. A proposta de t e o
+    texel de g cujo centro esta mais perto desse ponto (euclidiana
+    em pixeis; desempate efectivo, EMENDA SS2.4: distancias a
+    <= 1e-9 px da minima contam como empate e resolve o menor
+    (linha, coluna) - a primeira ocorrencia na ordem raster da
+    lista de texeis de g). A proposta e dirigida; o conjunto
+    devolvido e o de pares nao dirigidos (uniao dos dois sentidos
+    fica a cargo de quem monta o grafo).
 
-    Leitura de implementacao, declarada: o ponto reflectido avalia-se
-    como a combinacao a_A*A_g + a_B*B_g - a_C*C_g das coordenadas de
-    pixeis de g - a semantica de avaliacao das rotinas registadas
-    (ponto = soma w_i * P_i, a de ``_baricentricas``). Os pesos somam
-    1 - 2*a_C: o ponto cai fora do triangulo de g sempre que a_C > 0,
-    e o texel escolhido pode estar longe da aresta partilhada. E
-    exactamente este comportamento que a instrumentacao C-3 conta e
-    publica (pontos fora, distancias) - sem guarda nem correccao
-    silenciosa, como o julgamento de Metodo pediu.
+    Construcao emendada, declarada (EMENDA-T-COR-3-REFLEXAO, que
+    substitui a leitura (a_A, a_B, -a_C) de SS1.3 - cujos pesos
+    somam 1 - 2*a_C e cuja avaliacao dependia da origem da
+    textura): o operador e R2, a continuacao geometrica por
+    rotacao em torno da aresta soldada, escolhido por nome e por
+    formula fechada na emenda julgada; a reimplementacao
+    independente dos testes corre pela rota da rotacao explicita, e
+    os dois grafos coincidem ao abrigo do desempate de SS2.4.
+    Casos degenerados nomeados, guardados ANTES de qualquer
+    divisao (em numpy, dividir por zero nao levanta excepcao -
+    produz inf/nan silencioso): L = 0, ou delta_g = 0 (o vertice
+    de g fora da aresta esta sobre a recta da aresta em 3D - g nao
+    tem plano para onde desdobrar): nao ha proposta nesse sentido
+    e conta-se uma vez por (aresta, sentido) em
+    ``arestas_ignoradas_degeneradas``. delta_f = 0 nao e caso:
+    gama = 0 e a continuacao cai sobre a recta da aresta.
 
     Devolve (pares, estatisticas): estatisticas regista, sem limiar
     (descarga C-3): n. de propostas aceites e a distribuicao das suas
@@ -154,13 +173,16 @@ def propostas_e2(texel_face: np.ndarray, faces: np.ndarray,
     falhadas - contado uma vez por (aresta, sentido) em que a face de
     destino nao tem texeis rasterizados e a de origem tem (SS1.3:
     "nao ha proposta por essa aresta - declara-se e conta-se");
-    arestas duais ignoradas por soldadura degenerada (os extremos nao
-    ocupam exactamente dois cantos da face).
+    arestas duais ignoradas, uma vez por (aresta, sentido), em
+    ``arestas_ignoradas_degeneradas``: (i) soldadura degenerada (os
+    extremos nao ocupam exactamente dois cantos da face); (ii)
+    L = 0 ou delta_g = 0 (o caso geometrico declarado acima).
     """
     texel_face = np.asarray(texel_face)
     tamanho = texel_face.shape[0]
     faces = np.asarray(faces, dtype=int)
     faces_uv = np.asarray(faces_uv, dtype=np.float64)
+    verts = np.asarray(verts, dtype=np.float64)
     n_faces = len(faces)
     faces_w = _costura._faces_soldadas(faces, verts)
     arestas = _costura._pares_adjacentes(faces_w)
@@ -222,11 +244,40 @@ def propostas_e2(texel_face: np.ndarray, faces: np.ndarray,
             a_a = w[k_a_o]
             a_b = w[k_b_o]
             a_c = w[co_c]
+            # Geometria 3D da aresta (EMENDA SS2.2/SS2.3): eixo pelas
+            # copias proprias da face de ORIGEM; C_f e C_g sao os
+            # vertices fora da aresta, proprios de cada face.
+            A3 = verts[faces[origem][k_a_o]]
+            B3 = verts[faces[origem][k_b_o]]
+            Cf3 = verts[faces[origem][co_c]]
+            Cg3 = verts[faces[destino][cd_c]]
+            eixo = B3 - A3
+            L = float(np.linalg.norm(eixo))
+            if L == 0.0:
+                # Guarda dos degenerados (Metodo C-1'): ANTES de
+                # qualquer divisao; uma vez por (aresta, sentido).
+                n_ignoradas += 1
+                continue
+            e = eixo / L
+            rel_f = Cf3 - A3
+            xi_f = float(rel_f @ e)
+            delta_f = float(np.linalg.norm(rel_f - xi_f * e))
+            rel_g = Cg3 - A3
+            xi_g = float(rel_g @ e)
+            delta_g = float(np.linalg.norm(rel_g - xi_g * e))
+            if delta_g == 0.0:
+                # g nao tem plano para onde desdobrar (EMENDA SS2.6):
+                # sem proposta neste sentido; conta-se, nao se divide.
+                n_ignoradas += 1
+                continue
+            gama = a_c * delta_f / delta_g
+            beta = a_b + (a_c * xi_f - gama * xi_g) / L
+            alfa = 1.0 - beta - gama
             px_d = faces_px[destino]
-            pt_x = a_a * px_d[k_a_d][0] + a_b * px_d[k_b_d][0] \
-                - a_c * px_d[cd_c][0]
-            pt_y = a_a * px_d[k_a_d][1] + a_b * px_d[k_b_d][1] \
-                - a_c * px_d[cd_c][1]
+            pt_x = alfa * px_d[k_a_d][0] + beta * px_d[k_b_d][0] \
+                + gama * px_d[cd_c][0]
+            pt_y = alfa * px_d[k_a_d][1] + beta * px_d[k_b_d][1] \
+                + gama * px_d[cd_c][1]
             res_d = _P._baricentricas(px_d, pt_x, pt_y)
             if res_d is None:
                 n_fora += len(ls_t)
@@ -234,10 +285,15 @@ def propostas_e2(texel_face: np.ndarray, faces: np.ndarray,
                 n_fora += int((~res_d[0]).sum())
             centros_x = cs_d.astype(np.float64) + 0.5
             centros_y = ls_d.astype(np.float64) + 0.5
-            d2 = (pt_x[:, None] - centros_x[None, :]) ** 2 \
-                + (pt_y[:, None] - centros_y[None, :]) ** 2
-            esc = np.argmin(d2, axis=1)  # 1.a ocorrencia = menor (lin, col)
-            distancias.append(np.sqrt(d2[np.arange(len(ls_t)), esc]))
+            dist = np.sqrt((pt_x[:, None] - centros_x[None, :]) ** 2
+                           + (pt_y[:, None] - centros_y[None, :]) ** 2)
+            # Desempate efectivo (EMENDA SS2.4): distancias a
+            # <= 1e-9 px da minima contam como empate; resolve a
+            # primeira ocorrencia na ordem raster da lista de texeis
+            # de g = o menor (linha, coluna).
+            esc = np.argmax(
+                dist <= dist.min(axis=1, keepdims=True) + 1e-9, axis=1)
+            distancias.append(dist[np.arange(len(ls_t)), esc])
             for i in range(len(ls_t)):
                 t_lin = int(ls_t[i]) * tamanho + int(cs_t[i])
                 u_lin = int(ls_d[esc[i]]) * tamanho + int(cs_d[esc[i]])

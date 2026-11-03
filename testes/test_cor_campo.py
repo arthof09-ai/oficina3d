@@ -7,8 +7,12 @@ e a fixture da cerca (6) de ``testes/campo_fixture.py``:
    ida-e-volta);
 2. acoplamento: o micro-caso da costura (dois triangulos, uma aresta
    soldada, duas ilhas) - o par fantasma esperado, recomputado por
-   reimplementacao independente da reflexao de SS1.3; simetria do
-   grafo; sem auto-lacos nem duplicados; guardas de SS1.3;
+   reimplementacao independente da continuacao de R2 pela rota da
+   rotacao (EMENDA-T-COR-3-REFLEXAO SS2.2) contra a formula fechada
+   do modulo; simetria do grafo; sem auto-lacos nem duplicados;
+   guardas de SS1.3; a guarda dos degenerados geometricos
+   (delta_g = 0) de SS2.6 da emenda, com teste que chumba sem ela
+   (condicao C-1' da lente Metodo);
 3. doadora nomeada (SS2): a distancia manda; desempates por contagem
    e por indice; fonte -> ela propria; inalcancavel -> -1;
 4. resolvedor contra solucao densa (<= 1e-8); o chute nao altera a
@@ -16,8 +20,11 @@ e a fixture da cerca (6) de ``testes/campo_fixture.py``:
 5. a fixture da cerca (6) com as leituras (a)-(g) de SS3.2 - com a
    superficie de comparacao de (b) FIXADA pela descarga C-2 de
    Metodo: valores COMO ESCRITOS na textura (a solucao densa
-   convertida em P2 contra a textura de saida) - e os dentes
-   M-a..M-d, cada um contra o seu controlo limpo;
+   convertida em P2 contra a textura de saida) - a leitura (h) de
+   SS3.2 inscrita pela EMENDA SS4 (invariancia por translacao UV,
+   limiar <= 1%), e os dentes M-a..M-e, cada um contra o seu
+   controlo limpo (M-e: a avaliacao pre-emenda, que chumba (h) e
+   continua a passar (a)-(g));
 6. a medicao de SS3.3 (artefacto ``campo_divergencia.json``, nas duas
    variantes da descarga C-1): existencia, esquema, finitude,
    mediana/p95 recomputados do array - SEM assercao sobre valores;
@@ -146,12 +153,121 @@ def _micro_caso():
 
 
 def _fantasmas_independentes(texel_face, faces, faces_uv, verts, tamanho):
-    """Reimplementacao independente da reflexao de SS1.3 (sem usar
-    as rotinas do modulo nem as de ``projecao`` para as
-    baricentricas): resolve o sistema 2x2 de cada texel, reflecte
-    pela combinacao (a_A, a_B, -a_C) avaliada nas coordenadas de
-    pixeis de g, e escolhe o texel de g mais perto (desempate por
-    (linha, coluna)). Devolve o conjunto de pares nao dirigidos."""
+    """Reimplementacao independente da continuacao de R2 pela ROTA
+    DA ROTACAO (EMENDA-T-COR-3-REFLEXAO SS2.2; sem usar as rotinas
+    do modulo nem as de ``projecao``): baricentricas de t em f pelo
+    sistema 2x2 proprio; posicao 3D de t pelas copias proprias de f;
+    rotacao explicita (Rodrigues) em torno do eixo da aresta, pelo
+    angulo que leva a direccao perpendicular de C_f sobre a de C_g;
+    baricentricas do ponto rodado no triangulo 3D de g por sistema
+    proprio; avaliacao nas coordenadas de pixeis de g; texel mais
+    perto com o desempate efectivo de SS2.4 (distancias a <= 1e-9 px
+    da minima = empate, resolve o menor (linha, coluna)). E a
+    igualdade dos grafos entre esta rota e a formula fechada do
+    modulo que certifica que denotam o mesmo operador. Devolve o
+    conjunto de pares nao dirigidos."""
+    from oficina3d.cor import costura
+    faces = np.asarray(faces, dtype=int)
+    verts = np.asarray(verts, dtype=np.float64)
+    faces_w = costura._faces_soldadas(faces, verts)
+    arestas = costura._pares_adjacentes(faces_w)
+    px = np.empty_like(faces_uv)
+    px[..., 0] = faces_uv[..., 0] * tamanho
+    px[..., 1] = (1.0 - faces_uv[..., 1]) * tamanho
+    texeis = [np.nonzero(texel_face == f) for f in range(len(faces))]
+    pares = set()
+    for (va, vb), inc in arestas.items():
+        if len(inc) != 2:
+            continue
+        for o, d in ((inc[0], inc[1]), (inc[1], inc[0])):
+            if len(texeis[o][0]) == 0 or len(texeis[d][0]) == 0:
+                continue
+            tri_o, tri_d = faces_w[o], faces_w[d]
+            cantos_o = [k for k in range(3) if tri_o[k] in (va, vb)]
+            cantos_d = [k for k in range(3) if tri_d[k] in (va, vb)]
+            if len(cantos_o) != 2 or len(cantos_d) != 2:
+                continue
+            ka_o = cantos_o[0] if tri_o[cantos_o[0]] == va else cantos_o[1]
+            kb_o = cantos_o[1] if ka_o == cantos_o[0] else cantos_o[0]
+            kc_o = 3 - cantos_o[0] - cantos_o[1]
+            ka_d = cantos_d[0] if tri_d[cantos_d[0]] == va else cantos_d[1]
+            kb_d = cantos_d[1] if ka_d == cantos_d[0] else cantos_d[0]
+            kc_d = 3 - cantos_d[0] - cantos_d[1]
+            ls_o, cs_o = texeis[o]
+            ls_d, cs_d = texeis[d]
+            # Geometria 3D: copias proprias de cada face.
+            A3 = verts[faces[o][ka_o]]
+            B3 = verts[faces[o][kb_o]]
+            Cf3 = verts[faces[o][kc_o]]
+            A3d = verts[faces[d][ka_d]]
+            B3d = verts[faces[d][kb_d]]
+            Cg3 = verts[faces[d][kc_d]]
+            eixo = B3 - A3
+            L = float(np.linalg.norm(eixo))
+            if L == 0.0:
+                continue
+            e = eixo / L
+
+            def _perp(v):
+                return v - float(v @ e) * e
+
+            nu_f = _perp(Cf3 - A3)
+            nu_g = _perp(Cg3 - A3)
+            delta_f = float(np.linalg.norm(nu_f))
+            delta_g = float(np.linalg.norm(nu_g))
+            if delta_g == 0.0:
+                continue  # sem plano de destino: sem proposta (SS2.6)
+            po = px[o]
+            m = np.array([[po[1][0] - po[0][0], po[2][0] - po[0][0]],
+                          [po[1][1] - po[0][1], po[2][1] - po[0][1]]])
+            mg = np.stack([B3d - A3d, Cg3 - A3d], axis=1)  # (3, 2)
+            for i in range(len(ls_o)):
+                p = np.array([cs_o[i] + 0.5, ls_o[i] + 0.5])
+                uv = np.linalg.solve(m, p - po[0])
+                w = np.array([1.0 - uv[0] - uv[1], uv[0], uv[1]])
+                P = (w[ka_o] * A3 + w[kb_o] * B3 + w[kc_o] * Cf3)
+                v = P - A3
+                if delta_f == 0.0:
+                    # Sem componente perpendicular: a rotacao nao
+                    # move o ponto para fora do eixo.
+                    P_rod = A3 + float(v @ e) * e
+                else:
+                    uf = nu_f / delta_f
+                    ug = nu_g / delta_g
+                    cos_t = float(uf @ ug)
+                    sin_t = float(e @ np.cross(uf, ug))
+                    P_rod = A3 + v * cos_t + np.cross(e, v) * sin_t \
+                        + e * float(e @ v) * (1.0 - cos_t)
+                sol, *_ = np.linalg.lstsq(mg, P_rod - A3d, rcond=None)
+                beta_r, gama_r = float(sol[0]), float(sol[1])
+                alfa_r = 1.0 - beta_r - gama_r
+                pt = (alfa_r * px[d][ka_d] + beta_r * px[d][kb_d]
+                      + gama_r * px[d][kc_d])
+                dists = [float(np.hypot(pt[0] - (cs_d[j] + 0.5),
+                                        pt[1] - (ls_d[j] + 0.5)))
+                         for j in range(len(ls_d))]
+                dmin = min(dists)
+                melhor, melhor_chave = None, None
+                for j in range(len(ls_d)):
+                    if dists[j] > dmin + 1e-9:
+                        continue  # fora da janela de empate de SS2.4
+                    chave = (int(ls_d[j]), int(cs_d[j]))
+                    if melhor_chave is None or chave < melhor_chave:
+                        melhor_chave = chave
+                        melhor = int(ls_d[j]) * tamanho + int(cs_d[j])
+                t = int(ls_o[i]) * tamanho + int(cs_o[i])
+                if melhor is not None and melhor != t:
+                    pares.add((min(t, melhor), max(t, melhor)))
+    return pares
+
+
+def _fantasmas_pre_emenda(texel_face, faces, faces_uv, verts, tamanho):
+    """O proponente PRE-EMENDA (o mutante M-e): a avaliacao de SS1.3
+    tal como estava escrita - o ponto de g com baricentricas
+    (a_A, a_B, -a_C) avaliado por soma w_i*P_i nas coordenadas de
+    pixeis de g (a leitura R0, dependente da origem da textura),
+    desempate simples por (distancia, linha, coluna). So existe
+    para o teste de M-e medir contra ele a leitura (h)."""
     from oficina3d.cor import costura
     faces_w = costura._faces_soldadas(faces, verts)
     arestas = costura._pares_adjacentes(faces_w)
@@ -251,6 +367,43 @@ class TestAcoplamento(unittest.TestCase):
         est = CD.montar_estruturas(tf, pin, alc, pares)
         self.assertEqual(est["n_incognitas"], 0)
         self.assertEqual(est["excluidos_sem_acoplamento"], 5)
+
+    def test_guarda_delta_g_zero_conta_e_nao_propoe(self):
+        # Guarda dos degenerados (EMENDA SS2.6; condicao C-1' da
+        # lente Metodo no julgamento da emenda): face sintetica com
+        # C_g SOBRE a recta da aresta em 3D (delta_g = 0). No
+        # sentido f->g nao ha proposta (g nao tem plano para onde
+        # desdobrar) e o caso conta UMA vez em
+        # arestas_ignoradas_degeneradas; no sentido g->f a face
+        # degenerada ENVIA (delta_f = 0 => gama = 0: os pontos caem
+        # sobre a recta da aresta em f) - a assimetria geometrica
+        # certa. Dentes: sem a guarda, a divisao por delta_g em
+        # numpy produz inf/nan SILENCIOSO, o contador nao contaria
+        # o caso e as distancias publicadas teriam nan - este teste
+        # chumba nas tres assercoes se a guarda for retirada.
+        verts = np.array([
+            [0.0, 0.0, 0.0], [2.0, 0.0, 0.0], [1.0, 1.0, 0.0],
+            [1.0, 0.0, 0.0],   # C_g: sobre o segmento A-B
+        ])
+        faces = np.array([[0, 1, 2], [1, 0, 3]])
+        faces_uv = np.array([
+            [[0.05, 0.05], [0.45, 0.05], [0.05, 0.45]],
+            [[0.95, 0.55], [0.55, 0.55], [0.95, 0.95]],
+        ])
+        tam = 16
+        texel_face = PF.mapa_texel_face(faces_uv, tam)
+        self.assertGreater(int((texel_face == 0).sum()), 0)
+        self.assertGreater(int((texel_face == 1).sum()), 0)
+        pares, est = CD.propostas_e2(texel_face, faces, faces_uv, verts)
+        self.assertEqual(est["arestas_ignoradas_degeneradas"], 1)
+        self.assertGreater(est["propostas"], 0)
+        self.assertGreater(len(pares), 0)
+        for chave in ("distancia_mediana", "distancia_p95",
+                      "distancia_maxima"):
+            self.assertTrue(
+                bool(np.isfinite(est[chave])),
+                "%s nao finita (nan/inf da divisao por zero?): %r"
+                % (chave, est[chave]))
 
 
 class TestDoadora(unittest.TestCase):
@@ -427,6 +580,124 @@ class TestFixture(unittest.TestCase):
                          "M-d passou: o teste nao tem dentes")
         tex2, apl2, est2 = _correr(self.fx)
         self.assertTrue(_leituras(self.fx, tex2, apl2, est2)["d"])
+
+
+def _fixture_movida(fx):
+    """O layout movido da leitura (h) (EMENDA SS4): os mesmos
+    arrays 3D (``verts``/``faces`` identicos, objecto a objecto),
+    diferindo so na celula UV de Q2 - as faces 4 e 5 transladadas
+    de (0; +0,4375), i.e. 28 linhas inteiras a T=64, da celula
+    (0.75; 0)-(1.0; 0.25) para a celula livre
+    (0.75; 0.4375)-(1.0; 0.6875); ``texel_face``, textura e
+    mascara de pintado reconstruidos pela mesma regra do
+    construtor da fixture, sem tocar em ``campo_fixture.py``."""
+    faces_uv = fx["faces_uv"].copy()
+    faces_uv[list(fx["grupos"]["Q2"])] += np.array([0.0, 0.4375])
+    texel_face = PF.mapa_texel_face(faces_uv, fx["tamanho"])
+    textura = np.zeros_like(fx["textura"])
+    pintado = np.zeros_like(fx["pintado"])
+    for nome, cor in (("Q0", FX.COR_X), ("Q4", tuple(fx["cor_q4"]))):
+        for f in fx["grupos"][nome]:
+            sel = texel_face == f
+            textura[sel] = cor
+            pintado[sel] = True
+    sel = texel_face == fx["face_pintada_desligada"]
+    textura[sel] = FX.COR_Z
+    pintado[sel] = True
+    mov = dict(fx)
+    mov.update({"faces_uv": faces_uv, "texel_face": texel_face,
+                "textura": textura, "pintado": pintado})
+    return mov
+
+
+def _pares_relativos_q2(fx, pares):
+    """Os pares que envolvem as faces de Q2 (4, 5) como origem ou
+    destino, expressos RELATIVAMENTE (EMENDA SS4): cada extremo e
+    (face, linha, coluna) menos a origem da celula da sua face -
+    aqui, o texel minimo (ordem raster) da face nesse layout, que
+    translada com a celula por texeis inteiros."""
+    tf = fx["texel_face"]
+    tam = fx["tamanho"]
+    origens = {}
+
+    def rel(lin):
+        f = int(tf.flat[lin])
+        if f not in origens:
+            ls, cs = np.nonzero(tf == f)
+            origens[f] = (int(ls.min()), int(cs.min()))
+        l, c = divmod(int(lin), tam)
+        ol, oc = origens[f]
+        return (f, l - ol, c - oc)
+
+    conj = set()
+    for a, b in pares:
+        ra, rb = rel(a), rel(b)
+        if ra[0] in (4, 5) or rb[0] in (4, 5):
+            conj.add((ra, rb) if ra <= rb else (rb, ra))
+    return conj
+
+
+def _fraccao_h(fx_a, fx_b, pares_de):
+    """A fraccao de propostas relativas de Q2 que mudam entre os
+    dois layouts, na CONTAGEM DE PARES nao dirigidos (a forma de
+    SS5.3 da emenda; declarada aqui por registo da lente Metodo):
+    distancia de Jaccard |A sym-diff B| / |A uniao B| dos
+    conjuntos relativos. A emenda mede 0,0 para o operador
+    emendado e 57,0% para o condenado, nesta contagem."""
+    A = _pares_relativos_q2(fx_a, pares_de(fx_a))
+    B = _pares_relativos_q2(fx_b, pares_de(fx_b))
+    uniao = A | B
+    if not uniao:
+        return 0.0
+    return len(A ^ B) / len(uniao)
+
+
+def _pares_modulo(fx):
+    return CD.propostas_e2(fx["texel_face"], fx["faces"],
+                           fx["faces_uv"], fx["verts"])[0]
+
+
+def _pares_pre_emenda(fx):
+    return _fantasmas_pre_emenda(fx["texel_face"], fx["faces"],
+                                 fx["faces_uv"], fx["verts"],
+                                 fx["tamanho"])
+
+
+class TestLeituraH(unittest.TestCase):
+    def setUp(self):
+        self.fx = FX.construir_fixture()
+        self.mov = _fixture_movida(self.fx)
+
+    def test_leitura_h_translacao_uv(self):
+        # Leitura (h) de SS3.2, inscrita pela EMENDA SS4:
+        # invariancia por translacao UV. Geometria 3D identica,
+        # ilha de Q2 movida por texeis inteiros: a fraccao de
+        # propostas relativas que envolvem Q2 que mudam e <= 1%
+        # (o operador emendado mede 0,0%; o condenado, 57,0% -
+        # a linha separa classes, nao graus).
+        self.assertIs(self.mov["verts"], self.fx["verts"])
+        self.assertIs(self.mov["faces"], self.fx["faces"])
+        frac = _fraccao_h(self.fx, self.mov, _pares_modulo)
+        self.assertLessEqual(frac, 0.01)
+
+    def test_mutante_e_reflexao_pre_emenda(self):
+        # M-e: a avaliacao pre-emenda (a_A, a_B, -a_C) por soma
+        # w_i*P_i (R0). Tem de CHUMBAR (h) - a fraccao medida e
+        # ~57% contra o limiar de 1% - e regista-se que CONTINUA
+        # a passar (a)-(g): e exactamente a cegueira que a
+        # leitura (h) fecha (O-1 do julgamento da implementacao).
+        frac = _fraccao_h(self.fx, self.mov, _pares_pre_emenda)
+        self.assertGreater(
+            frac, 0.01, "M-e passou (h): o teste nao tem dentes")
+        pares = CD.pares_e1(self.fx["texel_face"]) | _pares_pre_emenda(
+            self.fx)
+        tex, aplicada, est = _correr(self.fx, pares=pares)
+        leituras = _leituras(self.fx, tex, aplicada, est)
+        for nome in "abcdefg":
+            self.assertTrue(
+                leituras[nome],
+                "M-e devia continuar a passar (%s): a cegueira de "
+                "(a)-(g) face a R0 e o facto registado" % nome)
 
 
 class TestMedicao(unittest.TestCase):
