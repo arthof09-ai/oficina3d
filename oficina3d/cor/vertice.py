@@ -28,6 +28,12 @@ converter os dois lados criaria o defeito simetrico. A propagacao
 media valores ja no mesmo espaco (linear). Nenhuma conversao acontece
 na carga: converter la quebraria o bake T1, que e sRGB ponta a ponta.
 
+C-COR02 (Frente D, passo 6): a amostragem de vista e BILINEAR em luz
+linear (``amostrar_bilinear``): os 4 vizinhos convertem-se antes de
+misturar e o resultado fica em linear. ``amostrar_vertices`` aceita
+``amostragem='seco'`` como controlo: a amostragem pontual anterior
+a este passo, byte a byte.
+
 Diferenca registrada contra o bake T1: la o pixel amostrado e limitado
 por clip a borda da imagem; aqui, vertice projetado FORA do quadro da
 vista nao pinta por ela (clip pintaria a cor da borda esticada sobre a
@@ -62,8 +68,42 @@ def srgb_para_linear(rgb):
                     ((rgb + 0.055) / 1.055) ** 2.4)
 
 
+def amostrar_bilinear(imagem, mascara, x, y):
+    """Amostragem bilinear em LUZ LINEAR de ``imagem`` (codificada sRGB).
+
+    ``x``/``y``: coordenadas continuas na convencao de indices (o pixel
+    ``i`` cobre ``[i, i+1)`` e o seu centro esta em ``i + 0.5``). Os 4
+    vizinhos convertem-se com ``srgb_para_linear`` ANTES de misturar
+    (C-COR02: bilinear nunca opera sobre valores codificados) e o
+    resultado fica em luz linear, como tudo o que sai deste modulo.
+    Vizinhos fora da mascara nao contribuem: os pesos renormalizam
+    sobre os vizinhos validos (sem halo do fundo). O chamador garante
+    o ponto dentro da imagem e o pixel-base com mascara valida (o
+    peso total e > 0).
+    """
+    x = np.clip(np.asarray(x, dtype=np.float64) - 0.5, 0, imagem.shape[1] - 1)
+    y = np.clip(np.asarray(y, dtype=np.float64) - 0.5, 0, imagem.shape[0] - 1)
+    x0 = np.floor(x).astype(int)
+    y0 = np.floor(y).astype(int)
+    x1 = np.minimum(x0 + 1, imagem.shape[1] - 1)
+    y1 = np.minimum(y0 + 1, imagem.shape[0] - 1)
+    dx = x - x0
+    dy = y - y0
+    total = np.zeros(len(x))
+    rgb = np.zeros((len(x), 3))
+    for xx, yy, w in ((x0, y0, (1 - dx) * (1 - dy)),
+                      (x1, y0, dx * (1 - dy)),
+                      (x0, y1, (1 - dx) * dy),
+                      (x1, y1, dx * dy)):
+        w = w * mascara[yy, xx]
+        total += w
+        rgb += w[:, None] * srgb_para_linear(imagem[yy, xx])
+    return rgb / np.maximum(total[:, None], 1e-15)
+
+
 def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict],
-                      centro: np.ndarray, ortho_scale: float):
+                      centro: np.ndarray, ortho_scale: float, *,
+                      amostragem: str = "bilinear"):
     """Pinta vertices por projecao das vistas. Retorna (cores, fonte, melhor, info).
 
     ``vistas``: lista de dicts com ``vista`` (nome), ``imagem`` (HxWx3 float
@@ -73,7 +113,12 @@ def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict]
     primeira vista vence facing igual), como em
     ``projecao.rasterizar_textura``. As cores devolvidas estao em LUZ
     LINEAR (a conversao da vista acontece na amostragem - C-COR01).
+    ``amostragem='bilinear'`` (default, C-COR02) mistura os 4
+    vizinhos em luz linear; ``'seco'`` mantem a amostragem
+    pontual pre-C-COR02, byte a byte (controlo).
     """
+    if amostragem not in ("bilinear", "seco"):
+        raise ValueError("amostragem deve ser bilinear ou seco")
     verts = np.asarray(verts, dtype=np.float64)
     normais = np.asarray(normais, dtype=np.float64)
     n = len(verts)
@@ -112,7 +157,12 @@ def amostrar_vertices(verts: np.ndarray, normais: np.ndarray, vistas: list[dict]
             sel = idx[ganha]
             if len(sel):
                 melhor[sel] = facing[sel]
-                cores[sel] = srgb_para_linear(imagem[ipy[sel], ipx[sel]])
+                if amostragem == "bilinear":
+                    cores[sel] = amostrar_bilinear(
+                        imagem, mascara, ax * px_all[sel] + bx,
+                        ay * py_all[sel] + by)
+                else:  # "seco": pontual pre-C-COR02 (controlo byte-exacto)
+                    cores[sel] = srgb_para_linear(imagem[ipy[sel], ipx[sel]])
                 fonte[sel] = FONTE_VISTA
             info["vertices_por_vista"][nome] = int(len(sel))
         else:

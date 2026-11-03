@@ -420,10 +420,72 @@ def _baricentricas(p: np.ndarray, px: np.ndarray, py: np.ndarray):
 # ----------------------------------------------------------------------------
 # Bake por projecao
 # ----------------------------------------------------------------------------
+
+def srgb_para_linear(rgb):
+    """Decodifica RGB sRGB 0..1 para luz linear (nao recebe alfa).
+
+    A MESMA EOTF de ``oficina3d.cor.vertice.srgb_para_linear``,
+    duplicada aqui porque ``vertice`` importa este modulo (o inverso
+    criaria um ciclo). A bateria da Frente D (passo 6) prende as duas
+    ao mesmo valor sobre uma grelha: divergencia entre elas e defeito.
+    """
+    rgb = np.asarray(rgb, dtype=np.float64)
+    return np.where(rgb <= 0.04045, rgb / 12.92,
+                    ((rgb + 0.055) / 1.055) ** 2.4)
+
+
+def linear_para_srgb(rgb):
+    """Codifica RGB em luz linear 0..1 para sRGB (inversa de
+    ``srgb_para_linear``): segmento linear em ``c <= 0.0031308``
+    (``12.92 * c``) e potencia 1/2,4 acima. O ramo da potencia sai
+    como ``p + 0.055 * (p - 1)`` - identico em reais a
+    ``1.055 * p - 0.055``, mas exacto no extremo: em float64,
+    ``1.055 - 0.055 = 0.9999999999999999``, e um bake de cor solida
+    tem de devolver a cor solida byte a byte."""
+    rgb = np.asarray(rgb, dtype=np.float64)
+    p = np.power(np.maximum(rgb, 0.0), 1.0 / 2.4)
+    return np.where(rgb <= 0.0031308, rgb * 12.92, p + 0.055 * (p - 1.0))
+
+
+def amostrar_bilinear(imagem, mascara, x, y):
+    """Amostragem bilinear de ``imagem`` (codificada sRGB) com a
+    mistura em LUZ LINEAR; o resultado sai em LUZ LINEAR.
+
+    ``x``/``y``: coordenadas continuas na convencao de indices (o
+    pixel ``i`` cobre ``[i, i+1)``, centro em ``i + 0.5``). Os 4
+    vizinhos convertem-se com ``srgb_para_linear`` ANTES de misturar
+    (C-COR02: nunca misturar valores codificados); vizinhos fora da
+    mascara nao contribuem (pesos renormalizados, sem halo do
+    fundo). Pontos fora do quadro sao limitados a borda da imagem:
+    a cor vem do pixel da borda, como no clip do bake (comportamento
+    A1 intocado - quem decide ONDE se pinta continua a ser o
+    ``amostra_ok`` de ``rasterizar_textura``). Quem chama re-codifica
+    o resultado (``linear_para_srgb``) se o destino for sRGB.
+    """
+    x = np.clip(np.asarray(x, dtype=np.float64) - 0.5, 0, imagem.shape[1] - 1)
+    y = np.clip(np.asarray(y, dtype=np.float64) - 0.5, 0, imagem.shape[0] - 1)
+    x0 = np.floor(x).astype(int)
+    y0 = np.floor(y).astype(int)
+    x1 = np.minimum(x0 + 1, imagem.shape[1] - 1)
+    y1 = np.minimum(y0 + 1, imagem.shape[0] - 1)
+    dx = x - x0
+    dy = y - y0
+    total = np.zeros(len(x))
+    rgb = np.zeros((len(x), 3))
+    for xx, yy, w in ((x0, y0, (1 - dx) * (1 - dy)),
+                      (x1, y0, dx * (1 - dy)),
+                      (x0, y1, (1 - dx) * dy),
+                      (x1, y1, dx * dy)):
+        w = w * mascara[yy, xx]
+        total += w
+        rgb += w[:, None] * srgb_para_linear(imagem[yy, xx])
+    return rgb / np.maximum(total[:, None], 1e-15)
+
 def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray,
                        faces_uv: np.ndarray, vistas: list[dict], tamanho: int,
                        centro: np.ndarray, dim: tuple[float, float, float],
-                       ortho_scale: float) -> tuple[np.ndarray, np.ndarray, np.ndarray, dict]:
+                       ortho_scale: float,
+                       amostragem: str = "bilinear") -> tuple[np.ndarray, np.ndarray, np.ndarray, dict]:
     """Pinta a textura por projecao das vistas.
 
     ``vistas``: lista de dicts com ``vista`` (nome), ``imagem`` (HxWx3 float
@@ -434,7 +496,18 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
     por caixas dessa vista, e ``info["alinhamento_usado"][nome]`` registra
     "otimizado"; sem a chave, o caminho v1 e mantido byte a byte.
     Retorna (textura TxTx3, pintado TxT bool, melhor_peso TxT float, info).
+
+    C-COR02 (Frente D, passo 6): a cor amostrada e bilinear
+    em luz linear (``amostrar_bilinear``) e re-codificada
+    para sRGB ao gravar; ``amostragem='seco'`` mantem a
+    amostragem pontual anterior, byte a byte (controlo).
+    A mistura muda texels de borda: a textura pos-S2
+    ``e4056741...`` deixa de ser a saida esperada do bake
+    (rotacao de baseline declarada; a nova baseline nasce
+    na composicao medida da Frente D).
     """
+    if amostragem not in ("bilinear", "seco"):
+        raise ValueError("amostragem deve ser bilinear ou seco")
     tex = np.zeros((tamanho, tamanho, 3), dtype=np.float64)
     pintado = np.zeros((tamanho, tamanho), dtype=bool)
     melhor = np.zeros((tamanho, tamanho), dtype=np.float64)
@@ -513,8 +586,10 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
             ext_h = ortho_scale * (wi / hi)
             spx = (qx / ext_h + 0.5) * wi
             spy = (0.5 - qy / ortho_scale) * hi
-            ipx = np.clip((ax * spx + bx).astype(int), 0, wi - 1)
-            ipy = np.clip((ay * spy + by).astype(int), 0, hi - 1)
+            cx = ax * spx + bx
+            cy = ay * spy + by
+            ipx = np.clip(cx.astype(int), 0, wi - 1)
+            ipy = np.clip(cy.astype(int), 0, hi - 1)
             amostra_ok = mascara[ipy, ipx] & (facing > FACING_MIN)
             if not amostra_ok.any():
                 continue
@@ -522,7 +597,18 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
             tx = xs.ravel()[sel]
             ty = ys.ravel()[sel]
             pes = facing[amostra_ok]
-            cor = imagem[ipy[amostra_ok], ipx[amostra_ok]]
+            if amostragem == "bilinear":
+                # C-COR02: bilinear em luz linear - os 4 vizinhos
+                # convertem-se, misturam-se em linear e o resultado
+                # volta a sRGB ao gravar (a textura continua sRGB).
+                # O clip NAO muda: ipx/ipy/amostra_ok sao os mesmos
+                # de antes e a amostra fora do quadro continua a
+                # pintar com a cor da borda (A1 intocado: o C-COR02
+                # nao corrige o A1 nem fecha a D1).
+                cor = linear_para_srgb(amostrar_bilinear(
+                    imagem, mascara, cx[amostra_ok], cy[amostra_ok]))
+            else:  # "seco": pontual pre-C-COR02 (controlo byte-exacto)
+                cor = imagem[ipy[amostra_ok], ipx[amostra_ok]]
             ganha = pes > melhor[ty, tx]
             if ganha.any():
                 g = np.nonzero(ganha)[0]
