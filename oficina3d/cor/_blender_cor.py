@@ -60,6 +60,7 @@ if APP not in sys.path:
 
 from oficina3d.cor import projecao as P  # noqa: E402
 from oficina3d.cor import preenchimento as PF  # noqa: E402
+from oficina3d.cor import campo_difusao as CD  # noqa: E402
 from oficina3d.cor import mapa_territorios as MT  # noqa: E402
 
 ANGULOS = P.ANGULOS
@@ -75,6 +76,22 @@ def ler_pedido():
     args = sys.argv[sys.argv.index("--") + 1:]
     with open(args[0], encoding="utf-8") as f:
         return json.load(f)
+
+
+def validar_campo_difusao(pedido, modo_preenchimento):
+    """Flag ``campo_difusao`` do pedido (T-COR-3, PACOTE-T-COR-3 SS1.1):
+    "desligado" (omissao = este valor) ou "k2plus". Valor desconhecido
+    => ValueError, na forma da validacao de ``preenchimento``;
+    "k2plus" com preenchimento != "3d" => ValueError (o campo so
+    existe dentro do caminho 3D). Funcao pura, sem Blender, para a
+    bateria a poder exercitar (extraccao AST, padrao da casa)."""
+    valor = pedido.get("campo_difusao", "desligado")
+    if valor not in ("desligado", "k2plus"):
+        raise ValueError(f"campo_difusao desconhecido no pedido: {valor!r}")
+    if valor == "k2plus" and modo_preenchimento != "3d":
+        raise ValueError(
+            "campo_difusao 'k2plus' exige preenchimento '3d'")
+    return valor
 
 
 def sha256_arquivo(caminho):
@@ -349,6 +366,8 @@ def main():
         if modo_preenchimento not in ("3d", "uv"):
             raise ValueError(f"preenchimento desconhecido no pedido: {modo_preenchimento!r}")
         res["preenchimento"] = modo_preenchimento
+        campo_difusao = validar_campo_difusao(pedido, modo_preenchimento)
+        res["campo_difusao"] = campo_difusao
         # Dilatacao v1 = "cor vizinha mais proxima": passes bastantes para
         # preencher o interior das zonas cegas, nao so as costuras. Cada passe
         # e 1 px (numpy, barato); 256 cobre regioes cegas de ate ~256 px de
@@ -540,8 +559,18 @@ def main():
                                          mapa.territorio_face))
             else:
                 cores_final, anel, alcancavel = PF.difundir(adj, cores_face, tem_cor)
-            tex, pintado, masc_3d = PF.aplicar_preenchimento(
-                tex, pintado, texel_face, cores_final, alcancavel)
+            # Ponto unico de divergencia (PACOTE-T-COR-3 SS1.8): a
+            # sequencia mapa -> cores -> adjacencia -> difundir acima
+            # e intacta nos dois bracos; so quem escreve os texeis
+            # cegos alcancaveis muda.
+            rel_campo = None
+            if campo_difusao == "k2plus":
+                tex, pintado, masc_3d, rel_campo = CD.aplicar_campo(
+                    tex, pintado, texel_face, faces, faces_uv, verts,
+                    alcancavel, cores_final)
+            else:
+                tex, pintado, masc_3d = PF.aplicar_preenchimento(
+                    tex, pintado, texel_face, cores_final, alcancavel)
             pintado_3d = pintado.copy()
             dominio = PF.dominio_dilatacao_restrita(
                 masc_uv, texel_face, alcancavel, passes=8)
@@ -558,6 +587,13 @@ def main():
                 "anel_medio": round(float(anel[preenchidas].mean()), 2) if preenchidas.any() else 0.0,
                 "anel_max": int(anel[preenchidas].max()) if preenchidas.any() else 0,
             }
+            # O registo diz qual mecanismo produziu o braco (SS1.8):
+            # sob "k2plus", o bloco "campo" e o relatorio de SS1.6.
+            if campo_difusao == "k2plus":
+                info_preench["mecanismo"] = "campo_difusao_k2plus"
+                info_preench["campo"] = rel_campo
+            else:
+                info_preench["mecanismo"] = "difusao_a3"
             if classe_face is not None:
                 # Anel da onda de barreiras (sem as orfas, cujo anel e o
                 # da onda livre): e a regua R1/R2 do plano de testes
