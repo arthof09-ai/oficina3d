@@ -1615,3 +1615,17 @@ Executor I0004 sob CM-000009, pacote citável «DESENHO-CORRECCAO-COR-ORC + ERRA
 **Adopção expressa (descarga da C-1 do julgamento Regras/Fila de T-COR-1, `699f1478…`):** a ordem da fila fica **ADOPTADA** nos termos da proposta §7 do desenho — o slot de GPU de T-COR-4 (bakes curtos da correcção da cor) corre **ANTES** da corrida completa da MP-T1 ≡ P-02; a leitura do §22 do índice do tribunal («next = P-02 ≡ MP-T1») vale como ordem **entre braços do tribunal**. **Sem adopção alternativa.** Assento gémeo no índice do tribunal, §23.5. A entrada anterior desta tranche inscreveu a ordem tal como declarada (declaração E-R1); esta fornece a palavra expressa de adopção que a condição C-1 exige, antes de T-COR-4 abrir.
 
 - I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — T-COR: adenda T-COR-2 julgada (PRONTO COM RESSALVAS ×2) e registada — descargas E-R3, C-M6 e fecho da C-1
+
+A **adenda T-COR-2** (`oficina-audit/tcor/ADENDA-T-COR-2.md`, 27.371 B, SHA-256 `af83444a…`) — **escolha K2, re-fundada em H-E** (difusão do campo de cor sobre o grafo dual do corpo; directos invariantes, L-5) e passo novo **T-COR-2.5** (despejo `proveniencia_v3`, com interruptores de morte V4 e forquilha de atribuição) — foi **julgada PRONTO COM RESSALVAS pelas duas lentes**: Método (`c18c9186…`; condições C-T2-M1…C-T2-M4) e Regras/Fila (`f30de535…`; condições C2-1 e C2-2). Acto principal no índice do tribunal, **§24**; mapa completo: as condições dos julgamentos de T-COR-1 ficam todas descarregadas em pleno.
+
+**Com a adenda regista-se a errata C-T2-M3** (`ERRATA-T-COR-2.md`, `f4a3f0fa…`): reconcilia a perna L-2 de §4 da adenda (Δcost-S ≤ 0,1574 e R_S ≤ 3,86) com a letra de §5.2.3 do desenho («R ≤ 1,5», lida contra o controlo antigo) — **nenhum número nem limiar muda**; a leitura válida do par é a da folha.
+
+**Descargas neste acto (C2-2):** (i) **errata C-M6 registada** (`ERRATA-T-COR-1.md`, `47d94d22…`) — reconcilia a §11 do relatório T-COR-1; impacto numérico zero; (ii) **inscrição bilateral E-R3 no assento do PN-01** (índice do tribunal, §5(ii)): o caminho (ii) de §7 foi o seguido — a medição própria D-F de T-COR-1 inscreve-se como **contribuição medida**; o destino do PN-01/T4 do Codex lê-se **confirmação independente ainda devida** (K3 não foi escolhida; o locus C-COR03 fica com o PN-01/T4, com o tamanho de D-F como contribuição); (iii) **C-1 fechada**: descarregada na §23.5 do índice e na entrada gémea anterior deste REGISTRO (commit `f330a187…`), supersedendo o «em curso» do §7 da adenda.
+
+**Estado:** **T-COR-2.5 autorizado a correr** (com a C-T2-M2 a governar o seu V4 e a C2-1 a fixar o conteúdo do seu relatório); **T-COR-3 só depois** de a forquilha de §3 da adenda cair no ramo «prosseguir».
+
+- I0007 (CM-000009), 2026-11-03.
