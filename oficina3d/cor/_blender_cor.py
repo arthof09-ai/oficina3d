@@ -488,6 +488,10 @@ def main():
                 except MT.MapaIncompativel as e:
                     raise ValueError(f"territorios: mapa incompativel: {e}")
                 tempo_carga = round(time.perf_counter() - t_carga, 3)
+                if pesos_ativos:
+                    fator = MT.fator_territorial(mapa, piso_ef, d_ref_ef)
+                    nomes_pedido = [v["vista"] for v in vistas_prontas]
+                    fator_pedido = MT.fator_para_pedido(fator, nomes_pedido)
                 terr_diag = {"aplicado": True, "motivo": None,
                              "sha_npz": mapa.sha_npz,
                              "glb_sha256": mapa.glb_sha256,
@@ -507,7 +511,7 @@ def main():
         progresso(55, "Blender COR: rasterizando a textura por projecao")
         tex, pintado, _melhor, info_bake = P.rasterizar_textura(
             verts, faces, normais, faces_uv, vistas_prontas, tamanho,
-            np.array(centro), dim, ortho)
+            np.array(centro), dim, ortho, fator_face_vista=fator_pedido)
         pintado_direto = pintado.copy()
         # Cobertura: fracao da AREA UV pintada (texels dentro de triangulos UV).
         masc_uv = P.rasterizar_mascara_2d(
@@ -587,7 +591,8 @@ def main():
                 vencedor = info_bake.get("vencedor")
                 if vencedor is not None:
                     fiel = direto_mask & (texel_face >= 0) & (vencedor == terr_tex)
-                    disputa = direto_mask & (texel_face >= 0) & (vencedor != terr_tex)
+                    disputa = (direto_mask & (texel_face >= 0)
+                               & (terr_tex >= 0) & (vencedor != terr_tex))
                     n_fiel, n_disputa = int(fiel.sum()), int(disputa.sum())
                 else:
                     n_fiel, n_disputa = None, None
@@ -595,14 +600,16 @@ def main():
                     cls_tex = classe_face[seguro]
                     n_barr = int((masc_3d & (cls_tex == PF.BARREIRA)).sum())
                     n_livre = int((masc_3d & (cls_tex == PF.ORFA)).sum())
+                    n_fonte = int((masc_3d & (cls_tex == PF.FONTE)).sum())
                 else:
-                    n_barr, n_livre = None, None
+                    n_barr, n_livre, n_fonte = None, None, None
                 n_dilat_tex = int(((~pintado_3d) & pintado_final & masc_uv).sum())
                 n_sem = int((masc_uv & ~pintado_final).sum())
                 prov_v3 = {
                     "direto_fiel": n_fiel, "direto_disputa": n_disputa,
                     "preenchimento_barreira": n_barr,
                     "preenchimento_livre": n_livre,
+                    "preenchimento_sobre_faces_fonte": n_fonte,
                     "dilatacao": n_dilat_tex, "sem_cor": n_sem,
                     "completa": bool(vencedor is not None and classe_face is not None),
                 }

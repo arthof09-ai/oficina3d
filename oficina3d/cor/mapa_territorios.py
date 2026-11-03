@@ -101,3 +101,43 @@ def validar_parametros_pesos(piso: float, d_ref: float) -> None:
     if not float(d_ref) > 0:
         raise ValueError(f"d_ref deve ser > 0: {d_ref!r}")
 
+
+def fator_territorial(mapa: MapaTerritorios, piso: float, d_ref: float) -> np.ndarray:
+    """Matriz (F, 4) de fatores de peso da P1.1, em VISTAS_ORDEM.
+
+    fator[f, v] =
+      1,0                          se territorio[f] == v (autoridade)
+      1,0                          se territorio[f] == -1 (sem autoridade:
+                                   nenhuma vista e penalizada)
+      1 - (1-piso)*min(1, d/D_REF) se territorio[f] == w != v (disputa):
+                                   na fronteira (d=0) a corrida e pura;
+                                   no interior profundo do territorio
+                                   alheio a intrusa paga o piso.
+
+    Limites de desenho: piso em [0,5; 1,0), d_ref default 0,03 (~p90 da
+    dist_geo medida: mediana 0,00416; p90 0,03045; max 0,13492 - laudo
+    P1 §3.2). Deterministico: funcao pura dos arrays do mapa e de
+    (piso, d_ref).
+    """
+    validar_parametros_pesos(piso, d_ref)
+    terr = mapa.territorio_face.astype(np.int64)  # (F,)
+    d = np.minimum(1.0, mapa.dist_geo_fronteira.astype(np.float64) / float(d_ref))
+    fator_disputa = 1.0 - (1.0 - float(piso)) * d  # (F,)
+    vistas_idx = np.arange(4)[None, :]  # (1,4)
+    autoridade = (terr[:, None] == vistas_idx) | (terr[:, None] < 0)
+    return np.where(autoridade, 1.0, fator_disputa[:, None]).astype(np.float32)
+
+
+def fator_para_pedido(fator: np.ndarray, nomes_pedido: list) -> np.ndarray:
+    """Reordena as colunas do fator (VISTAS_ORDEM) para a ordem do pedido.
+
+    ``rasterizar_textura`` usa o indice da vista NA LISTA do pedido
+    (vi); sem esta reordenacao, um pedido fora da ordem canonica
+    aplicaria o pedágio da vista errada. Nomes desconhecidos = erro.
+    """
+    cols = []
+    for nome in nomes_pedido:
+        if nome not in VISTAS_ORDEM:
+            raise ValueError(f"vista fora do conjunto canonico: {nome!r}")
+        cols.append(VISTAS_ORDEM.index(nome))
+    return np.asarray(fator)[:, cols]

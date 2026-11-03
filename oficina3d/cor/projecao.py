@@ -485,7 +485,8 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
                        faces_uv: np.ndarray, vistas: list[dict], tamanho: int,
                        centro: np.ndarray, dim: tuple[float, float, float],
                        ortho_scale: float,
-                       amostragem: str = "bilinear") -> tuple[np.ndarray, np.ndarray, np.ndarray, dict]:
+                       amostragem: str = "bilinear",
+                       fator_face_vista=None) -> tuple[np.ndarray, np.ndarray, np.ndarray, dict]:
     """Pinta a textura por projecao das vistas.
 
     ``vistas``: lista de dicts com ``vista`` (nome), ``imagem`` (HxWx3 float
@@ -495,6 +496,16 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
     pelo ``_blender_cor``): nesse caso o override SUBSTITUI o alinhamento
     por caixas dessa vista, e ``info["alinhamento_usado"][nome]`` registra
     "otimizado"; sem a chave, o caminho v1 e mantido byte a byte.
+
+    P1.1 (opcional): ``fator_face_vista`` (F, len(vistas)) com as colunas
+    NA ORDEM DA LISTA ``vistas`` (o chamador reordena a partir de
+    VISTAS_ORDEM). Com o parametro, o peso efetivo da proposta e
+    ``facing_interpolado * fator[fi, vi]`` e ``melhor`` passa a guardar
+    o peso EFETIVO (a corrida continua comparando grandezas homogeneas
+    - autoauditoria do desenho, D2); ``info["vencedor"]`` (TxT int8, -1
+    fora da pintura) registra quem venceu cada texel. Sem o parametro,
+    o comportamento atual e mantido BIT A BIT e nenhum array de
+    vencedor e alocado (custo zero).
     Retorna (textura TxTx3, pintado TxT bool, melhor_peso TxT float, info).
 
     C-COR02 (Frente D, passo 6): a cor amostrada e bilinear
@@ -513,7 +524,9 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
     melhor = np.zeros((tamanho, tamanho), dtype=np.float64)
     info = {"faces_pintadas_por_vista": {}, "texels_por_vista": {},
             "alinhamento_usado": {}}
-    for v in vistas:
+    vencedor = (np.full((tamanho, tamanho), -1, dtype=np.int8)
+                if fator_face_vista is not None else None)
+    for vi, v in enumerate(vistas):
         nome = v["vista"]
         imagem = v["imagem"]
         mascara = v["mascara"]
@@ -609,15 +622,23 @@ def rasterizar_textura(verts: np.ndarray, faces: np.ndarray, normais: np.ndarray
                     imagem, mascara, cx[amostra_ok], cy[amostra_ok]))
             else:  # "seco": pontual pre-C-COR02 (controlo byte-exacto)
                 cor = imagem[ipy[amostra_ok], ipx[amostra_ok]]
-            ganha = pes > melhor[ty, tx]
+            if fator_face_vista is None:
+                peso_ef = pes
+            else:
+                peso_ef = pes * float(fator_face_vista[fi, vi])
+            ganha = peso_ef > melhor[ty, tx]
             if ganha.any():
                 g = np.nonzero(ganha)[0]
-                melhor[ty[g], tx[g]] = pes[g]
+                melhor[ty[g], tx[g]] = peso_ef[g]
                 tex[ty[g], tx[g]] = cor[g]
                 pintado[ty[g], tx[g]] = True
+                if vencedor is not None:
+                    vencedor[ty[g], tx[g]] = vi
                 texels += int(ganha.sum())
         info["faces_pintadas_por_vista"][nome] = faces_ok
         info["texels_por_vista"][nome] = texels
+    if vencedor is not None:
+        info["vencedor"] = vencedor
     return tex, pintado, melhor, info
 
 
