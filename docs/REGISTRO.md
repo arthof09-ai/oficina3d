@@ -1497,3 +1497,72 @@ COPIA DO CODEX (SS9.1.8): git status dela LIMPO e HEAD 626229bfe1921cddc003b583f
 ESTADO: a Frente D esta EXECUTADA ate ao passo 9 sob o veredicto do passo 8: mecanismo PRONTO COM RESSALVAS (R-1: celula cega T-MIX-2 x S-PC1-3, nomeada e medida por sonda no valor julgado; R-2: rota da composicao vs letra da CC-14, registada - a composicao foi medida antes de qualquer consumo a jusante e julgada antes da bateria de fecho; R-3: CPU nao medido nos paineis do passo 7 e deste fecho); qualidade visual NAO JULGADA - aguarda o olho do Mestre sobre o render flat deste fecho e o par antes/depois do passo 7. Ficam ABERTOS, declarados e nunca varridos (pacote SS9.2): C-COR03 (medias do preenchimento em sRGB - a S2-pipeline-linear NAO esta fechada; quantificacao devida em tranche propria), A1 (clip de borda no bake T1, intacto por desenho; magnitude em producao NP5 por medir; tranche propria nao autorizada), D1 (IoU por vista 0,8177/0,7774/0,8065/0,7957 < 0,88), FA-2 (confirmacao cruzada DeltaE textura embutida x PNG externo; adiavel, nao bloqueia) e a qualidade visual. Limites que viajam com a guarda: ela e estrutural, nao semantica (troca de acessores entre primitivos de igual contagem e indetectavel por construcao); verificar_glb_texturizado nao foi auditado por esta tranche. Os 9 ficheiros extraviados seguem byte-intactos na arvore (SHA-256 reconferidos neste fecho: preenchimento 1B785652..., _blender_cor 5BC89FB4..., passo CC4DD88A..., __init__ 73D208FD..., mapa_territorios AFD75403..., test_cor_territorios 4A8585A4..., test_cor_preenchimento_barreira 8003D58F..., test_cor_pesos 5F0867DB...; projecao no estado de fecho do passo 6, 10987B2C...), fora de todos os commits da frente - o merito e da tranche P1 (CC-17).
 
 - I0004 (CM-000009), 2026-11-02.
+
+FRENTE P1 - TRANCHE T-P1-0 (CORRECCOES DOS 3 TESTES EXTRAVIADOS, C-P1-1 a C-P1-3 do julgamento CC-17): EXECUTADA - os 3 FAIL eram defeitos de teste (0 de producao); producao INTOCADA por SHA; sem commit (adocao re-serializada = T-P1-1/T-P1-2, C-P1-6).
+
+
+
+AUTORIDADE E ABERTURA: julgamento de merito da meia-tranche extraviada (I0003, frente P1, CC-17): veredicto (a) ADOPTAR como base da P1 com correccoes C-P1-1...C-P1-6; esta tranche aplica SO C-P1-1...C-P1-3 (ficheiros de teste). Abertura medida no PC: HEAD 29cee7b8588a9848617d99d7453bb88e9505dcbc; git status = exactamente as 9 linhas extraviadas (5 M + 4 ??); SHA-256 dos 9 = ancoras do julgamento, digito a digito (preenchimento 1B785652..., _blender_cor 5BC89FB4..., passo CC4DD88A..., __init__ 73D208FD..., mapa_territorios AFD75403..., projecao 10987B2C..., test_cor_territorios 4A8585A4..., test_cor_preenchimento_barreira 8003D58F..., test_cor_pesos 5F0867DB...); PC ocioso ha 31.581 s a abertura. Reproducao pre-correccao no PC (venv do projecto): 24 testes extraviados = FAILED (failures=3, skipped=1) - os 3 FAIL da regua, confirmados no ambiente real.
+
+
+
+CORRECCOES (so 2 ficheiros de teste mudam; test_cor_pesos intocado): C-P1-1 (test_cor_territorios, U8): as duas assercoes passam a igualdade exacta NO DOMINIO f32 da matriz (fator == np.float32(0.6)), sem tolerancia; errata de uma linha registada ao plano de testes julgado (U8: "== piso, exacto no dominio f32 da matriz"). C-P1-2 (test_cor_preenchimento_barreira, U12): assercoes reescritas para o estado final julgado - alc[3] verdadeiro, classe[3] == ORFA, anel[3] == 3, onda[2] == 0 acrescentado, e a propriedade de seguranca explicita: onda[3] == ONDA_LIVRE (!= 0 - B nunca recebe a onda de A). C-P1-3 (U14, simetrica): classe[1] == ORFA, onda[1] == ONDA_LIVRE, onda[1] != -1 (a face territorial nao recebe a onda cega); acrescentado classe[2] == BARREIRA. U17 e os restantes testes dos dois ficheiros intocados (diff conferido linha a linha).
+
+
+
+PROVA DE DENTES POR MUTACAO (em COPIA da arvore fora do repo, apagada no fim; controlo sem mutacao: 24 testes OK (skipped=1)): M-PISO (piso efectivo trocado para 0,5 em mapa_territorios, na copia) - o U8 corrigido FALHA (np.float32(0.5) != np.float32(0.6)); ficheiro de territorios sob o mutante: 12 testes, 1 failure (so o U8). M-PAREDE (condicao de parede removida em difundir_barreira, na copia) - o U12 corrigido FALHA (classe[3] = 1 BARREIRA != 2 ORFA: a onda de A atravessa e entrega em B) e o U14 corrigido FALHA (classe[1] = 1 != 2); ficheiro de barreira sob o mutante: 9 testes, 4 failures + 1 skipped. Cada teste corrigido apanha o seu mutante - as correccoes nao afrouxaram nada.
+
+
+
+REGUA NO PC (suite completa, arvore real, venv do projecto, unittest discover): Ran 404 tests in 34.600s - OK (skipped=2) = 402 ok + 0 FAIL + 2 skipped + 0 erros. Os 3 testes corrigidos aparecem ok por nome. Skips nomeados: U20 (sem OFICINA3D_P1_PROVA - prova do job-ancora, pertence a T-P1-1) e test_mcp::test_criar_servidor_registra_as_ferramentas (pacote mcp nao instalado neste venv) - ambos pre-existentes e declarados, nenhum novo.
+
+
+
+INTEGRIDADE DE FECHO: HEAD intacto (29cee7b...); os 6 ficheiros de PRODUCAO extraviados com SHA-256 identicos aos da abertura (ancoras acima); test_cor_pesos identico (5F0867DB...); novas ancoras dos ficheiros corrigidos: test_cor_territorios 910B9BC5B144EE1F... e test_cor_preenchimento_barreira B1DE6170D9883651...; git status = as mesmas 9 linhas dos extraviados (+ este append ao REGISTRO, sem commit, como a tranche manda). FICA ABERTO, fora desta tranche por desenho: C-P1-4 (guarda da disputa v3) e C-P1-5 (posicao de fator_face_vista) - tranche P1.1 (T-P1-2); U20 e a ablacao no ancora - T-P1-1; C-COR03/PN-01 intocado e nao decidido (fronteira do julgamento, seccao 4). Relatorio proprio: hidden_files/p1-t0-correccoes-testes-2026-11-02.md (workspace do Muse).
+
+
+
+- I0004 (CM-000009), 2026-11-02.
+
+
+FRENTE P1 - TRANCHE T-P1-1 (ADOPCAO DA FATIA P1.2 - PREENCHIMENTO COM BARREIRAS, C-P1-6): EXECUTADA - commit b552a87 na main; U20 exacto no artefacto real; ablacao A2 x A0 no job-ancora com a sessao a reproduzir a baseline da Frente D byte a byte; R1-R7 medidos. Julgamento da serie B (Critico dedicado) a seguir - nenhum job de producao pode pedir a fatia (barreiras ou pesos) antes de ele fechar: a fatia so entra por flag explicita no pedido e o worker nao passa o campo.
+
+
+
+AUTORIDADE E ABERTURA: julgamento CC-17 (adocao re-serializada P1.2 -> P1.1) + fecho da T-P1-0. Abertura medida: HEAD 29cee7b8588a9848617d99d7453bb88e9505dcbc; status = as 9 linhas extraviadas + o append da T-P1-0 neste REGISTRO (por commitar); ancoras dos 9 ficheiros = julgamento/T-P1-0, digito a digito (testes ja nas ancoras novas da T-P1-0: territorios 910B9BC5..., barreira B1DE6170...); PC ocioso ha 32.142 s. Insumos congelados por hash: GLB-ancora 9A5C1203BB41DDF8... (2.879.252 B), mapa territorios_orc.npz EECD9A36... (glb_sha256 interno = o da ancora), pedido-base s2cor08-1/orc EBA1093A....
+
+
+
+U20 (guardiao de paridade; OFICINA3D_P1_PROVA = pasta com territorios_orc.npz + modelo_uv.glb, copias conferidas por hash): o modulo de barreira corre OK com o U20 A CORRER (9 testes, nenhum skip): (anel, onda) da onda de barreiras == anel_bake_barreira/onda_bake_barreira do .npz EXACTAMENTE sobre o grafo real; orfas = 254; anel medio sobre a classe BARREIRA = 3,24 (places=2); anel max = 21. A porta de producao reproduz o laudo no artefacto real - a leitura de fidelidade do julgamento fica de pe.
+
+
+
+ABLACAO A2 x A0 (4 bakes puros de producao, _blender_cor.py da arvore; pedidos = o do ancora pos-S2 com saidas redireccionadas; A2/A2' com territorios {ativo: true, mapa, barreiras: true} e SEM a chave pesos; gpu.lock detido durante os bakes e reposto a 0 B): A0 textura f198a2a7... / GLB 9dd67084... = A BASELINE DA FRENTE D BYTE A BYTE (R16 na forma mais forte) e A0 == A0' identicos (determinismo); numeros da sessao = laudo (diretos 420.713; fontes 24.590; preenchidas 25.160; anel livre 3,18/21; IoU por vista 0,8177/0,7774/0,8065/0,7957). A2 == A2' byte-identicos (textura c53b165c..., GLB ba1e8b17...). Diagnostico A2: aplicado=true, sha_npz conferido, pesos_ativos=false registado (nunca herdado em silencio), carga do mapa 0,06 s, texels_disputa_antes_npz 42.715 e fieis_antes 377.997 (as classes do laudo reproduzem); faces por classe: fonte 24.590 / barreira 24.906 / orfa_livre 254 / sem_fonte 0; proveniencia v3 de preenchimento em duas camadas, declarado: barreira 402.132 texels, livre (orfas) 2.901 texels, direto_fiel/disputa nulos com o motivo "fatia de pesos desligada".
+
+
+
+REGUAS R1-R7 (plano julgado, seccao 3.1): R1 anel medio da barreira 3,24 <= 3,3 (esperado 3,24) OK; R2 anel maximo da barreira 21 <= 21 OK; R3 orfas = 254 exactas OK; R4 cobertura final identica a A0 (845.063 texels UV; sem_cor 0 em ambos; preenchimento_3d 424.350 texels em ambos) OK; R5 salto medio da classe com preenchimento (instrumento D-H4.1 do pacote de adopcao, mesma serie pos-Frente D, classes da reconstrucao validada): A0 73,6242 -> A2 73,6170 - CAI na direccao obrigatoria, magnitude -0,0072 registada sem meta inventada (nas 895 arestas da classe que mudaram, a media cai -0,35; estratificado por banda de fronteira da face preenchida: banda 0 +0,12, banda 1 +0,02, banda 2 -0,15, banda >=3 -0,27); R6 texels diretos byte-identicos a A0: 0 diferencas sobre a mascara de diretos do laudo (420.712 texels) - a mascara texel_* do .npz esta na orientacao interna do pipeline (flip vertical face ao PNG salvo): sem o flip medem-se 6.520 falsos positivos, com o flip 0; diferencas totais A0 x A2 = 62.256 texels, todas fora dos diretos; R7 nenhuma outra classe piora alem de +5%: interna +0,06% (52,70 -> 52,73), fronteira pura +0,45% (50,64 -> 50,87), costura UV -0,26% (108,86 -> 108,58) OK.
+
+
+
+B4 (quem paga a barreira - medicao do executor para a serie B): dos arrays do .npz, 585 faces pioram com a barreira e o total extra PELA FORMULA DO PROPRIO LAUDO (adocao/p1/territorios.py:603 - soma de anel_barreira com orfas a 0, menos anel_livre) = +680 exactos (regua da bateria: <= 748); a conta liquida alternativa (orfa ao seu anel livre real) = +1.304 - as duas contas registadas, a leitura e do Critico. 14 faces pioram mais de +6 aneis, com registo nominal (livre -> barreira): territorio 1 (costas): 16125 (1->12), 16127 (2->11), 16129 (2->10), 16723 (1->11), 16726 (1->10), 16734 (2->9), 43671 (1->8), 44171 (3->10), 44187 (2->11); territorio 0 (frente): 45728 (2->9), 46132 (1->11), 46133 (1->10), 46137 (1->9), 46144 (1->8). N-O2-P1b (medicao nova da bateria, sem aceite/reprova nesta tranche): nas 24.906 faces BARREIRA, a vista vencedora majoritaria da face-fonte == rotulo geometrico propagado pela onda em 23.566 faces (94,62%); nas ORFAS o rotulo e o da onda livre por construcao (fontes maioritarias: esquerda 99, costas 65, direita 67, frente 23). B5: faces sem fonte alcancavel = 0 e texels dentro da UV pintados por dilatacao = 0 (a dilatacao segue 100% halo: 2.709.638 texels fora da UV, igual a A0).
+
+
+
+ADOPCAO (C-P1-6, commits por fatia com divisao por plumbing): commit b552a87f6505f8a309433bba00844c4ad4dc7298 na main (6 ficheiros, +600/-7): preenchimento.py inteiro; testes/test_cor_preenchimento_barreira.py inteiro; passo.py inteiro (repasse opcional, default desligado); __init__.py inteiro (docstring - descreve tambem a matriz de fatores da P1.1, que entra na T-P1-2); mapa_territorios.py PARCIAL (so carga + validacao; fator_territorial/fator_para_pedido ficam por commitar); _blender_cor.py PARCIAL (sem o calculo do fator e sem o parametro fator_face_vista na chamada - conferido na arvore commitada: 0 ocorrencias de fator_territorial/fator_face_vista=fator_pedido e 0 "def fator" no mapa). CONDICAO ESCRITA: nenhum job de producao pode pedir a fatia de pesos antes de o julgamento da P1.1 (T-P1-2) fechar; nesta arvore o caminho de pesos esta fisicamente incompleto (sem fator e sem parametro) e a proveniencia v3 declara "fatia de pesos desligada" quando ele nao corre. Apos o commit, as versoes completas foram restauradas na arvore e reconfirmadas por SHA (mapa AFD75403..., _blender_cor 5BC89FB4...): o resto da fatia P1.1 segue por commitar e byte-intacto (projecao 10987B2C..., test_cor_territorios 910B9BC5..., test_cor_pesos 5F0867DB...).
+
+
+
+SUITES POS-ADOPCAO (venv do projecto, unittest discover): (A) arvore de trabalho, sem env: Ran 404 tests - OK (skipped=2) = 402 ok + 0 FAIL + 2 skipped (a regua de fecho da T-P1-0, mantida sobre a arvore pos-commit); (B) arvore de trabalho, COM OFICINA3D_P1_PROVA: Ran 404 tests - OK (skipped=1) = 403 ok + 0 FAIL + 1 skipped (o U20 corre e passa dentro da suite completa; o skip restante e o test_mcp pre-existente); (C) WORKTREE LIMPO do HEAD b552a87: Ran 389 tests - OK (skipped=2) = 387 ok + 0 FAIL + 2 skipped - a arvore commitada e auto-consistente sem os restos da P1.1 (389 = 404 - 12 testes de territorios - 3 de pesos; worktree removido no fim).
+
+
+
+PAINEL (medido): tempo interno dos bakes 41,56 s (A0) / 41,47 s (A0') / 42,20 s (A2) / 43,21 s (A2') - o acrescimo de A2 sobre A0 e +1,5% (carga do mapa 0,06 s incluida); pico de VRAM 762 MiB e pico de working set do processo Blender 1.127,9 MB (amostrador proprio a cada 2 s durante os 4 bakes, 165 amostras); triangulos 49.750 (inalterados); textura A2 3.081.704 B e GLB A2 5.962.828 B (A0: 3.083.321 B / 5.964.448 B); tokens: nao se aplica (motor local); CPU: nao medido (contador a 0 no contexto destacado - fenomeno declarado da Frente D).
+
+
+
+FICA ABERTO: o julgamento da serie B sobre esta entrega (Critico senior dedicado da P1) - a adopcao fica sob o veredicto dele; a T-P1-2 (adocao da P1.1: C-P1-4 guarda (terr_tex >= 0) na disputa v3, C-P1-5 posicao de fator_face_vista, commits do resto da fatia, varredura de calibracao, ablacao A1 x A0 e composicao A3, sabotagens e veredicto visual separado no fecho da P1); C-COR03/PN-01 intocado e nao decidido (as reguas de cor desta tranche sao da serie pos-Frente D e ficam datadas se a correccao C-COR03 aterrar depois, como o julgamento declarou). Relatorio proprio: hidden_files/p1-t1-adocao-p12-2026-11-02.md (workspace do Muse).
+
+
+
+- I0004 (CM-000009), 2026-11-02.
