@@ -1629,3 +1629,97 @@ A **adenda T-COR-2** (`oficina-audit/tcor/ADENDA-T-COR-2.md`, 27.371 B, SHA-256 
 **Estado:** **T-COR-2.5 autorizado a correr** (com a C-T2-M2 a governar o seu V4 e a C2-1 a fixar o conteúdo do seu relatório); **T-COR-3 só depois** de a forquilha de §3 da adenda cair no ramo «prosseguir».
 
 - I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — Motor Próprio: pacote de execução da melhoria do motor novo julgado (PRONTO COM RESSALVAS ×2), errata registada e leitura governante da fila adoptada
+
+Por ordem do Mestre («Então melhore», 2026-11-03 08:57), o **pacote de execução** do desenho de melhoria do motor novo foi julgado: `PACOTE-MELHORIA-EXECUCAO.md` (37.047 B, SHA-256 `0e6a0fdd…`) operacionaliza «DESENHO-MELHORIA-MOTOR-NOVO + ERRATA-MELHORIA-MOTOR-NOVO» em cinco pacotes de construção (**PKG-1** preparação · **PKG-2** saída · **PKG-3** runner/painel/grelha · **PKG-4** perfis · **PKG-5** determinismo), com o mapa (a) já na VM / (b) só depois de a MP-T1 medir a base / (c) fora da tranche. Julgamentos: **Método** (`f566949e…`) **PRONTO COM RESSALVAS**, condições C-1…C-8; **Regras/Fila** (`d73f122a…`) **PRONTO COM RESSALVAS**, condições CR-1…CR-3. A **errata** (`ERRATA-PACOTE-MELHORIA.md`, 24.083 B, `df42d3d9…`) descarrega C-1…C-8 em especificação, sem editar o pacote; a unidade citável passa a ser o par **«PACOTE-MELHORIA-EXECUCAO + ERRATA-PACOTE-MELHORIA»**.
+
+**Descargas de registo neste acto:** **CR-1** — fica adoptada a leitura governante: construir infra-estrutura de prova na VM **não** é executar candidato; a estreia de qualquer candidato continua a ser a MP-T1 sob a fila CE-6. **CR-3** — pacote e julgamentos registados antes de qualquer pacote abrir. **CR-2 fica condição viva:** o relatório de fecho de cada pacote prova staging e clone byte-idênticos (manifesto antes×depois). A construção pode abrir, **PKG-1 primeiro**; a fila da GPU não se mexe. Acto principal no índice do tribunal, **§25**.
+
+- I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — Motor Próprio: mapa de paridade julgado (PRONTO COM RESSALVAS ×2) e errata registada — «MAPA-PARIDADE + ERRATA-MAPA-PARIDADE» é o guia governante das melhorias
+
+O **mapa de paridade** do motor novo (`MAPA-PARIDADE.md`, 17.750 B, `d7766556…`; corpo `aaa31737…`) — estudo teórico sobre fontes primárias, sem corrida nenhuma alegada — foi julgado **PRONTO COM RESSALVAS** pelas duas lentes: **Método** (`468221b3…`), com a condição **C-M1 GRAVE**: a frase «nenhum consumidor usa as cores de vértice do TripoSR» é **falsa** — o COLOR_0 do TripoSR é a fonte 2 do passo T2 da pintura da casa e a única fonte no caminho de zero vistas canónicas; **Regras** (`9f6161de…`). A **errata** (`ERRATA-MAPA-PARIDADE.md`, 22.406 B, `c2418acc…`) descarrega C-M1…C-M6, C-R1, C-R2, C-R4 e a perna de inscrição de C-R3, sem editar o mapa.
+
+**Quadro final corrigido (o que vale):** a fronteira estrutural é **uma só raiz — F-01/F-02** (entrada multivista e a sua face, as costas canónicas); a única dívida de treino é a **destilação (F-03)**, que só se fecha com programa próprio sob a cadeia C-07 (outputs Hunyuan proibidos como treino, §5.b); **F-07** (offload de VRAM) é condicional e fencada à medição CE-4 da MP-T1; falha nova **F-11** — granularidade da resolução de extracção (o emprestado tem botão contínuo; o nosso só profundidades inteiras). IoU, tempo e pico de VRAM do motor novo continuam **não medidos** (provas: MP-T1; determinismo e perfis: MP-T2). Com este registo, **«MAPA-PARIDADE + ERRATA-MAPA-PARIDADE» é o guia governante** das melhorias do motor novo. Acto principal no índice do tribunal, **§26**.
+
+- I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — Motor Próprio: PKG-1 FECHADO — correcção executada e confirmada sem condições
+
+O **PKG-1** (preparação de entrada da casa) fechou. A ronda de correcção (`RELATORIO-PKG-1-CORRECCAO.md`, 11.575 B, `b2aa8898…`; `preparacao.py` corrigido, 17.587 B, `f05047ba…`) descarregou **CM-1 [GRAVE]** — a truncagem intermédia da fórmula de preenchimento, aplicada nos dois ramos a partir do código oficial staged (caso nomeado 115×100 → (11, 18), onde a casa dava (11, 19); sonda: 0/22.500 divergências na grelha, contra 25,47% da fórmula velha) —, **CM-2** (selecção da componente por **área poligonal do contorno**, a medida do oficial, sem OpenCV) e **CM-3** (documental). Bateria da ronda: controlo **8/8 verde**, mutantes **8/8 vermelhos no alvo** (M7 vermelho só em tb13, devolvendo [11, 19]). A confirmação (`JULGAMENTO-PKG-1-CORRECCAO-METODO.md`, 12.664 B, `eb0b89e2…`) é **CONFIRMA A DESCARGA de tudo, sem condições novas**, com prova própria do crítico (grelha 173×173: 0/29.929 divergências).
+
+**Forma de citação da CR-2 (descarga da C-1 de Regras):** staging (82 ficheiros) e clone (289) idênticos ao manifesto antes×depois nas duas rondas — os quatro manifestos são byte-idênticos entre si (49.473 B, `eb36c42c…`); para os **3 pesos ≥64 MiB**, o facto provado é «idênticos por **tamanho exacto + mtime em nanossegundos**» — a forma curta «byte-idêntico» **não** se usa para eles. Com a **errata-da-errata** (`ERRATA-DA-ERRATA-PACOTE.md`, 17.918 B, `a01b8aef…`), a perna (3) da delimitação caiu: as divergências de entrada vivas são **duas** — (1) o modelo de fundo (rembg+U2Net da casa vs. RMBG-1.4 do oficial; substituição CE-2) e (2) o filtro do tecto (LANCZOS vs. INTER_AREA), **não medida** até à MP-T2; a cadeia citável do pacote, para matéria do PKG-1, passa a **três termos**: «PACOTE-MELHORIA-EXECUCAO + ERRATA-PACOTE-MELHORIA + ERRATA-DA-ERRATA-PACOTE». Declarado não exercido: a inferência real rembg+U2Net — estreia na abertura da MP-T1. **PKG-1 FECHADO.** Acto principal no índice do tribunal, **§27**.
+
+- I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — Tribunal P3: régua D-H0 V3 CERTIFICADA pelo Supremo Tribunal RPGional — a V3 é a régua oficial
+
+O Comestre Juiz certificou a régua **D-H0 V3** (`CERTIFICACAO-DH0-V3.md`, 20.080 B, `7c759228…`), sobre a bateria corrida pelo condutor I0008 (`BATERIA-DH0-V3-RELATORIO.md`, 28.988 B, `f0d35048…`) e julgada **PRONTO COM RESSALVAS** pelas duas lentes (Método `348f3836…`; Regras `7b38f8a2…`) — condições só de inscrição, todas descarregadas no próprio acto. Portões: **núcleo CERTIFICADO** · **espelhos CERTIFICADO** (na sua linha de âmbito) · **mínimos CERTIFICADO** · **distância NÃO CERTIFICADO**, na forma citável exacta: «ramo distância: não certificado — medido e reprovado». A partir de 2026-11-03, a **V3 é a régua oficial**; a V2 fica época fechada (série D-H0/V2), sem mistura de números entre séries. Adjudicação do item 5: o valor que governa para IoU_esp do conjunto nulo é **0,658628**; o 0,546320 impresso no §D.5 do selo fica **NÃO CITÁVEL** — o selo não se emenda; a correcção vive no acto e neste registo. Leituras de sujeito da bateria (não são matriz): **Orc CERTIFICÁVEL · Capríleo PARCIAL (perfis) · Besta INDETERMINADO**. Certificar a régua não certifica matriz nem sujeito nenhum, nem decide rota da DECISÃO P3. Actos seguintes ordenados — (a) re-corrida de P-00 sob a V3, (b) julgamento de publicação, (c) re-inscrição composta de PN-09 — nenhum feito por este acto. Acto principal no índice do tribunal, **§28**.
+
+- I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — Tribunal P3: matriz P-00 sob a V3 PUBLICADA e PN-09 re-inscrita com fundamento composto
+
+A matriz **P-00 da série D-H0/V3** (`p00-v3/P00-V3-MATRIZ.md`, 28.835 B, `f048730a…`) foi **publicada** pelo acto do Juiz (`ACTO-PUBLICACAO-P00-V3.md`, 28.425 B, `741287e0…`), julgada **PUBLICA COM RESSALVAS** pelas duas lentes (Regras `a6b3fb1d…`; Método `b342ac53…`, que recomputou 45/45 células exactas) — todas as condições descarregadas no acto. **Publicada, não certificada:** os braços práticos lêem os sinais da série V3 desde 2026-11-03; a matriz da série V2 fica época fechada para P-00. Veredictos publicados (com os cinco qualificadores do acto-mãe): **Orc — CERTIFICÁVEL**, identidade **AFIRMATIVA**; **Capríleo — PARCIAL (perfis)**, com o par frente×costas **RECUSADO** (IoU_dir 0,2580, margem −0,1920 D−), identidade **AFIRMATIVA**; **Besta — INDETERMINADO**, identidade só na forma bipartida «**proveniência AFIRMATIVA, coerência INDETERMINADA**». As condições **(4)** linha de lateralidade entre três leitores e **(5)** Anexo S de §6.1-V3 ficam **PENDENTES NÃO EXERCITADAS**: toda a citação da matriz carrega a cláusula «publicada, não certificada — condições (4)/(5) de §6.1-V3 pendentes», e nenhum uso sob a V3 pode depender da linha de lateralidade nem do Anexo S até à adenda de completamento.
+
+**§5.4 (pronúncia lavrada):** a leitura INDETERMINADO da Besta é a **primeira** escalação — **contador = 1**; nenhuma revisão de calibração é devida por acumulação (dispara à segunda escalação de qualquer conjunto) e a revisão **não fica descarregada** por esta publicação — fica armada. **PN-09 re-inscrita com fundamento composto:** (i) INDETERMINADO sob a V3 + (ii) recusa sob a V2 + (iii) concorrência independente T-14 (mede a malha, não depende da régua); a entrada originária não se apaga. Nenhuma decisão sobre o conjunto foi tomada; re-entrada só por conjunto corrigido via **REF-01 aprovado pelo Mestre** → re-corrida → adenda à matriz. Acto principal no índice do tribunal, **§29**.
+
+- I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — Tribunal P3: campanha de ataque à régua V3 julgada — certificação CONFIRMADA COM RESTRIÇÕES, adenda de uso em vigor, programa V4 ordenado
+
+Por ordem expressa do Mestre (2026-11-03, 11:16), **10 críticos atacantes** com lentes dedicadas + **1 bateria de estresse** atacaram a régua V3 certificada e a matriz P-00 publicada. Julgamento final: `JULGAMENTO-CAMPANHA-V3.md` (41.774 B, `45f4fadb…`). **Facto enquadrante: nenhum ataque virou um veredicto certificado nos conjuntos exercitados.** Por lente: **Reprodutibilidade SOBREVIVE limpa** (13/13 corridas hostis idênticas); Gramática, Degeneradas, Fronteiras, Mínimos, Mutação, Divergência e Plantas **sobrevivem com feridas**; **Espelhos CAIU** na leitura larga (o portão F×B(a) prefere a configuração espelhada nos 3/3 sujeitos de ouro, +17,4/+39,3/+23,6 p.p.; a forja `direita := espelho(esquerda)` certifica em 4/4; um conjunto meio-Orc/meio-Capríleo lê CERTIFICÁVEL) — a linha fica confirmada **só na sua letra** (espelho lateral único pela assinatura (b2)); **Distância CAIU na linha** (a não-certificação vivia só em prosa: conjuntos de distância liam CERTIFICÁVEL pelo caminho de produção).
+
+**Decisão do Juiz:** a certificação **aguenta, RESTRITA**, na forma citável lavrada no índice (§30.2), sempre com os cinco qualificadores do acto-mãe — citar a certificação sem a cláusula da campanha é defeito de citação. Instrumentos: **errata** `ERRATA-CAMPANHA-V3.md` (5.902 B, `8f615a29…`; itens E-1…E-8 — não toca código nem números certificados); **Adenda de Uso V3-ATAQUE-01** (`ADENDA-USO-V3-ATAQUE-01.md`, 5.619 B, `34f2d93e…`; itens U-1…U-6) **em vigor desde o julgamento** — entre eles, o ramo distância fica **proibido como entrada** de qualquer corrida sob a série V3 até à V4; e **programa V4 ordenado** (V4-1…V4-11; ciclo completo de versão nova; os corpora da campanha são regressão obrigatória da bateria da V4). A **matriz P-00/V3 continua a valer** sob a adenda: verificação retroactiva executada **sem surpresas** (`p00-v3/NOTA-ADENDA-CAMPANHA.md`, 12.681 B, `e713bfae…`) — teste de espelho píxel-exacto **negativo (0/48)**, proveniência fresca **12/12 = manifesto T-08**, ramo **alfa ×12**. **Não ordenado:** tocar um byte da V3, re-correr P-00 sob a V3, decidir o conjunto da Besta ou qualquer rota da DECISÃO P3. A pronúncia de §5.4 fica intacta (contador = 1; a campanha não é a revisão de calibração). Fases 0–2 do programa executadas neste acto; o ciclo da V4 (Fase 3) fica por executar. Acto principal no índice do tribunal, **§30**.
+
+- I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — Motor Próprio: PKG-2 FECHADO — errata da citação CR-2 e descargas expressas
+
+O **PKG-2** (saída: contrato de dois artefactos e ligação da limpeza) fechou. Entrega: `RELATORIO-PKG-2.md` (22.659 B, `a1f28ee7…`), `saida.py` (`606f4bb1…`); julgamentos **PRONTO COM RESSALVAS ×2** (Método `fde1d31a…`; Regras `2cc00144…`), convergentes num defeito da §4 do relatório: **três linhas META que não existem** (nomes, tamanhos e mtimes inventados) — a prova mecânica por baixo estava certa (manifestos antes/depois byte-idênticos: 371 linhas = 368 por SHA-256 integral + 3 META, 49.473 B, `eb36c42c…`). Descarga: a **`ERRATA-PKG-2.md`** (7.102 B, `53aaf8fb…`) declara as linhas da §4 **NÃO-CITÁVEIS** e inscreve as verdadeiras (a citação da matéria da §4 passa a «RELATORIO-PKG-2 + ERRATA-PKG-2»):
+
+- `TripoSG/image_encoder_dinov2/model.safetensors` — 1.217.522.888 B · mtime_ns 1793702935631229264
+- `TripoSG/transformer/diffusion_pytorch_model.safetensors` — 5.758.280.104 B · mtime_ns 1793702888135228347
+- `TripoSG/vae/diffusion_pytorch_model.safetensors` — 970.685.468 B · mtime_ns 1793702969153229911
+
+**C-2 descarregada por inscrição expressa do registador:** o fundamento do estado «não exercitado» de T-C2-3 (ΔIoU) fica admitido com efeito de fecho — o adaptador malha→máscara é entregável do PKG-3; no fecho do PKG-3 o estado terá de ser exercitado ou re-fundamentado. **D-2 descarregada por declaração expressa:** a cadeia citável do PKG-2 é a de **dois termos** («PACOTE-MELHORIA-EXECUCAO + ERRATA-PACOTE-MELHORIA»); a forma de três termos da errata-da-errata vincula só matéria do PKG-1. **PKG-2 FECHADO**, sem nova bateria. Acto principal no índice do tribunal, **§31**.
+
+- I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — Motor Próprio: PKG-3 FECHADO — ΔIoU exercitado e condição C-1 corrigida e confirmada
+
+O **PKG-3** (runner, painel e grelha) fechou. Entrega: `RELATORIO-PKG-3.md` (24.691 B, `bd96df7f…`) — corrida sintética completa com **stub declarado** (Entrada do PKG-1 → runner → Saída do PKG-2), adaptador malha→máscara, painel CE-5 de 24 campos e grelha R-1; bateria: controlo **8/8 verde**, mutantes **8/8 vermelhos no alvo**; CR-2 provada (manifestos `eb36c42c…`, idênticos aos do fecho do PKG-2). **ΔIoU de T-C2-3 EXERCITADO** — a sede transitada do PKG-2 fica descarregada **por exercício**: par de diferença conhecida com IoU 0,7500 e **ΔIoU 0,2500 exacto** nas três implementações da pilha D-H0; par idêntico com ΔIoU = 0. Julgamentos: **Regras PRONTO, sem condições** (`b84cddef…`) — primeiro fecho limpo nesta lente nesta linhagem; **Método PRONTO COM RESSALVAS** (`b44d2787…`), condição única **C-1 [MENOR]** (a fase do registo de falha saía «corrida» para `InstrumentacaoAusente`, classe de pré-voo).
+
+A ronda de correcção (`RELATORIO-CORRECCAO-PKG-3.md`, 8.530 B, `627c19a0…`) corrigiu o runner (`1e5ce78d…`) e a bateria (`41b61d81…`; mutante novo MD5 vermelho exactamente na afirmação nova): re-corrida com controlo 8/8 e mutantes **9/9**; a confirmação (`JULGAMENTO-CORRECCAO-PKG-3-METODO.md`, 8.446 B, `38e3a614…`) é **CONFIRMA A DESCARGA**, com a observação O-1 inscrita como extensão: a forma conjunta **«RELATORIO-PKG-3 + RELATORIO-CORRECCAO-PKG-3»** cobre também as linhas de prosa de `painel.json` (`5ca099db…`) e `relatorio_limpa.json` (`ec7f5009…`) da §1 do relatório julgado. **PKG-3 FECHADO.** Transita como não exercitado: corrida real = MP-T1 (fila do PC, atrás do T-COR-4, CE-6); inscrição formal da grelha R-1 = fecho da MP-T1; campo (iii) da saída; rembg real; adaptador em malhas reais. Acto principal no índice do tribunal, **§32**.
+
+- I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — Motor Próprio: PKG-4 FECHADO — duas rondas de correcção confirmadas
+
+O **PKG-4** (perfis como configuração) fechou. Entrega: `RELATORIO-PKG-4.md` (14.616 B, `366b79de…`) — 8 ficheiros de perfil com exactamente os **11 campos** do esquema C-8; `perfis.py` com registo fechado de nomes e `perfil_oficial` como único perfil-omissão; bateria T-P-1 (omissões lidas por AST da cópia staged: **11/11 campos, 0 divergências**) + T-P-2 (**11/11**) + 5 mutantes vermelhos no alvo; CR-2 provada (manifestos `eb36c42c…`). Julgamentos **PRONTO COM RESSALVAS ×2**: Método (`bd2996e3…`) — **C-1** (valores não-finitos passavam: `guidance_scale: Infinity` validava) e **C-2** (buraco de cobertura no caminho «ficheiro ilegível»), mais a observação O-1 (partilha de objectos-lista em `validar_perfil` — viaja para a integração da MP-T1); Regras (`81e0e783…`) — **C-1 documental** (a decisão 1 dizia que o eixo de experiência vive no `REGISTO`; cada entrada tem só `{"omissao": bool}`).
+
+**Ronda 1** (`RELATORIO-CORRECCAO-PKG-4.md`, 16.568 B, `97a09b21…`): guarda de finitude, casos novos t2i/t2j/t2k e mutantes MP5/MP6 vermelhos no alvo; re-corrida T-P-2 **14/14**, mutantes **7/7**; a C-1 de Regras descarregou-se por **declaração expressa** («o registo guarda nome e estatuto de omissão; o eixo vive no nome do perfil»). Confirmações: Método (`5cd6af98…`) **CONFIRMA** C-1/C-2 mas levanta condição nova **C-3** — a guarda chamava `math.isfinite` também sobre `int` e um inteiro gigante (>~309 dígitos) rebentava com `OverflowError` cru, classe que o julgado aceitava; Regras (`c95a67e6…`) **CONFIRMA** a descarga documental, com **O-1**: ficam inscritas **duas extensões** da forma conjunta «RELATORIO-PKG-4 + RELATORIO-CORRECCAO-PKG-4» — à **decisão 1** e à **frase do fecho** do relatório julgado (§7, linhas 238–241). **Ronda 2** (`RELATORIO-CORRECCAO-2-PKG-4.md`, 14.051 B, `f7995871…`): `int` não-bool é finito por construção e não passa por `isfinite`; `perfis.py` final 9.394 B (`5923e9e3…`); caso novo t2l vermelho contra a forma da ronda 1 com o `OverflowError` exacto; re-corrida T-P-2 **15/15**, mutantes 7/7; confirmação (`a434d879…`) **CONFIRMA A DESCARGA** da C-3 — e fica inscrita a forma conjunta de **três termos** «RELATORIO-PKG-4 + RELATORIO-CORRECCAO-PKG-4 + RELATORIO-CORRECCAO-2-PKG-4» para as linhas de `perfis.py`/`bateria.py`/`resultados.json` da §1 do julgado. **PKG-4 FECHADO.** Transita: corrida real com qualquer perfil = MP-T1 (atrás do T-COR-4, CE-6); adopção de perfis = MP-T2 sob R-4; integração do runner ao registo = MP-T1; utilidade de determinismo/seed = **PKG-5**.
+
+**Nota de estado do índice (para o próximo gémeo):** o índice do tribunal vai em **§§1–33** (300.240 B, SHA-256 `1ff45a0c…`); a **§34 ainda não existe** — o fecho do **PKG-5 está em correcção**; o seu gémeo escreve-se quando a §34 for inscrita no índice. Com esta entrada, `docs/REGISTRO.md` volta a acompanhar o índice por inteiro.
+
+- I0007 (CM-000009), 2026-11-03.
