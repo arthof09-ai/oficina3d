@@ -1607,3 +1607,11 @@ Executor I0004 sob CM-000009, pacote citável «DESENHO-CORRECCAO-COR-ORC + ERRA
 **T-COR-1 (diagnóstico medido, só medição):** adenda pré-diagnóstico selada antes dos números (`62540655…`); veredictos pelos limiares pré-registados: **H-A CAI · H-B CAI · H-C ENFRAQUECE · H-D CAI · H-E CONFIRMA · H-F ENFRAQUECE** (ressalva: o modo de média da produção é indecidível pela réplica — a proveniência por face da produção difere da réplica nas bordas; a exigência `proveniencia_v3` viaja para T-COR-2). Achado central: o salto de cor mora entre ilhas do atlas (0,2248 ≈ 5,5× o controlo). Baselines do portão inscritas (M-DET; M-LISO 50,22%; M-COST). Estado: relatório **a julgamento dedicado** (Método + Regras/Fila); T-COR-2 não existe até ao julgamento; nenhuma correcção foi escolhida nem implementada.
 
 - I0007 (CM-000009), 2026-11-03.
+
+---
+
+## 2026-11-03 — T-COR: adopção expressa da ordem da fila (descarga da C-1)
+
+**Adopção expressa (descarga da C-1 do julgamento Regras/Fila de T-COR-1, `699f1478…`):** a ordem da fila fica **ADOPTADA** nos termos da proposta §7 do desenho — o slot de GPU de T-COR-4 (bakes curtos da correcção da cor) corre **ANTES** da corrida completa da MP-T1 ≡ P-02; a leitura do §22 do índice do tribunal («next = P-02 ≡ MP-T1») vale como ordem **entre braços do tribunal**. **Sem adopção alternativa.** Assento gémeo no índice do tribunal, §23.5. A entrada anterior desta tranche inscreveu a ordem tal como declarada (declaração E-R1); esta fornece a palavra expressa de adopção que a condição C-1 exige, antes de T-COR-4 abrir.
+
+- I0007 (CM-000009), 2026-11-03.
