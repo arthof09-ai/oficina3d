@@ -14,7 +14,7 @@ BASE da Oficina (`<BASE>`); o código fica em `<BASE>\app`.
 
 | venv | papel | pacotes-chave (conferidos) |
 |---|---|---|
-| `.venv_app` | app, worker, web, CLI | torch 2.5.1+cu124 (CUDA ok), transformers 4.49.0, diffusers 0.39.0, fastapi 0.162.0, trimesh 5.2.0, numpy 2.2.6, setuptools 84.2.1 + wheel (correção pós-instalação: sem eles o import do app falhava) |
+| `.venv_app` | app, worker, CLI | torch 2.5.1+cu124 (CUDA ok), transformers 4.49.0, diffusers 0.39.0, trimesh 5.2.0, numpy 2.2.6, setuptools 84.2.1 + wheel (correção pós-instalação: sem eles o import do app falhava) |
 | `.venv_triposr` | runner do TripoSR | torch 2.5.1+cu124, **numpy 1.26.4** (fixado: o trimesh 4.0.5 quebra no numpy 2), trimesh 4.0.5, torchmcubes via shim em `instalacao\compat` |
 | `.venv_mcp` | servidor MCP | mcp 2.3.0 |
 
@@ -50,7 +50,7 @@ resolvida por curinga para não depender de acento em arquivo ASCII).
 | tarefa | o que sobe | log |
 |---|---|---|
 | `Oficina3D_Worker` | fila de jobs (`instalacao\tarefa_worker\`) | `<BASE>\_cache\logs\tarefa_worker.log` |
-| `Oficina3D_Web` | página/API em 127.0.0.1:8765 (`instalacao\tarefa_web\`) | `<BASE>\_cache\logs\tarefa_web.log` + `web_server.log` |
+| `Oficina3D_Web` | retirada (Plano C, O0.1) | — |
 
 ⚠ A página web da Oficina FOI RETIRADA (Plano C, O0.1): operação só por CLI/MCP. Regresso na O10 como galeria.
 

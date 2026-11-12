@@ -6,7 +6,7 @@ Regras: escrever só em `E:\RPG_Assimilacao\Oficina3D\`; **nada no disco C:** (c
 ## Ambientes
 | O quê | Caminho |
 |---|---|
-| Python do app (3.10) | `E:\RPG_Assimilacao\Oficina3D\.venv\Scripts\python.exe` — tem torch cu124, fastapi, uvicorn, pydantic 2.10, trimesh, pillow, numpy, scipy, scikit-image, opencv, pymeshlab, rembg, gradio |
+| Python do app (3.10) | `E:\RPG_Assimilacao\Oficina3D\.venv\Scripts\python.exe` — tem torch cu124, pydantic 2.10, trimesh, pillow, numpy, scipy, scikit-image, opencv, pymeshlab, rembg, gradio |
 | Python do TripoSR | `...\.venv_triposr\Scripts\python.exe` (transformers 4.35; separado de propósito) |
 | Blender 5.2.3 | `...\Ferramentas\Blender\blender-5.2.3-windows-x64\blender.exe` (headless: `-b --factory-startup -P script.py -- args`) |
 | Motores | `...\motores\Hunyuan3D-2GP`, `...\motores\TripoSR` |
@@ -22,7 +22,7 @@ app\oficina3d\            pacote Python (rodar com .venv, cwd = app\)
   motores\                (agente "núcleo")
   entrada\                (agente "entrada")
   refino\                 (agente "refino")
-  web\                    (agente "web")
+  web\                    (retirada na O0.1 — Plano C; regresso na O10 como galeria)
 app\testes\               testes por módulo (unittest ou scripts simples)
 jobs\<id>\
   job.json
@@ -100,7 +100,7 @@ python -m oficina3d.cli enviar --imagem arq[:vista] ... --modo livre --motor hun
 python -m oficina3d.cli status [id] ; baixar id destino ; motores ; worker
 
 # web  (agente "web")
-python -m oficina3d.web   # FastAPI em http://127.0.0.1:8765 (só local; nada exposto à rede)
+# web — retirada na O0.1 (Plano C); regresso na O10 como galeria
 ```
 
 ⚠ A página web da Oficina FOI RETIRADA (Plano C, O0.1): operação só por CLI/MCP. Regresso na O10 como galeria.

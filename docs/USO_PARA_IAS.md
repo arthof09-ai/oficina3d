@@ -26,7 +26,7 @@ cd E:\RPG_Assimilacao\Oficina3D\app
 
 ## 3. Página e API HTTP (só neste PC)
 ```
-..\.venv\Scripts\python.exe -m oficina3d.web      →  http://127.0.0.1:8765   (API em /api/..., ver /docs)
+A web foi retirada (Plano C, O0.1): operação só por CLI/MCP. Regresso na O10 como galeria.
 ```
 
 ## 4. Servidor MCP (Claude Code, Claude Desktop, Codex, ChatGPT)
