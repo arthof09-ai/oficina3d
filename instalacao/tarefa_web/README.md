@@ -1,5 +1,7 @@
 # Tarefa Agendada da pagina web
 
+⚠ A página web da Oficina está PARTIDA e vai ser RETIRADA (Plano C, O0.1): falta-lhe o `app.js` e a pasta `static/vendor/` — não arrancar nem usar; operação só por CLI/MCP. Volta na O10 como galeria.
+
 Faz a pagina da Oficina 3D (http://127.0.0.1:8765) subir sozinha no logon do
 usuario (plano v2, Fase 1 item 5). Espelho da tarefa do worker.
 

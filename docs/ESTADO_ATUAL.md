@@ -7,6 +7,7 @@
 
 - Ambiente, motores e modelos instalados pelo manifesto, com SHA-256 (itens 1-2), e do zero so com o GitHub (rodada R4 - independencia das referencias, DONO-02).
 - Worker como servico (tarefa Oficina3D_Worker), web no ar (Oficina3D_Web, http://127.0.0.1:8765), MCP com 9 ferramentas por stdio e por HTTP com token (401 sem ele). Paridade web x MCP provada.
+- ⚠ A página web da Oficina está PARTIDA e vai ser RETIRADA (Plano C, O0.1): falta-lhe o `app.js` e a pasta `static/vendor/` — não arrancar nem usar; operação só por CLI/MCP. Volta na O10 como galeria.
 - Os 5 motores com GLB real gerado; refino de ponta a ponta.
 - **Prova C COMPLETA (item 3 da definicao de pronta):** Orc, Besta Cristalina e Caprileo, cada um em hunyuan-mv-turbo (4 vistas) e hunyuan-mini-turbo (1 vista), sementes 7 e 42 + repeticao da 7: **determinismo byte-identico nos 3 personagens e nos 2 motores** (sha256 iguais nas repeticoes), forma <= 41,4 s, VRAM <= 6.435 MB, GLB final = 49.750 triangulos em todos. As imagens da Besta e do Caprileo vieram do Drive (indice da auditoria do Codex, relatorio de continuidade v002), com sha256 conferido arquivo a arquivo, e estao em app\testes\dourado\imagens (gitignore: arte do RPG nao vai ao repo publico).
 - Rodadas de endurecimento R1-R4 concluidas (ver REGISTRO): restarts do worker explicados, arquivos no Drive, instalacao do zero, travas e retomada de orfao provadas, fila longa 10/10.

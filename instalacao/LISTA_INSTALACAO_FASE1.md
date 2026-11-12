@@ -52,6 +52,8 @@ resolvida por curinga para não depender de acento em arquivo ASCII).
 | `Oficina3D_Worker` | fila de jobs (`instalacao\tarefa_worker\`) | `<BASE>\_cache\logs\tarefa_worker.log` |
 | `Oficina3D_Web` | página/API em 127.0.0.1:8765 (`instalacao\tarefa_web\`) | `<BASE>\_cache\logs\tarefa_web.log` + `web_server.log` |
 
+⚠ A página web da Oficina está PARTIDA e vai ser RETIRADA (Plano C, O0.1): falta-lhe o `app.js` e a pasta `static/vendor/` — não arrancar nem usar; operação só por CLI/MCP. Volta na O10 como galeria.
+
 ## 7. Portas de entrada no ar
 
 - CLI: `.venv_app\Scripts\python.exe -m oficina3d.cli motores|status|enviar|...`
