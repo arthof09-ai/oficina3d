@@ -1821,3 +1821,23 @@ A **bateria não correu — pela sua própria regra pré-registada**. O condutor
 **Instalação verificada.** A sede é o conjunto de referências da Oficina, `app\testes\referencias\` — e a vaga frontal-direita estava **vazia** (a base r3-t2 nunca lá foi instalada; vagara por exclusão da bancada). A imagem entrou pela convenção de nomes do conjunto como **`orc_diag_frente_dir.png`**: 2.411.369 B, SHA-256 `575f84edf20cdf92d46d6265a1ebe9f137a6045e993caf09922540ac439da80e` — **idêntico ao dígito nos dois lados** (origem na VM e ficheiro instalado no PC, lido de volta após a cópia). O conjunto passou de 16 para **17** PNG; **nada foi sobrescrito nem apagado**. **A base antiga fica preservada**: r3-t2 (`42510537…`) intacta na sua sede de evidência na VM, re-conferida hoje, depois da instalação. **Manifesto do conjunto: não existe** (a pasta contém só os PNG das vistas) — a proveniência desta vista («decisão expressa do Mestre, 2026-11-03», hash acima) vive neste registo e no acto.
 
 - I0007 (CM-000009), 2026-11-03.
+
+## 2026-11-12 — Plano C, item 2 (passo 1): a `main` é a cópia canónica de `oficina3d/`
+
+**Sentença:** Bancada O0, itens 2–9 (Plano C, Etapa O0.0), item 2 — cópia canónica: a `main` é canónica quanto a `oficina3d/`; os três ramos arquivam-se com etiqueta permanente verificada antes de qualquer remoção, sem fusão nem cópia para a `main`.
+
+**Prova medida hoje (2026-11-12, leitura remota via `gh api`):** ponta da `main` = `0538290bfe6e087440dcc81267e861574d30eb03` (a mais recente); pacote `oficina3d/` com **58 ficheiros** na árvore da ponta. Ramos medidos antes do arquivo: `integracao/frente-d` = `5279f60d25184289b9b215d16e1ee21d71f509d1` (antepassado estrito da main, já fundido por fast-forward, REGISTRO linha 1469) · `codex/melhoria-paralela` = `626229bfe1921cddc003b583f5e83ea064343522` (ahead 17 / behind 29) · `codex/auditoria-sem-pc` = `3d019cf5a147774e0216b026529ef7700b7daeaa` (ahead 4 / behind 27).
+
+**Arquivo (passos 2–3):** etiquetas permanentes criadas e verificadas por leitura remota (SHA da etiqueta = SHA medido da ponta do ramo): `arquivo/integracao-frente-d` → `5279f60d…` · `arquivo/codex-melhoria-paralela` → `626229bf…` · `arquivo/codex-auditoria-sem-pc` → `3d019cf5…`. Ramos removidos depois da prova: a listagem remota de ramos passou a ter só a `main` (`0538290b…` intacta), com as três etiquetas presentes. **Nenhuma fusão, cherry-pick ou cópia para a `main` nesta decisão** (passo 4): a ponta e a árvore de `oficina3d/` na main ficam inalteradas por este acto, salvo este registo. Os 37 scripts de `testes/codex/` e a evidência da auditoria ficam só no arquivo etiquetado, consultáveis.
+
+- I0007 (CM-000009), 2026-11-12.
+
+## 2026-11-12 — Plano C, resgate da cadeia de vértice (§5, passo 6): travessia da fronteira declarada da Frente D
+
+**Acto que autoriza:** sentença da bancada de resgate da cadeia de vértice (item 2, passo 5), `SENTENCA-RESGATE-VERTICE.md` (28.526 B, SHA-256 do ficheiro `35dd2939e056ed8b2b4cfd7925478f03501efb81527e76fdde9a84619bbb11f8`; SHA do conteúdo `70f9cf971cb23b73bf1001427fbc2a214a66084d19cca5a5ea9cdd2b9026295f`), lavrada 2026-11-12 sobre a ponta da main `0538290b…`.
+
+**Travessia lavrada (V6(d)/T4(c)):** a fronteira declarada da Frente D — «`TestDistanciasValidas` NÃO foi absorvida nesta tranche», na docstring de `testes/test_cor_guardas.py` — **foi atravessada por esta sentença**: a classe `TestDistanciasValidas` entrou na `main` junto com o bloco de validação de `avaliar_alinhamento_forma` (V6), em porte aditivo, com a frase de fronteira **actualizada, não apagada** («absorvida pela bancada de resgate da cadeia de vértice, 2026-11-12»).
+
+**Âmbito do porte (só os hunks aprovados):** B1 (import `struct` morto) · B5 (guarda `if __name__ == "__main__":`) · B4 parcial (canalização de `amostragem` ao job + `res["amostragem"]`; `res["espaco_cor"]` NÃO entra, na redacção do ramo seria falso sob o contrato da main) · V6+T4 (acto único). **Recusados e fora da main:** toda a cadeia de cor (V1–V5 + B2, com T1 e T2 como dependentes) + B3 + T3 — ficam no arquivo etiquetado do ramo `arquivo/codex-melhoria-paralela`, consultáveis. Porta de reabertura (§6 da sentença): consumidor EXR real medido, ou superioridade em imagem byte, reabre a cadeia como conjunto perante o portão D-3.
+
+- I0007 (CM-000009), 2026-11-12.
