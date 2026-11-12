@@ -14,7 +14,8 @@ valida, arquivo quebrado recusado sem excecao.
 
 Fronteira declarada: a segunda classe da fonte julgada,
 ``TestDistanciasValidas`` (mira ``avaliar_alinhamento_forma`` - outro
-alvo, outra guarda), NAO foi absorvida nesta tranche.
+alvo, outra guarda), foi absorvida pela bancada de resgate da cadeia
+de vertice, 2026-11-12 (sentenca SENTENCA-RESGATE-VERTICE.md).
 """
 import copy
 import json
@@ -24,9 +25,12 @@ import sys
 import tempfile
 import unittest
 
+import numpy as np
+
 APP=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(APP))
 from oficina3d.cor.validacao_vertice import verificar_glb_vertice
+from oficina3d.cor.vertice import avaliar_alinhamento_forma
 
 class TestDefesaColor0(unittest.TestCase):
     def setUp(self):
@@ -122,5 +126,23 @@ class TestDefesaColor0(unittest.TestCase):
                 self.assertFalse(verificar_glb_vertice(self.path)['ok'])
         for doc in [[],{'meshes':None},{'meshes':[None]},{'meshes':[{'primitives':None}]}]:
             with self.subTest(doc=doc):self.assertFalse(self.verify(doc)['ok'])
+
+class TestDistanciasValidas(unittest.TestCase):
+    def test_nan_infinito_negativo_e_nao_numerico_recusam(self):
+        for distances in [[float('nan')],[float('inf')],[-.1],['erro'],[[.01,.02]]]:
+            with self.subTest(distances=distances):
+                accepted,_,metrics=avaliar_alinhamento_forma(distances,dict(x=1,y=1,z=1))
+                self.assertFalse(accepted)
+                json.dumps(metrics,allow_nan=False)
+
+    def test_numpy_e_gerador_sao_aceitos_sem_truth_value_ambiguo(self):
+        for distances in [np.array([.001,.002]),(v for v in [.001,.002])]:
+            self.assertTrue(avaliar_alinhamento_forma(distances,dict(x=1,y=1,z=1))[0])
+
+    def test_razoes_nao_finitas_ou_nao_numericas_recusam(self):
+        for ratio in [float('nan'),float('inf'),'erro',None]:
+            with self.subTest(ratio=ratio):
+                accepted,_,metrics=avaliar_alinhamento_forma([.001],dict(x=ratio,y=1,z=1))
+                self.assertFalse(accepted);json.dumps(metrics,allow_nan=False)
 
 if __name__=='__main__':unittest.main()
