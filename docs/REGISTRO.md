@@ -1841,3 +1841,24 @@ A **bateria não correu — pela sua própria regra pré-registada**. O condutor
 **Âmbito do porte (só os hunks aprovados):** B1 (import `struct` morto) · B5 (guarda `if __name__ == "__main__":`) · B4 parcial (canalização de `amostragem` ao job + `res["amostragem"]`; `res["espaco_cor"]` NÃO entra, na redacção do ramo seria falso sob o contrato da main) · V6+T4 (acto único). **Recusados e fora da main:** toda a cadeia de cor (V1–V5 + B2, com T1 e T2 como dependentes) + B3 + T3 — ficam no arquivo etiquetado do ramo `arquivo/codex-melhoria-paralela`, consultáveis. Porta de reabertura (§6 da sentença): consumidor EXR real medido, ou superioridade em imagem byte, reabre a cadeia como conjunto perante o portão D-3.
 
 - I0007 (CM-000009), 2026-11-12.
+## 2026-11-12 — Plano C, O0.1: remoção da página web pelo mapa do inventário
+
+A página web da Oficina foi **retirada** no Plano C, O0.1, pela remoção única e completa mapeada no inventário prévio (`INVENTARIO-WEB-O0.md`: 43 referências, 8 ACTIVAS, 34 inactivas, 1 DÚVIDA), depois da sinalização interina colocada nos 5 pontos de documentação. Operação passa a ser **só por CLI/MCP**. A web **regressa na O10 como galeria** para ver e dar nota, com o `app.js`, sobre a base já reestruturada — critério de aceitação obrigatório da O10 (sentença do Item 8, passo 4).
+
+**O pacote e o arranque (itens 1–7 e 11–14 do inventário).** Saiu o pacote `oficina3d/web/` inteiro (7 ficheiros: `__init__.py`, `__main__.py`, `app.py`, `regras.py`, `static/index.html`, `static/app.css`, `static/viewer_config.js` — itens 1–7). Saiu `instalacao/tarefa_web/` inteiro (itens 11–14: `iniciar_web.py`, `tarefa_web.xml`, `registrar_tarefa.cmd`, `README.md`). No PC, o desregisto da tarefa `Oficina3D_Web` é acto do coordenador no mesmo acto da publicação desta remoção (antes de o código publicado chegar à instalação), para não nascer o arranque zombie a cada logon descrito no inventário §10.1.
+
+**As 8 referências ACTIVAS, resolvidas uma a uma:**
+1. Item 11 — `instalacao/tarefa_web/iniciar_web.py` (lançador): **apagado** com a pasta `tarefa_web/`.
+2. Item 12 — `instalacao/tarefa_web/tarefa_web.xml` (tarefa `Oficina3D_Web`): **apagado** com a pasta.
+3. Item 13 — `instalacao/tarefa_web/registrar_tarefa.cmd`: **apagado** com a pasta.
+4. Item 16 — `fastapi==0.162.0` em `instalacao/requisitos/app.txt`: **removido**.
+5. Item 17 — `uvicorn==0.54.0` em `instalacao/requisitos/app.txt`: **removido**. O `uvicorn` do venv do MCP (`instalacao/requisitos/mcp.txt`) **não foi tocado** — é do servidor MCP.
+6. Item 18 — `fastapi`/`uvicorn` em `instalacao/requirements_venv_app.lock`: **removidos** (as duas linhas).
+7. Item 19 — `instalacao/instalar.ps1:67`: `fastapi` **removido** da linha de verificação «IMPORT OK» do `.venv_app`; os restantes imports ficam intactos.
+8. Item 21 — `testes/test_web.py`: **apagado** (era o único importador da web fora dela).
+
+**Documentação viva actualizada para o estado final** nos pontos sinalizados: `docs/USO_PARA_IAS.md`, `docs/ESTADO_ATUAL.md`, `docs/ARQUITETURA.md` e `instalacao/LISTA_INSTALACAO_FASE1.md` passam a dizer que a web FOI retirada (Plano C, O0.1), operação só por CLI/MCP, regresso na O10 como galeria; o quinto ponto, `instalacao/tarefa_web/README.md`, saiu com a pasta do mecanismo. As entradas antigas deste REGISTRO e os documentos históricos/estudo (inventário §7) **não foram editados nem apagados** — esta entrada é append-only, como manda o registo.
+
+**Item 15 — DÚVIDA resolvida como ARQUIVO:** `docs/v1_recuperado/INICIAR_OFICINA3D.bat` fica **assinalado como ARQUIVO histórico inerte, fora do mapa de remoção**: vive na cópia recuperada da v1, não é editado nem apagado nesta remoção.
+
+- Preparação O0.1 (CM-000009), 2026-11-12.

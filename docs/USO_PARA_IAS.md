@@ -1,7 +1,7 @@
 # Oficina 3D — como Claude, ChatGPT/Codex e outras IAs usam o app
 
 > **Neste PC (atualizado pelo Muse em 31/10/2026):** a BASE é `C:\Users\txcga\RPG_Local\Oficina3D` (não `E:\RPG_Assimilacao\Oficina3D` — os caminhos com `E:` abaixo são o exemplo genérico da v1; troque pela BASE daqui). Os ambientes são `.venv_app` (app/worker/web), `.venv_mcp` (MCP) e `.venv_triposr` — não existe `.venv` único. O módulo do servidor MCP é `oficina3d.mcp`. Já existe um `.mcp.json` pronto na BASE com os caminhos reais deste PC. Worker e página web sobem sozinhos no logon (tarefas `Oficina3D_Worker` e `Oficina3D_Web`).
-> ⚠ A página web da Oficina está PARTIDA e vai ser RETIRADA (Plano C, O0.1): falta-lhe o `app.js` e a pasta `static/vendor/` — não arrancar nem usar; operação só por CLI/MCP. Volta na O10 como galeria.
+> ⚠ A página web da Oficina FOI RETIRADA (Plano C, O0.1): operação só por CLI/MCP. Regresso na O10 como galeria.
 
 Quatro portas de entrada, todas para a mesma fila (`E:\RPG_Assimilacao\Oficina3D\jobs\`). O **worker** processa um job por vez na GPU; precisa estar rodando:
 
@@ -22,7 +22,7 @@ cd E:\RPG_Assimilacao\Oficina3D\app
 ..\.venv\Scripts\python.exe -m oficina3d.cli baixar <id> D:\destino
 ```
 
-⚠ A página web da Oficina está PARTIDA e vai ser RETIRADA (Plano C, O0.1): falta-lhe o `app.js` e a pasta `static/vendor/` — não arrancar nem usar; operação só por CLI/MCP. Volta na O10 como galeria.
+⚠ A página web da Oficina FOI RETIRADA (Plano C, O0.1): operação só por CLI/MCP. Regresso na O10 como galeria.
 
 ## 3. Página e API HTTP (só neste PC)
 ```

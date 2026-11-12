@@ -103,7 +103,7 @@ python -m oficina3d.cli status [id] ; baixar id destino ; motores ; worker
 python -m oficina3d.web   # FastAPI em http://127.0.0.1:8765 (só local; nada exposto à rede)
 ```
 
-⚠ A página web da Oficina está PARTIDA e vai ser RETIRADA (Plano C, O0.1): falta-lhe o `app.js` e a pasta `static/vendor/` — não arrancar nem usar; operação só por CLI/MCP. Volta na O10 como galeria.
+⚠ A página web da Oficina FOI RETIRADA (Plano C, O0.1): operação só por CLI/MCP. Regresso na O10 como galeria.
 
 ## Etapas do worker
 1. `entrada` (0–10%): `entrada.preparar` (pula no modo `so-refinar`).

@@ -64,7 +64,7 @@ $Motores = @(
 $Estimativas = @{ uv = 0.05; python310 = 0.1; transitorio = 2.5 }
 $Testes = @(
     @{ Venv = '.venv_app'; Pasta = 'motores\Hunyuan3D-2GP'; Exige = @('IMPORT OK', '+cu124 True');
-       Codigo = "import torch, mmgp, pymeshlab, trimesh, transformers, diffusers, fastapi, rembg, huggingface_hub; from hy3dgen.shapegen import Hunyuan3DDiTFlowMatchingPipeline; from hy3dgen.rembg import BackgroundRemover; print('IMPORT OK', torch.__version__, torch.cuda.is_available(), transformers.__version__, diffusers.__version__)" },
+       Codigo = "import torch, mmgp, pymeshlab, trimesh, transformers, diffusers, rembg, huggingface_hub; from hy3dgen.shapegen import Hunyuan3DDiTFlowMatchingPipeline; from hy3dgen.rembg import BackgroundRemover; print('IMPORT OK', torch.__version__, torch.cuda.is_available(), transformers.__version__, diffusers.__version__)" },
     @{ Venv = '.venv_triposr'; Pasta = 'motores\TripoSR'; Exige = @('IMPORT OK', '+cu124 True', '\compat\torchmcubes\__init__.py');
        Codigo = "import torch, torchmcubes, transformers, trimesh, onnxruntime, moderngl, xatlas; from tsr.system import TSR; from tsr.bake_texture import bake_texture; print('IMPORT OK', torch.__version__, torch.cuda.is_available(), transformers.__version__, torchmcubes.__file__)" },
     @{ Venv = '.venv_mcp'; Pasta = ''; Exige = @('IMPORT OK');
