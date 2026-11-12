@@ -34,7 +34,6 @@ import hashlib
 import json
 import math
 import os
-import struct
 import sys
 import time
 import traceback
@@ -421,8 +420,11 @@ def main():
             progresso(45, f"Blender VERTICE: vista {vista} pronta ({int(vis.sum())} vertices visiveis)")
 
         progresso(55, "Blender VERTICE: amostrando as vistas nos vertices")
+        amostragem = pedido.get("amostragem", "bilinear")
         cores, fonte, _melhor, info_amostra = V.amostrar_vertices(
-            verts, normais, vistas_prontas, np.array(centro), ortho)
+            verts, normais, vistas_prontas, np.array(centro), ortho,
+            amostragem=amostragem)
+        res["amostragem"] = amostragem
         for vista in por_vista:
             por_vista[vista]["vertices_pintados"] = int(
                 info_amostra["vertices_por_vista"].get(vista, 0))
@@ -527,4 +529,5 @@ def main():
         sys.exit(3)
 
 
-main()
+if __name__ == "__main__":
+    main()
