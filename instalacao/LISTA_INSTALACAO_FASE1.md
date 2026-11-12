@@ -57,7 +57,7 @@ resolvida por curinga para não depender de acento em arquivo ASCII).
 ## 7. Portas de entrada no ar
 
 - CLI: `.venv_app\Scripts\python.exe -m oficina3d.cli motores|status|enviar|...`
-- Web: http://127.0.0.1:8765 (sobe sozinha no logon).
+- Web: retirada (Plano C, O0.1) — regresso na O10 como galeria.
 - MCP: `.mcp.json` pronto na BASE (stdio, `oficina3d.mcp`, 9 ferramentas);
   HTTP opcional na 8766, sempre com token.
 - Pasta de jobs: integração por arquivos (ver `docs\USO_PARA_IAS.md`).
@@ -67,5 +67,5 @@ resolvida por curinga para não depender de acento em arquivo ASCII).
 ```
 .venv_app\Scripts\python.exe -m oficina3d.cli motores      (5 motores: sim)
 .venv_app\Scripts\python.exe -m unittest discover -s testes (suite verde)
-curl http://127.0.0.1:8765/api/saude                          (ok: true)
+# web retirada (Plano C, O0.1): sem endpoint de saude; regresso na O10 como galeria
 ```
